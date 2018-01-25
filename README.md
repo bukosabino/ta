@@ -1,8 +1,8 @@
 # Technical Analysis Library in Python
 
-You can use this library to add features to your dataset to trading.
+You can use this library to add features to your trade dataset.
 
-# Volume
+## Volume
 
 * Accumulation/Distribution Index (ADI)
 * On-balance volume (OBV)
@@ -16,8 +16,22 @@ You can use this library to add features to your dataset to trading.
 
 > pip install -r requirements.txt
 
-Inspired on:
+# Use
+
+> import pandas as pd
+> from volume import *
+> df = pd.read_csv('input/data.csv', sep=',')
+> df['cmf'] = chaikin_money_flow(df.High, df.Low, df.Close, df.Volume_BTC)
+
+# Based on:
 
 * https://en.wikipedia.org/wiki/Technical_analysis
 * https://github.com/FreddieWitherden/ta
 * https://github.com/femtotrader/pandas_talib
+
+
+# Credits:
+
+Developed by Bukosabino at Lecrin Technologies - http://lecrintech.com
+
+We are glad receving any contribution, idea or feedback.
