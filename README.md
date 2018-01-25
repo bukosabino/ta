@@ -18,10 +18,13 @@ You can use this library to add features to your trade dataset.
 
 # Use
 
-> import pandas as pd
-> from volume import *
-> df = pd.read_csv('input/data.csv', sep=',')
-> df['cmf'] = chaikin_money_flow(df.High, df.Low, df.Close, df.Volume_BTC)
+```python
+import pandas as pd
+from volume import *
+df = pd.read_csv('input/data.csv', sep=',')
+df['cmf'] = chaikin_money_flow(df.High, df.Low, df.Close, df.Volume_BTC)
+```
+
 
 # Based on:
 
