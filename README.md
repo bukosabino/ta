@@ -12,19 +12,28 @@ You can use this library to add features to your trade dataset.
 * Ease of movement (EoM, EMV)
 * Volume-price trend (VPT)
 
+## Volatility
+
+* Average True Range (ATR)
+* Bollinger Bands (BB)
+* Keltner channel (KC)
+* Donchian channel (DC)
+
+
 # Installation
 
 > pip install -r requirements.txt
 
-# Use
+
+# Example
 
 ```python
 import pandas as pd
 from volume import *
+
 df = pd.read_csv('input/data.csv', sep=',')
 df['cmf'] = chaikin_money_flow(df.High, df.Low, df.Close, df.Volume_BTC)
 ```
-
 
 # Based on:
 

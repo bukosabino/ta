@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import pandas as pd
-from pandas.stats import moments
 
 
 def acc_dist_index(high, low, close, volume):
