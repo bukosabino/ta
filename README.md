@@ -46,4 +46,4 @@ df['cmf'] = chaikin_money_flow(df.High, df.Low, df.Close, df.Volume_BTC)
 
 Developed by Bukosabino at Lecrin Technologies - http://lecrintech.com
 
-We are glad receving any contribution, idea or feedback.
+We are glad receiving any contribution, idea or feedback.
