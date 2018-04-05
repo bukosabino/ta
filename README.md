@@ -6,7 +6,7 @@ You can use this library to add features to your trade dataset.
 
 * Accumulation/Distribution Index (ADI)
 * On-balance volume (OBV)
-* On-balance volume mean (OBV)
+* On-balance volume mean (OBV mean)
 * Chaikin Money Flow (CMF)
 * Force Index (FI)
 * Ease of movement (EoM, EMV)
@@ -25,15 +25,45 @@ You can use this library to add features to your trade dataset.
 > pip install -r requirements.txt
 
 
-# Example
+# Example add one feature
 
 ```python
 import pandas as pd
 from volume import *
 
+# load datas
 df = pd.read_csv('input/data.csv', sep=',')
+
+# clean nan values
+df = utils.dropna(df)
+
+# add ta feature
 df['cmf'] = chaikin_money_flow(df.High, df.Low, df.Close, df.Volume_BTC)
+
+# fill nan values
+df['cmf'] = df['cmf'].fillna(method='backfill')
 ```
+
+
+# Example add some features
+
+```python
+import pandas as pd
+from volume import *
+
+# load datas
+df = pd.read_csv('input/data.csv', sep=',')
+
+# clean nan values
+df = utils.dropna(df)
+
+# add ta features
+df = add_volume_ta(df, "High", "Low", "Close", "Volume_BTC")
+
+# fill nan values
+df = df.fillna(method='backfill')
+```
+
 
 # Based on:
 
@@ -46,4 +76,4 @@ df['cmf'] = chaikin_money_flow(df.High, df.Low, df.Close, df.Volume_BTC)
 
 Developed by Bukosabino at Lecrin Technologies - http://lecrintech.com
 
-We are glad receiving any contribution, idea or feedback.
+We are glad to receive any contribution, idea or feedback.
