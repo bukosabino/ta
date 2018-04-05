@@ -24,6 +24,11 @@ You can use this library to add features to your finacial time series dataset.
 * Moving Average Convergence Divergence (MACD)
 * Relative Strength Index (RSI)
 
+## Fundamental
+
+* Daily Return (DR)
+* Cumulative Return (CR)
+
 
 # Installation
 
@@ -89,6 +94,7 @@ df = add_all_ta_features(df, "Open", "High", "Low", "Close", "Volume_BTC")
 df = df.fillna(method='backfill')
 ```
 
+If you don't know any feature you can visualize them in "visualize_features.ipynb".
 
 # Based on:
 

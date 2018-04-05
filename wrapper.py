@@ -2,7 +2,10 @@ import pandas as pd
 
 from volume import *
 from volatility import *
+from trend import *
 from fundamental import *
+#from momentum import *
+
 
 def add_volume_ta(df, high, low, close, volume):
     """Add volume technical analysis features to dataframe.
@@ -53,6 +56,48 @@ def add_volatility_ta(df, high, low, close):
     return df
 
 
+def add_trend_ta(df, high, low, close):
+    """Add trend technical analysis features to dataframe.
+
+    Args:
+        df (pandas.core.frame.DataFrame): Dataframe base.
+        high (str): Name of 'high' column.
+        low (str): Name of 'low' column.
+        close (str): Name of 'close' column.
+
+    Returns:
+        pandas.core.frame.DataFrame: Dataframe with new features.
+    """
+    df['trend1'] = macd(df[close], n_fast=12, n_slow=26, n_sign=9)
+    df['trend2'] = macd_signal(df[close], n_fast=12, n_slow=26, n_sign=9)
+    df['trend3'] = macd_diff(df[close], n_fast=12, n_slow=26, n_sign=9)
+    df['trend4'] = ema_fast(df[close], n_fast=12)
+    df['trend5'] = ema_slow(df[close], n_slow=26)
+    df['trend6'] = adx(df[high], df[low], df[close], n=14)
+    df['trend7'] = adx_pos(df[high], df[low], df[close], n=14)
+    df['trend8'] = adx_neg(df[high], df[low], df[close], n=14)
+    df['trend9'] = vortex_indicator_pos(df[high], df[low], df[close], n=14)
+    df['trend10'] = vortex_indicator_neg(df[high], df[low], df[close], n=14)
+    df['trend11'] = abs(df['trend9'] - df['trend10'])
+    df['trend12'] = trix(df[close], n=15)
+    return df
+
+
+def add_momentum_ta(df, high, low, close):
+    """Add trend technical analysis features to dataframe.
+
+    Args:
+        df (pandas.core.frame.DataFrame): Dataframe base.
+        high (str): Name of 'high' column.
+        low (str): Name of 'low' column.
+        close (str): Name of 'close' column.
+
+    Returns:
+        pandas.core.frame.DataFrame: Dataframe with new features.
+    """
+    #df['momentum1'] = rsi(df[close], n=14)
+
+
 def add_fa(df, close):
     """Add fundamental analysis features to dataframe.
 
@@ -84,5 +129,6 @@ def add_all_ta_features(df, open, high, low, close, volume):
     """
     df = add_volume_ta(df, high, low, close, volume)
     df = add_volatility_ta(df, high, low, close)
+    df = add_trend_ta(df, high, low, close)
     df = add_fa(df, close)
     return df
