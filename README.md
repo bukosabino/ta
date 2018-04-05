@@ -49,7 +49,7 @@ df['cmf'] = df['cmf'].fillna(method='backfill')
 
 ```python
 import pandas as pd
-from volume import *
+from ta import *
 
 # load datas
 df = pd.read_csv('input/data.csv', sep=',')
@@ -59,6 +59,25 @@ df = utils.dropna(df)
 
 # add ta features
 df = add_volume_ta(df, "High", "Low", "Close", "Volume_BTC")
+
+# fill nan values
+df = df.fillna(method='backfill')
+```
+
+# Example all features
+
+```python
+import pandas as pd
+from ta import *
+
+# load datas
+df = pd.read_csv('input/data.csv', sep=',')
+
+# clean nan values
+df = utils.dropna(df)
+
+# add ta features
+df = add_all_ta_features(df, "Open", "High", "Low", "Close", "Volume_BTC")
 
 # fill nan values
 df = df.fillna(method='backfill')

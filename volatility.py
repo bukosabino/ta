@@ -17,18 +17,32 @@ def average_true_range(high, low, close, n=14):
     return pd.Series(ema(tr, n).fillna(0), name='atr')
 
 
-def bollinger_bands(close, n=20, ndev=2):
+def bollinger_hband(close, n=20, ndev=2):
     """Bollinger Bands (BB)
     https://en.wikipedia.org/wiki/Bollinger_Bands
     """
     mavg = close.rolling(n).mean()
     mstd = close.rolling(n).std()
     hband = mavg + ndev*mstd
-    lband = mavg - ndev*mstd
-    result = pd.Series(lband, name='lband'), pd.Series(mavg, name='mavg'),\
-             pd.Series(hband, name='hband')
-    return result
+    return pd.Series(hband, name='hband')
 
+
+def bollinger_lband(close, n=20, ndev=2):
+    """Bollinger Bands (BB)
+    https://en.wikipedia.org/wiki/Bollinger_Bands
+    """
+    mavg = close.rolling(n).mean()
+    mstd = close.rolling(n).std()
+    lband = mavg - ndev*mstd
+    return pd.Series(lband, name='lband')
+
+
+def bollinger_mavg(close, n=20):
+    """Bollinger Bands (BB)
+    https://en.wikipedia.org/wiki/Bollinger_Bands
+    """
+    mavg = close.rolling(n).mean()
+    return pd.Series(mavg, name='mavg')
 
 def bollinger_hband_indicator(close, n=20, ndev=2):
     """Bollinger High Band Indicator
@@ -66,13 +80,20 @@ def keltner_channel(high, low, close, n=10):
     return pd.Series(tp.rolling(n).mean(), name='kc')
 
 
-def donchian_channel(close, n=20):
+def donchian_channel_hband(close, n=20):
     """Donchian channel (DC)
     https://en.wikipedia.org/wiki/Donchian_channel
     """
     hband = close.rolling(n).max()
+    return pd.Series(hband, name='dchband')
+
+
+def donchian_channel_lband(close, n=20):
+    """Donchian channel (DC)
+    https://en.wikipedia.org/wiki/Donchian_channel
+    """
     lband = close.rolling(n).min()
-    return pd.Series(lband, name='dclband'), pd.Series(hband, name='dchband')
+    return pd.Series(lband, name='dclband')
 
 
 def donchian_channel_hband_indicator(close, n=20):
@@ -83,7 +104,7 @@ def donchian_channel_hband_indicator(close, n=20):
     df = pd.DataFrame([close]).transpose()
     df['hband'] = 0.0
     hband = close.rolling(n).max()
-    df.loc[close > hband, 'hband'] = 1.0
+    df.loc[close >= hband, 'hband'] = 1.0
     return pd.Series(df['hband'], name='dcihband')
 
 
@@ -95,5 +116,5 @@ def donchian_channel_lband_indicator(close, n=20):
     df = pd.DataFrame([close]).transpose()
     df['lband'] = 0.0
     lband = close.rolling(n).min()
-    df.loc[close < lband, 'lband'] = 1.0
+    df.loc[close <= lband, 'lband'] = 1.0
     return pd.Series(df['lband'], name='dcilband')

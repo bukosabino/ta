@@ -1,29 +1,5 @@
 import pandas as pd
 
-
-def add_volume_ta(df, high, low, close, volume):
-    """Add volume technical analysis features to dataframe.
-
-    Args:
-        df (pandas.core.frame.DataFrame): Dataframe base.
-        high (str): Name of 'high' column.
-        low (str): Name of 'low' column.
-        close (str): Name of 'close' column.
-        volume (str): Name of 'volume' column.
-
-    Returns:
-        pandas.core.frame.DataFrame: Dataframe with new features.
-    """
-    df['v1'] = acc_dist_index(df[high], df[low], df[close], df[volume])
-    df['v2'] = on_balance_volume(df[close], df[volume])
-    df['v3'] = on_balance_volume_mean(df[close], df[volume], 10)
-    df['v5'] = chaikin_money_flow(df[high], df[low], df[close], df[volume])
-    df['v6'] = force_index(df[close], df[volume])
-    df['v7'] = ease_of_movement(df[high], df[low], df[close], df[volume], 14)
-    df['v8'] = volume_price_trend(df[close], df[volume])
-    return df
-
-
 def acc_dist_index(high, low, close, volume):
     """Accumulation/Distribution Index (ADI)
     https://en.wikipedia.org/wiki/Accumulation/distribution_index
@@ -102,7 +78,6 @@ def ease_of_movement(high, low, close, volume, n=20):
 
 
 def volume_price_trend(close, volume):
-    # TODO: problems with g-research challenge datas (too big values)
     """Volume-price trend (VPT)
     https://en.wikipedia.org/wiki/Volume%E2%80%93price_trend
     Is based on a running cumulative volume that adds or substracts a multiple
