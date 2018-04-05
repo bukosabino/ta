@@ -22,7 +22,9 @@ You can use this library to add features to your finacial time series dataset.
 ## Trend
 
 * Moving Average Convergence Divergence (MACD)
-* Relative Strength Index (RSI)
+* Average Directional Movement Index (ADX)
+* Vortex Indicator (VI)
+* Trix (TRIX)
 
 ## Fundamental
 

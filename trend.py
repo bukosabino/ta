@@ -48,7 +48,7 @@ def ema_slow(close, n_slow=26):
 
 
 def adx(high, low, close, n=14):
-    """Average directional movement index
+    """Average Directional Movement Index (ADX)
     """
     cs = close.shift(1)
     
