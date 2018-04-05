@@ -1,6 +1,5 @@
-# -*- coding: utf-8 -*-
 import pandas as pd
-from pandas.stats import moments
+#from pandas.stats import moments
 import numpy as np
 
 from utils import *
@@ -8,7 +7,6 @@ from utils import *
 
 def macd(close, n_fast=12, n_slow=26, n_sign=9):
     """Moving Average Convergence Divergence (MACD)
-    https://github.com/femtotrader/pandas_talib/blob/master/pandas_talib/__init__.py
     """
     emafast = ema(close, n_fast)
     emaslow = ema(close, n_slow)
@@ -18,7 +16,6 @@ def macd(close, n_fast=12, n_slow=26, n_sign=9):
 
 def macd_signal(close, n_fast=12, n_slow=26, n_sign=9):
     """Moving Average Convergence Divergence (MACD Signal)
-    https://github.com/femtotrader/pandas_talib/blob/master/pandas_talib/__init__.py
     """
     emafast = ema(close, n_fast)
     emaslow = ema(close, n_slow)
