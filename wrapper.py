@@ -2,6 +2,7 @@ import pandas as pd
 
 from volume import *
 from volatility import *
+from fundamental import *
 
 def add_volume_ta(df, high, low, close, volume):
     """Add volume technical analysis features to dataframe.
@@ -52,6 +53,21 @@ def add_volatility_ta(df, high, low, close):
     return df
 
 
+def add_fa(df, close):
+    """Add fundamental analysis features to dataframe.
+
+    Args:
+        df (pandas.core.frame.DataFrame): Dataframe base.
+        close (str): Name of 'close' column.
+
+    Returns:
+        pandas.core.frame.DataFrame: Dataframe with new features.
+    """
+    df['fundamental1'] = daily_return(df[close])
+    df['fundamental2'] = cumulative_return(df[close])
+    return df
+
+
 def add_all_ta_features(df, open, high, low, close, volume):
     """Add all technical analysis features to dataframe.
 
@@ -68,4 +84,5 @@ def add_all_ta_features(df, open, high, low, close, volume):
     """
     df = add_volume_ta(df, high, low, close, volume)
     df = add_volatility_ta(df, high, low, close)
+    df = add_fa(df, close)
     return df
