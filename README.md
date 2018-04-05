@@ -1,28 +1,33 @@
 # Technical Analysis Library in Python
 
-You can use this library to add features to your trade dataset.
+You can use this library to add features to your finacial time series dataset.
 
 ## Volume
 
 * Accumulation/Distribution Index (ADI)
-* On-balance volume (OBV)
-* On-balance volume mean (OBV mean)
+* On-Balance Volume (OBV)
+* On-Balance Volume mean (OBV mean)
 * Chaikin Money Flow (CMF)
 * Force Index (FI)
-* Ease of movement (EoM, EMV)
-* Volume-price trend (VPT)
+* Ease of Movement (EoM, EMV)
+* Volume-price Trend (VPT)
 
 ## Volatility
 
 * Average True Range (ATR)
 * Bollinger Bands (BB)
-* Keltner channel (KC)
-* Donchian channel (DC)
+* Keltner Channel (KC)
+* Donchian Channel (DC)
+
+## Trend
+
+* Moving Average Convergence Divergence (MACD)
+* Relative Strength Index (RSI)
 
 
 # Installation
 
-> pip install -r requirements.txt
+> pip3 install -r requirements.txt
 
 
 # Example add one feature
@@ -63,6 +68,7 @@ df = add_volume_ta(df, "High", "Low", "Close", "Volume_BTC")
 # fill nan values
 df = df.fillna(method='backfill')
 ```
+
 
 # Example all features
 
