@@ -25,7 +25,8 @@ def add_volume_ta(df, high, low, close, volume):
     df['volume3'] = on_balance_volume_mean(df[close], df[volume], 10)
     df['volume5'] = chaikin_money_flow(df[high], df[low], df[close], df[volume])
     df['volume6'] = force_index(df[close], df[volume])
-    df['volume7'] = ease_of_movement(df[high], df[low], df[close], df[volume], 14)
+    df['volume7'] = ease_of_movement(df[high], df[low], df[close],
+                                        df[volume], 14)
     df['volume8'] = volume_price_trend(df[close], df[volume])
     return df
 
@@ -52,7 +53,7 @@ def add_volatility_ta(df, high, low, close):
     df['volatility8'] = donchian_channel_hband(df[close], n=20)
     df['volatility9'] = donchian_channel_lband(df[close], n=20)
     df['volatility10'] = donchian_channel_hband_indicator(df[close], n=20)
-    df['volatility11'] = donchian_channel_lband_indicator(df[close], n=20)    
+    df['volatility11'] = donchian_channel_lband_indicator(df[close], n=20)
     return df
 
 
@@ -83,7 +84,8 @@ def add_trend_ta(df, high, low, close):
     df['trend13'] = mass_index(df[high], df[low], n=9, n2=25)
     df['trend14'] = cci(df[high], df[low], df[close], n=20, c=0.015)
     df['trend15'] = dpo(df[close], n=20)
-    df['trend16'] = kst(df[close], r1=10, r2=15, r3=20, r4=30, n1=10, n2=10, n3=10, n4=15, nsig=9)
+    df['trend16'] = kst(df[close], r1=10, r2=15, r3=20, r4=30, n1=10,
+                            n2=10, n3=10, n4=15, nsig=9)
     df['trend17'] = ichimoku_a(df[high], df[low], n1=9, n2=26, n3=52)
     df['trend18'] = ichimoku_b(df[high], df[low], n1=9, n2=26, n3=52)
     return df
@@ -102,7 +104,8 @@ def add_momentum_ta(df, high, low, close, volume):
         pandas.core.frame.DataFrame: Dataframe with new features.
     """
     df['momentum1'] = rsi(df[close], n=14)
-    df['momentum2'] = money_flow_index(df[high], df[low], df[close], df[volume], n=14)
+    df['momentum2'] = money_flow_index(df[high], df[low], df[close],
+                                        df[volume], n=14)
     return df
 
 

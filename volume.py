@@ -31,7 +31,6 @@ def on_balance_volume(close, volume):
 
 def on_balance_volume_mean(close, volume, n=10):
     """On-balance volume mean (OBV mean)
-    https://github.com/femtotrader/pandas_talib/blob/master/pandas_talib/__init__.py
     It's based on a cumulative total volume.
     """
     df = pd.DataFrame([close, volume]).transpose()
@@ -47,7 +46,6 @@ def on_balance_volume_mean(close, volume, n=10):
 
 def chaikin_money_flow(high, low, close, volume, n=20):
     """Chaikin Money Flow (CMF)
-    http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:chaikin_money_flow_cmf
     It measures the amount of Money Flow Volume over a specific period.
     """
     mfv = ((close - low) - (high - close)) / (high - low)
@@ -58,7 +56,6 @@ def chaikin_money_flow(high, low, close, volume, n=20):
 
 def force_index(close, volume, n=2):
     """Force Index (FI)
-    https://github.com/femtotrader/pandas_talib/blob/master/pandas_talib/__init__.py
     It illustrates how strong the actual buying or selling pressure is. High
     positive values mean there is a strong rising trend, and low values signify
     a strong downward trend.
@@ -69,7 +66,6 @@ def force_index(close, volume, n=2):
 def ease_of_movement(high, low, close, volume, n=20):
     """Ease of movement (EoM, EMV)
     https://en.wikipedia.org/wiki/Ease_of_movement
-    https://github.com/femtotrader/pandas_talib/blob/master/pandas_talib/__init__.py
     It relate an asset's price change to its volume and is particularly useful
     for assessing the strength of a trend.
     """

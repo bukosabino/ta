@@ -7,23 +7,21 @@ def rsi(close, n=14):
     """
     diff = close.diff()
     which_dn = diff < 0
-    
+
     up, dn = diff, diff*0
     up[which_dn], dn[which_dn] = 0, -up[which_dn]
-    
+
     emaup = up.ewm(n).mean()
     emadn = dn.ewm(n).mean()
-    
+
     rsi = 100 * emaup/(emaup + emadn)
     return pd.Series(rsi, name='rsi')
 
-    
+
 def money_flow_index(high, low, close, volume, n=14):
     """Money Flow Index (MFI)
-    http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:money_flow_index_mfi
-    https://en.wikipedia.org/wiki/Money_flow_index
     """
-    
+
     # 0 Prepare dataframe to work
     df = pd.DataFrame([high, low, close, volume]).T
     df.columns = ['High', 'Low', 'Close', 'Volume']
@@ -33,7 +31,7 @@ def money_flow_index(high, low, close, volume, n=14):
 
     # 1 typical price
     tp = (df['High'] + df['Low'] + df['Close']) / 3.0
-    
+
     # 2 money flow
     mf = tp * df['Volume']
 
@@ -50,4 +48,3 @@ def money_flow_index(high, low, close, volume, n=14):
     mr = n_positive_mf / n_negative_mf
     mr = (100 - (100 / (1 + mr)))
     return pd.Series(mr, name='mfi_'+str(n))
-

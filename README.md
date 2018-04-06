@@ -2,7 +2,7 @@
 
 You can use this library to add features to your finacial time series dataset.
 
-## Volume
+### Volume
 
 * Accumulation/Distribution Index (ADI)
 * On-Balance Volume (OBV)
@@ -12,14 +12,14 @@ You can use this library to add features to your finacial time series dataset.
 * Ease of Movement (EoM, EMV)
 * Volume-price Trend (VPT)
 
-## Volatility
+### Volatility
 
 * Average True Range (ATR)
 * Bollinger Bands (BB)
 * Keltner Channel (KC)
 * Donchian Channel (DC)
 
-## Trend
+### Trend
 
 * Moving Average Convergence Divergence (MACD)
 * Average Directional Movement Index (ADX)
@@ -31,12 +31,12 @@ You can use this library to add features to your finacial time series dataset.
 * KST Oscillator (KST)
 * Ichimoku Kinkō Hyō (Ichimoku)
 
-## Momentum
+### Momentum
 
 * Money Flow Index (MFI)
 * Relative Strength Index (RSI)
 
-## Fundamental
+### Fundamental
 
 * Daily Return (DR)
 * Cumulative Return (CR)
@@ -46,7 +46,7 @@ You can use this library to add features to your finacial time series dataset.
 
 > pip3 install pyta
 
-# Example adding all features
+### Example adding all features
 
 ```python
 import pandas as pd
@@ -66,7 +66,7 @@ df = df.fillna(method='backfill')
 ```
 
 
-# Example adding one feature
+### Example adding one feature
 
 ```python
 import pandas as pd

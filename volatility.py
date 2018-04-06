@@ -13,7 +13,7 @@ def average_true_range(high, low, close, n=14):
     z = abs(low - close.diff(1))
     aux = np.array([x, y, z])
     tr = pd.Series(aux.max(axis=0), index=high.index.values)
-    return pd.Series(ema(tr, n).fillna(0), name='atr')
+    return pd.Series(tr.ewm(n).mean().fillna(0), name='atr')
 
 
 def bollinger_hband(close, n=20, ndev=2):

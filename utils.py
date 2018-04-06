@@ -9,8 +9,3 @@ def dropna(df):
     df = df[df != 0.0]
     df = df.dropna()
     return df
-
-
-def ema(serie, n, wilder=False):
-    span = n if not wilder else 2*n - 1
-    return serie.ewm(span=span).mean()
