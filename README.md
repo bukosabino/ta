@@ -46,10 +46,21 @@ You can use this library to add features to your finacial time series dataset.
 
 
 ```sh
-virtualenv -p python3 virtualenvironment
-source virtualenvironment/bin/activate
-pip3 install ta==0.1.2
+> virtualenv -p python3 virtualenvironment
+> source virtualenvironment/bin/activate
+> pip3 install ta
 ```
+
+You can get examples of code in "examples_to_use" folder.
+If you don't know any feature you can visualize the notebook: "examples/visualize_features.ipynb".
+
+Note: To use the notebook you will need install matplotlib and jupyter lab. So:
+
+```sh
+> pip3 install matplotlib==2.1.2
+> pip3 install jupyterlab==0.31.12
+```
+
 
 ### Example adding all features
 
@@ -91,9 +102,6 @@ df['cmf'] = df['cmf'].fillna(method='backfill')
 ```
 
 
-If you don't know any feature you can visualize them in "visualize_features.ipynb".
-
-
 # Deploy to developers
 
 > pip3 install -r requirements.txt
@@ -104,6 +112,12 @@ If you don't know any feature you can visualize them in "visualize_features.ipyn
 * https://en.wikipedia.org/wiki/Technical_analysis
 * https://github.com/FreddieWitherden/ta
 * https://github.com/femtotrader/pandas_talib
+
+
+# TODO:
+
+* add ta features
+* boolean parameter fillna by function
 
 
 # Credits:
