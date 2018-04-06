@@ -43,7 +43,6 @@ def ema_slow(close, n_slow=26):
     return pd.Series(emaslow, name='emaslow')
 
 
-
 def adx(high, low, close, n=14):
     """Average Directional Movement Index (ADX)
     """
@@ -129,10 +128,55 @@ def vortex_indicator_neg(high, low, close, n=14):
 
 
 def trix(close, n=15):
-    """ Trix (TRIX)
+    """Trix (TRIX)
     """
     ema1 = close.ewm(span=n, min_periods=n-1).mean()
     ema2 = ema1.ewm(span=n, min_periods=n-1).mean()
     ema3 = ema2.ewm(span=n, min_periods=n-1).mean()
     trix = (ema3 - ema3.shift(1)) / ema3.shift(1)
     return pd.Series(trix*100, name='trix_'+str(n))
+
+
+def mass_index(high, low, n=9, n2=25):
+    """Mass Index (MI)
+    """
+    amplitude = high - low
+    ema1 = amplitude.ewm(span=n, min_periods=n-1).mean()
+    ema2 = ema1.ewm(span=n, min_periods=n-1).mean()
+    mass = ema1/ema2
+    return pd.Series(mass.rolling(n2).sum(), name='mass_index_'+str(n))
+
+
+def cci(high, low, close, n=20, c=0.015):
+    """Commodity Channel Index (CCI)
+    """
+    pp = (high+low+close)/3
+    cci = (pp-pp.rolling(n).mean())/pp.rolling(n).std()
+    return pd.Series(1/c * cci, name='cci')
+
+
+def dpo(close, n=20):
+    """Detrended Price Oscillator (DPO)
+    """
+    dpo = close.shift(int(n/(2+1))) - close.rolling(n).mean()
+    return pd.Series(dpo, name='dpo_'+str(n))
+    
+def kst():
+    
+    
+    ROC1 = close.diff(r1 - 1) / close.shift(r1 - 1)
+    
+    rocma1 = moments.rolling_mean(close / close.shift(r1) - 1, n1)
+
+
+def kst(close, r1=10, r2=15, r3=20, r4=30, n1=10, n2=10, n3=10, n4=15, nsig=9):
+    """KST Oscillator (KST)
+    """
+    rocma1 = (close / close.shift(r1) - 1).rolling(n1).mean()
+    rocma2 = (close / close.shift(r2) - 1).rolling(n2).mean()
+    rocma3 = (close / close.shift(r3) - 1).rolling(n3).mean()
+    rocma4 = (close / close.shift(r4) - 1).rolling(n4).mean()
+    kst = 100*(rocma1 + 2*rocma2 + 3*rocma3 + 4*rocma4)    
+    sig = kst.rolling(nsig).mean()
+    #return pd.Series(kst, name='kst')
+    return pd.Series(sig, name='sig')

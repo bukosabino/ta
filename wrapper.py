@@ -80,6 +80,10 @@ def add_trend_ta(df, high, low, close):
     df['trend10'] = vortex_indicator_neg(df[high], df[low], df[close], n=14)
     df['trend11'] = abs(df['trend9'] - df['trend10'])
     df['trend12'] = trix(df[close], n=15)
+    df['trend13'] = mass_index(df[high], df[low], n=9, n2=25)
+    df['trend14'] = cci(df[high], df[low], df[close], n=20, c=0.015)
+    df['trend15'] = dpo(df[close], n=20)
+    df['trend16'] = kst(df[close], r1=10, r2=15, r3=20, r4=30, n1=10, n2=10, n3=10, n4=15, nsig=9)
     return df
 
 

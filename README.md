@@ -25,6 +25,10 @@ You can use this library to add features to your finacial time series dataset.
 * Average Directional Movement Index (ADX)
 * Vortex Indicator (VI)
 * Trix (TRIX)
+* Mass Index (MI)
+* Commodity Channel Index (CCI)
+* Detrended Price Oscillator (DPO)
+* KST Oscillator (KST)
 
 ## Fundamental
 
@@ -37,7 +41,7 @@ You can use this library to add features to your finacial time series dataset.
 > pip3 install -r requirements.txt
 
 
-# Example add one feature
+# Example adding one feature
 
 ```python
 import pandas as pd
@@ -57,7 +61,7 @@ df['cmf'] = df['cmf'].fillna(method='backfill')
 ```
 
 
-# Example add some features
+# Example adding some features
 
 ```python
 import pandas as pd
@@ -77,7 +81,7 @@ df = df.fillna(method='backfill')
 ```
 
 
-# Example all features
+# Example adding all features
 
 ```python
 import pandas as pd
