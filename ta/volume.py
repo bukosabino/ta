@@ -1,5 +1,6 @@
 import pandas as pd
 
+
 def acc_dist_index(high, low, close, volume):
     """Accumulation/Distribution Index (ADI)
     https://en.wikipedia.org/wiki/Accumulation/distribution_index

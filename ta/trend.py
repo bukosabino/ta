@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 
-from utils import *
+from .utils import *
 
 
 def macd(close, n_fast=12, n_slow=26, n_sign=9):

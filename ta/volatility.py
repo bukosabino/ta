@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 
-from utils import *
+from .utils import *
 
 
 def average_true_range(high, low, close, n=14):

@@ -1,10 +1,10 @@
 import pandas as pd
 
-from volume import *
-from volatility import *
-from trend import *
-from fundamental import *
-from momentum import *
+from .volume import *
+from .volatility import *
+from .trend import *
+from .fundamental import *
+from .momentum import *
 
 
 def add_volume_ta(df, high, low, close, volume):
