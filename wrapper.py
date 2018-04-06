@@ -4,7 +4,7 @@ from volume import *
 from volatility import *
 from trend import *
 from fundamental import *
-#from momentum import *
+from momentum import *
 
 
 def add_volume_ta(df, high, low, close, volume):
@@ -87,7 +87,7 @@ def add_trend_ta(df, high, low, close):
     return df
 
 
-def add_momentum_ta(df, high, low, close):
+def add_momentum_ta(df, high, low, close, volume):
     """Add trend technical analysis features to dataframe.
 
     Args:
@@ -99,7 +99,9 @@ def add_momentum_ta(df, high, low, close):
     Returns:
         pandas.core.frame.DataFrame: Dataframe with new features.
     """
-    #df['momentum1'] = rsi(df[close], n=14)
+    df['momentum1'] = rsi(df[close], n=14)
+    df['momentum2'] = money_flow_index(df[high], df[low], df[close], df[volume], n=14)
+    return df
 
 
 def add_fa(df, close):
@@ -134,5 +136,6 @@ def add_all_ta_features(df, open, high, low, close, volume):
     df = add_volume_ta(df, high, low, close, volume)
     df = add_volatility_ta(df, high, low, close)
     df = add_trend_ta(df, high, low, close)
+    df = add_momentum_ta(df, high, low, close, volume)
     df = add_fa(df, close)
     return df

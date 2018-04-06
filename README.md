@@ -30,6 +30,11 @@ You can use this library to add features to your finacial time series dataset.
 * Detrended Price Oscillator (DPO)
 * KST Oscillator (KST)
 
+## Momentum
+
+* Money Flow Index (MFI)
+* Relative Strength Index (RSI)
+
 ## Fundamental
 
 * Daily Return (DR)
@@ -58,26 +63,6 @@ df['cmf'] = chaikin_money_flow(df.High, df.Low, df.Close, df.Volume_BTC)
 
 # fill nan values
 df['cmf'] = df['cmf'].fillna(method='backfill')
-```
-
-
-# Example adding some features
-
-```python
-import pandas as pd
-from ta import *
-
-# load datas
-df = pd.read_csv('input/data.csv', sep=',')
-
-# clean nan values
-df = utils.dropna(df)
-
-# add ta features
-df = add_volume_ta(df, "High", "Low", "Close", "Volume_BTC")
-
-# fill nan values
-df = df.fillna(method='backfill')
 ```
 
 

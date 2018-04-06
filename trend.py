@@ -180,3 +180,14 @@ def kst(close, r1=10, r2=15, r3=20, r4=30, n1=10, n2=10, n3=10, n4=15, nsig=9):
     sig = kst.rolling(nsig).mean()
     #return pd.Series(kst, name='kst')
     return pd.Series(sig, name='sig')
+
+
+def ichimoku(s, n1=9, n2=26, n3=52):
+    conv = (hhv(s, n1) + llv(s, n1)) / 2
+    base = (hhv(s, n2) + llv(s, n2)) / 2
+
+    spana = (conv + base) / 2
+    spanb = (hhv(s, n3) + llv(s, n3)) / 2
+
+    return DataFrame(dict(conv=conv, base=base, spana=spana.shift(n2),
+                          spanb=spanb.shift(n2), lspan=s.close.shift(-n2)))

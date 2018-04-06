@@ -26,7 +26,6 @@ def on_balance_volume(close, volume):
         df.loc[c1, 'OBV'] = - volume
     if c2.any():
         df.loc[c2, 'OBV'] = volume
-    # return df['OBV']
     return pd.Series(df['OBV'], name='obv')
 
 
