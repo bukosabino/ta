@@ -84,6 +84,8 @@ def add_trend_ta(df, high, low, close):
     df['trend14'] = cci(df[high], df[low], df[close], n=20, c=0.015)
     df['trend15'] = dpo(df[close], n=20)
     df['trend16'] = kst(df[close], r1=10, r2=15, r3=20, r4=30, n1=10, n2=10, n3=10, n4=15, nsig=9)
+    df['trend17'] = ichimoku_a(df[high], df[low], n1=9, n2=26, n3=52)
+    df['trend18'] = ichimoku_b(df[high], df[low], n1=9, n2=26, n3=52)
     return df
 
 

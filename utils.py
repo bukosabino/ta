@@ -12,8 +12,5 @@ def dropna(df):
 
 
 def ema(serie, n, wilder=False):
-    """
-    https://github.com/FreddieWitherden/ta/blob/master/ta.py
-    """
     span = n if not wilder else 2*n - 1
     return serie.ewm(span=span).mean()

@@ -161,13 +161,6 @@ def dpo(close, n=20):
     dpo = close.shift(int(n/(2+1))) - close.rolling(n).mean()
     return pd.Series(dpo, name='dpo_'+str(n))
     
-def kst():
-    
-    
-    ROC1 = close.diff(r1 - 1) / close.shift(r1 - 1)
-    
-    rocma1 = moments.rolling_mean(close / close.shift(r1) - 1, n1)
-
 
 def kst(close, r1=10, r2=15, r3=20, r4=30, n1=10, n2=10, n3=10, n4=15, nsig=9):
     """KST Oscillator (KST)
@@ -178,16 +171,28 @@ def kst(close, r1=10, r2=15, r3=20, r4=30, n1=10, n2=10, n3=10, n4=15, nsig=9):
     rocma4 = (close / close.shift(r4) - 1).rolling(n4).mean()
     kst = 100*(rocma1 + 2*rocma2 + 3*rocma3 + 4*rocma4)    
     sig = kst.rolling(nsig).mean()
-    #return pd.Series(kst, name='kst')
     return pd.Series(sig, name='sig')
 
 
-def ichimoku(s, n1=9, n2=26, n3=52):
-    conv = (hhv(s, n1) + llv(s, n1)) / 2
-    base = (hhv(s, n2) + llv(s, n2)) / 2
-
+def ichimoku_a(high, low, n1=9, n2=26, n3=52):
+    """Ichimoku Kinkō Hyō (Ichimoku)
+    """
+    conv = (high.rolling(n1).max() + low.rolling(n1).min()) / 2
+    base = (high.rolling(n2).max() + low.rolling(n2).min()) / 2
+    
     spana = (conv + base) / 2
-    spanb = (hhv(s, n3) + llv(s, n3)) / 2
+    spanb = (high.rolling(n3).max() + low.rolling(n3).min()) / 2
+    
+    return pd.Series(spana.shift(n2), name='ichimoku_'+str(n2))
 
-    return DataFrame(dict(conv=conv, base=base, spana=spana.shift(n2),
-                          spanb=spanb.shift(n2), lspan=s.close.shift(-n2)))
+
+def ichimoku_b(high, low, n1=9, n2=26, n3=52):
+    """Ichimoku Kinkō Hyō (Ichimoku)
+    """
+    conv = (high.rolling(n1).max() + low.rolling(n1).min()) / 2
+    base = (high.rolling(n2).max() + low.rolling(n2).min()) / 2
+    
+    spana = (conv + base) / 2
+    spanb = (high.rolling(n3).max() + low.rolling(n3).min()) / 2
+    
+    return pd.Series(spanb.shift(n2), name='ichimoku_'+str(n2))

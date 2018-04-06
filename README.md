@@ -29,6 +29,7 @@ You can use this library to add features to your finacial time series dataset.
 * Commodity Channel Index (CCI)
 * Detrended Price Oscillator (DPO)
 * KST Oscillator (KST)
+* Ichimoku Kinkō Hyō (Ichimoku)
 
 ## Momentum
 
@@ -41,9 +42,28 @@ You can use this library to add features to your finacial time series dataset.
 * Cumulative Return (CR)
 
 
-# Installation
+# How to use
 
-> pip3 install -r requirements.txt
+> pip3 install pyta
+
+# Example adding all features
+
+```python
+import pandas as pd
+from ta import *
+
+# load datas
+df = pd.read_csv('your-file.csv', sep=',')
+
+# clean nan values
+df = utils.dropna(df)
+
+# add ta features
+df = add_all_ta_features(df, "Open", "High", "Low", "Close", "Volume_BTC")
+
+# fill nan values
+df = df.fillna(method='backfill')
+```
 
 
 # Example adding one feature
@@ -53,7 +73,7 @@ import pandas as pd
 from volume import *
 
 # load datas
-df = pd.read_csv('input/data.csv', sep=',')
+df = pd.read_csv('your-file.csv', sep=',')
 
 # clean nan values
 df = utils.dropna(df)
@@ -66,26 +86,13 @@ df['cmf'] = df['cmf'].fillna(method='backfill')
 ```
 
 
-# Example adding all features
-
-```python
-import pandas as pd
-from ta import *
-
-# load datas
-df = pd.read_csv('input/data.csv', sep=',')
-
-# clean nan values
-df = utils.dropna(df)
-
-# add ta features
-df = add_all_ta_features(df, "Open", "High", "Low", "Close", "Volume_BTC")
-
-# fill nan values
-df = df.fillna(method='backfill')
-```
-
 If you don't know any feature you can visualize them in "visualize_features.ipynb".
+
+
+# Deploy to developers
+
+> pip3 install -r requirements.txt
+
 
 # Based on:
 
