@@ -44,7 +44,7 @@ You can use this library to add features to your finacial time series dataset.
 
 # How to use
 
-> pip3 install pyta
+> pip3 install ta
 
 ### Example adding all features
 
@@ -70,7 +70,7 @@ df = df.fillna(method='backfill')
 
 ```python
 import pandas as pd
-from volume import *
+from ta.volume import *
 
 # load datas
 df = pd.read_csv('your-file.csv', sep=',')
