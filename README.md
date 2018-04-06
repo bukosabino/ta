@@ -44,9 +44,12 @@ You can use this library to add features to your finacial time series dataset.
 
 # How to use
 
-> virtualenv -p python3 virtualenvironment
-> source virtualenvironment/bin/activate
-> pip3 install ta
+
+```sh
+virtualenv -p python3 virtualenvironment
+source virtualenvironment/bin/activate
+pip3 install ta==0.1.2
+```
 
 ### Example adding all features
 
