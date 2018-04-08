@@ -36,7 +36,7 @@ You can use this library to add features to your financial time series dataset.
 * Money Flow Index (MFI)
 * Relative Strength Index (RSI)
 
-### Fundamental
+### Others
 
 * Daily Return (DR)
 * Cumulative Return (CR)
@@ -83,7 +83,7 @@ df = df.fillna(method='backfill')
 ```
 
 
-### Example adding one feature
+### Example adding individual features
 
 ```python
 import pandas as pd
@@ -124,7 +124,7 @@ df['cmf'] = df['cmf'].fillna(method='backfill')
 
 * extend documentation
 * add ta features
-* boolean parameter fillna by function
+* fillna by function (boolean parameter)
 
 
 # Credits:
