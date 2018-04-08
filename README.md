@@ -1,6 +1,6 @@
 # Technical Analysis Library in Python
 
-You can use this library to add features to your finacial time series dataset.
+You can use this library to add features to your financial time series dataset.
 
 ### Volume
 
@@ -51,10 +51,11 @@ You can use this library to add features to your finacial time series dataset.
 > pip3 install ta
 ```
 
-You can get examples of code in "examples_to_use" folder.
-If you don't know any feature you can visualize the notebook: "examples/visualize_features.ipynb".
+You can get code examples in "examples_to_use" folder.
 
-Note: To use the notebook you will need install matplotlib and jupyter lab. So:
+If you don't know any feature you can view the notebook: "examples/visualize_features.ipynb".
+
+Note: To execute the notebook you will need install 'matplotlib' and 'jupyter lab'. So:
 
 ```sh
 > pip3 install matplotlib==2.1.2
@@ -86,7 +87,7 @@ df = df.fillna(method='backfill')
 
 ```python
 import pandas as pd
-from ta.volume import *
+from ta import *
 
 # load datas
 df = pd.read_csv('your-file.csv', sep=',')
@@ -94,8 +95,11 @@ df = pd.read_csv('your-file.csv', sep=',')
 # clean nan values
 df = utils.dropna(df)
 
-# add ta feature
-df['cmf'] = chaikin_money_flow(df.High, df.Low, df.Close, df.Volume_BTC)
+# Add bollinger band high indicator
+df['bb_high_indicator'] = bollinger_hband_indicator(df["Close"], n=20, ndev=2)
+
+# Add bollinger band low indicator
+df['bb_low_indicator'] = bollinger_lband_indicator(df["Close"], n=20, ndev=2)
 
 # fill nan values
 df['cmf'] = df['cmf'].fillna(method='backfill')
@@ -104,7 +108,9 @@ df['cmf'] = df['cmf'].fillna(method='backfill')
 
 # Deploy to developers
 
+```sh
 > pip3 install -r requirements.txt
+```
 
 
 # Based on:
@@ -116,6 +122,7 @@ df['cmf'] = df['cmf'].fillna(method='backfill')
 
 # TODO:
 
+* extend documentation
 * add ta features
 * boolean parameter fillna by function
 

@@ -1,11 +1,21 @@
 import pandas as pd
 import numpy as np
 
-from .utils import *
 
-
-def macd(close, n_fast=12, n_slow=26, n_sign=9):
+def macd(close, n_fast=12, n_slow=26):
     """Moving Average Convergence Divergence (MACD)
+    
+    https://en.wikipedia.org/wiki/MACD
+    
+    Is a trend-following momentum indicator that shows the relationship between two moving averages of prices.
+    
+    Args:
+        close(pandas.Series): dataset 'Close' column.
+        n_fast(int): n period short-term.
+        n_slow(int): n period long-term.
+
+    Returns:
+        pandas.Series: New feature generated.
     """
     emafast = close.ewm(n_fast).mean()
     emaslow = close.ewm(n_slow).mean()
@@ -15,6 +25,19 @@ def macd(close, n_fast=12, n_slow=26, n_sign=9):
 
 def macd_signal(close, n_fast=12, n_slow=26, n_sign=9):
     """Moving Average Convergence Divergence (MACD Signal)
+    
+    https://en.wikipedia.org/wiki/MACD
+
+    Shows EMA of MACD.
+    
+    Args:
+        close(pandas.Series): dataset 'Close' column.
+        n_fast(int): n period short-term.
+        n_slow(int): n period long-term.
+        n_sign(int): n period to signal.
+
+    Returns:
+        pandas.Series: New feature generated.
     """
     emafast = close.ewm(n_fast).mean()
     emaslow = close.ewm(n_slow).mean()
@@ -25,6 +48,19 @@ def macd_signal(close, n_fast=12, n_slow=26, n_sign=9):
 
 def macd_diff(close, n_fast=12, n_slow=26, n_sign=9):
     """Moving Average Convergence Divergence (MACD Diff)
+    
+    https://en.wikipedia.org/wiki/MACD
+        
+    Shows the relationship between MACD and MACD Signal.
+    
+    Args:
+        close(pandas.Series): dataset 'Close' column.
+        n_fast(int): n period short-term.
+        n_slow(int): n period long-term.
+        n_sign(int): n period to signal.
+
+    Returns:
+        pandas.Series: New feature generated.
     """
     emafast = close.ewm(n_fast).mean()
     emaslow = close.ewm(n_slow).mean()
@@ -34,11 +70,33 @@ def macd_diff(close, n_fast=12, n_slow=26, n_sign=9):
 
 
 def ema_fast(close, n_fast=12):
+    """EMA
+    
+    Short Period Exponential Moving Average
+    
+    Args:
+        close(pandas.Series): dataset 'Close' column.
+        n_fast(int): n period short-term.
+
+    Returns:
+        pandas.Series: New feature generated.
+    """
     emafast = close.ewm(n_fast).mean()
     return pd.Series(emafast, name='emafast')
 
 
 def ema_slow(close, n_slow=26):
+    """EMA
+
+    Long Period Exponential Moving Average
+    
+    Args:
+        close(pandas.Series): dataset 'Close' column.
+        n_slow(int): n period long-term.
+
+    Returns:
+        pandas.Series: New feature generated.
+    """
     emaslow = close.ewm(n_slow).mean()
     return pd.Series(emaslow, name='emaslow')
 
@@ -129,6 +187,17 @@ def vortex_indicator_neg(high, low, close, n=14):
 
 def trix(close, n=15):
     """Trix (TRIX)
+    
+    http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:trix
+    
+    Shows the percent rate of change of a triple exponentially smoothed moving average.
+    
+    Args:
+        close(pandas.Series): dataset 'Close' column.
+        n(int): n period.
+    
+    Returns:
+        pandas.Series: New feature generated.
     """
     ema1 = close.ewm(span=n, min_periods=n-1).mean()
     ema2 = ema1.ewm(span=n, min_periods=n-1).mean()
@@ -157,6 +226,17 @@ def cci(high, low, close, n=20, c=0.015):
 
 def dpo(close, n=20):
     """Detrended Price Oscillator (DPO)
+    
+    http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:detrended_price_osci
+    
+    Is an indicator designed to remove trend from price and make it easier to identify cycles.
+    
+    Args:
+        close(pandas.Series): dataset 'Close' column.
+        n(int): n period.
+    
+    Returns:
+        pandas.Series: New feature generated.
     """
     dpo = close.shift(int(n/(2+1))) - close.rolling(n).mean()
     return pd.Series(dpo, name='dpo_'+str(n))

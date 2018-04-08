@@ -3,8 +3,8 @@ import pandas as pd
 from .volume import *
 from .volatility import *
 from .trend import *
-from .fundamental import *
 from .momentum import *
+from .others import *
 
 
 def add_volume_ta(df, high, low, close, volume):
@@ -44,16 +44,23 @@ def add_volatility_ta(df, high, low, close):
         pandas.core.frame.DataFrame: Dataframe with new features.
     """
     df['volatility1'] = average_true_range(df[high], df[low], df[close], n=14)
+    
     df['volatility2'] = bollinger_hband(df[close], n=20, ndev=2)
     df['volatility3'] = bollinger_lband(df[close], n=20, ndev=2)
     df['volatility4'] = bollinger_mavg(df[close], n=20)
     df['volatility5'] = bollinger_hband_indicator(df[close], n=20, ndev=2)
     df['volatility6'] = bollinger_lband_indicator(df[close], n=20, ndev=2)
-    df['volatility7'] = keltner_channel(df[high], df[low], df[close], n=10)
-    df['volatility8'] = donchian_channel_hband(df[close], n=20)
-    df['volatility9'] = donchian_channel_lband(df[close], n=20)
-    df['volatility10'] = donchian_channel_hband_indicator(df[close], n=20)
-    df['volatility11'] = donchian_channel_lband_indicator(df[close], n=20)
+    
+    df['volatility7'] = keltner_channel_central(df[high], df[low], df[close], n=10)
+    df['volatility8'] = keltner_channel_hband(df[high], df[low], df[close], n=10)
+    df['volatility9'] = keltner_channel_lband(df[high], df[low], df[close], n=10)
+    df['volatility10'] = keltner_channel_hband_indicator(df[high], df[low], df[close], n=10)
+    df['volatility11'] = keltner_channel_lband_indicator(df[high], df[low], df[close], n=10)
+    
+    df['volatility12'] = donchian_channel_hband(df[close], n=20)
+    df['volatility13'] = donchian_channel_lband(df[close], n=20)
+    df['volatility14'] = donchian_channel_hband_indicator(df[close], n=20)
+    df['volatility15'] = donchian_channel_lband_indicator(df[close], n=20)
     return df
 
 
@@ -69,7 +76,7 @@ def add_trend_ta(df, high, low, close):
     Returns:
         pandas.core.frame.DataFrame: Dataframe with new features.
     """
-    df['trend1'] = macd(df[close], n_fast=12, n_slow=26, n_sign=9)
+    df['trend1'] = macd(df[close], n_fast=12, n_slow=26)
     df['trend2'] = macd_signal(df[close], n_fast=12, n_slow=26, n_sign=9)
     df['trend3'] = macd_diff(df[close], n_fast=12, n_slow=26, n_sign=9)
     df['trend4'] = ema_fast(df[close], n_fast=12)
