@@ -1,27 +1,35 @@
 import pandas as pd
 
 
-def daily_return(close):
+def daily_return(close, fillna=False):
     """Daily Return (DR)
     
     Args:
         close(pandas.Series): dataset 'Close' column.
+        fillna(bool): if True, fill nan values.
         
     Returns:
         pandas.Series: New feature generated.
     """
     dr = (close / close.shift(1)) - 1
-    return pd.Series(dr*100, name='d_ret')
+    dr *= 100
+    if fillna:
+        dr = dr.fillna(0)
+    return pd.Series(dr, name='d_ret')
 
 
-def cumulative_return(close):
+def cumulative_return(close, fillna=False):
     """Cumulative Return (CR)
    
     Args:
         close(pandas.Series): dataset 'Close' column.
+        fillna(bool): if True, fill nan values.
         
     Returns:
         pandas.Series: New feature generated.
     """
     cr = (close / close.iloc[0]) - 1
-    return pd.Series(cr*100, name='cum_ret')
+    cr *= 100
+    if fillna:
+        cr = cr.fillna(method='backfill')
+    return pd.Series(cr, name='cum_ret')
