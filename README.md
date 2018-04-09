@@ -1,8 +1,10 @@
 # Technical Analysis Library in Python
 
-You can use this library to add features to your financial time series dataset.
+It is a technical analysis library to financial time series datasets. You can use to do feature engineering. It is builded on pandas python library.
 
-### Volume
+Features you can find out here:
+
+#### Volume
 
 * Accumulation/Distribution Index (ADI)
 * On-Balance Volume (OBV)
@@ -12,14 +14,14 @@ You can use this library to add features to your financial time series dataset.
 * Ease of Movement (EoM, EMV)
 * Volume-price Trend (VPT)
 
-### Volatility
+#### Volatility
 
 * Average True Range (ATR)
 * Bollinger Bands (BB)
 * Keltner Channel (KC)
 * Donchian Channel (DC)
 
-### Trend
+#### Trend
 
 * Moving Average Convergence Divergence (MACD)
 * Average Directional Movement Index (ADX)
@@ -31,12 +33,13 @@ You can use this library to add features to your financial time series dataset.
 * KST Oscillator (KST)
 * Ichimoku Kinkō Hyō (Ichimoku)
 
-### Momentum
+#### Momentum
 
 * Money Flow Index (MFI)
 * Relative Strength Index (RSI)
+* True strength index (TSI)
 
-### Others
+#### Others
 
 * Daily Return (DR)
 * Cumulative Return (CR)
@@ -51,6 +54,10 @@ You can use this library to add features to your financial time series dataset.
 > pip3 install ta
 ```
 
+To use this library you should have a financial time series dataset including “Timestamp”, “Open”, “High”, “Low”, “Close” y “Volume” columns.
+
+You should clean or fill nan values in your dataset before add technical analysis features.
+
 You can get code examples in "examples_to_use" folder.
 
 If you don't know any feature you can view the notebook: "examples/visualize_features.ipynb".
@@ -63,46 +70,43 @@ Note: To execute the notebook you will need install 'matplotlib' and 'jupyter la
 ```
 
 
-### Example adding all features
+#### Example adding all features
 
 ```python
 import pandas as pd
 from ta import *
 
-# load datas
+# Load datas
 df = pd.read_csv('your-file.csv', sep=',')
 
-# clean nan values
+# Clean nan values
 df = utils.dropna(df)
 
-# add ta features
-df = add_all_ta_features(df, "Open", "High", "Low", "Close", "Volume_BTC")
-
-# fill nan values
-df = df.fillna(method='backfill')
+# Add ta features filling Nans values
+df = add_all_ta_features(df, "Open", "High", "Low", "Close", "Volume_BTC",
+                            fillna=True)
 ```
 
 
-### Example adding individual features
+#### Example adding individual features
 
 ```python
 import pandas as pd
 from ta import *
 
-# load datas
+# Load datas
 df = pd.read_csv('your-file.csv', sep=',')
 
-# clean nan values
+# Clean nan values
 df = utils.dropna(df)
 
-# Add bollinger band high indicator
-df['bb_high_indicator'] = bollinger_hband_indicator(df["Close"], n=20, ndev=2)
+# Add bollinger band high indicator filling Nans values
+df['bb_high_indicator'] = bollinger_hband_indicator(df["Close"], n=20, ndev=2,
+                                                        fillna=True)
 
-# Add bollinger band low indicator
-df['bb_low_indicator'] = bollinger_lband_indicator(df["Close"], n=20, ndev=2)
-
-# fill nan values
-df['cmf'] = df['cmf'].fillna(method='backfill')
+# Add bollinger band low indicator filling Nans values
+df['bb_low_indicator'] = bollinger_lband_indicator(df["Close"], n=20, ndev=2,
+                                                        fillna=True)
 ```
 
 
@@ -116,15 +120,16 @@ df['cmf'] = df['cmf'].fillna(method='backfill')
 # Based on:
 
 * https://en.wikipedia.org/wiki/Technical_analysis
+* https://pandas.pydata.org/
 * https://github.com/FreddieWitherden/ta
 * https://github.com/femtotrader/pandas_talib
 
 
 # TODO:
 
-* extend documentation
+* generate online documentation (https://readthedocs.org/)
 * add ta features
-* fillna by function (boolean parameter)
+* more documentation
 
 
 # Credits:

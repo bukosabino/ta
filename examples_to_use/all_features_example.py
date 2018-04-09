@@ -1,4 +1,6 @@
-import numpy as np
+"""This is a example adding all technical analysis features implemented in
+this library.
+"""
 import pandas as pd
 from ta import *
 
@@ -10,10 +12,8 @@ df = utils.dropna(df)
 
 print(df.columns)
 
-# Add all ta features
-df = add_all_ta_features(df, "Open", "High", "Low", "Close", "Volume_BTC")
-
-# Fill nan values
-df = df.fillna(method='backfill')
+# Add all ta features filling nans values
+df = add_all_ta_features(df, "Open", "High", "Low", "Close", "Volume_BTC",
+                                fillna=True)
 
 print(df.columns)
