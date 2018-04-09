@@ -17,3 +17,4 @@ df = add_all_ta_features(df, "Open", "High", "Low", "Close", "Volume_BTC",
                                 fillna=True)
 
 print(df.columns)
+print(len(df.columns))

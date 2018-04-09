@@ -56,13 +56,13 @@ Features you can find out here:
 > pip3 install ta
 ```
 
-To use this library you should have a financial time series dataset including “Timestamp”, “Open”, “High”, “Low”, “Close” y “Volume” columns.
+To use this library you should have a financial time series dataset including “Timestamp”, “Open”, “High”, “Low”, “Close” and “Volume” columns.
 
-You should clean or fill nan values in your dataset before add technical analysis features.
+You should clean or fill Nans values in your dataset before add technical analysis features.
 
-You can get code examples in "examples_to_use" folder.
+You can get code examples in [examples_to_use](https://github.com/bukosabino/ta/tree/master/examples_to_use) folder.
 
-If you don't know any feature you can view the notebook: "examples/visualize_features.ipynb".
+If you don't know any feature you can view [this notebook](https://github.com/bukosabino/ta/blob/master/examples_to_use/visualize_features.ipynb).
 
 Note: To execute the notebook you will need install 'matplotlib' and 'jupyter lab'. So:
 
@@ -86,8 +86,7 @@ df = pd.read_csv('your-file.csv', sep=',')
 df = utils.dropna(df)
 
 # Add ta features filling Nans values
-df = add_all_ta_features(df, "Open", "High", "Low", "Close", "Volume_BTC",
-                            fillna=True)
+df = add_all_ta_features(df, "Open", "High", "Low", "Close", "Volume_BTC", fillna=True)
 ```
 
 
@@ -128,7 +127,7 @@ df['bb_low_indicator'] = bollinger_lband_indicator(df["Close"], n=20, ndev=2, fi
 
 # TODO:
 
-* generate online documentation (https://readthedocs.org/)
+* generate online documentation (https://readthedocs.org/ , http://www.sphinx-doc.org/en/master/)
 * add ta features
 * more documentation
 
