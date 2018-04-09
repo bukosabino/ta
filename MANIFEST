@@ -2,8 +2,8 @@
 setup.cfg
 setup.py
 ta/__init__.py
-ta/fundamental.py
 ta/momentum.py
+ta/others.py
 ta/trend.py
 ta/utils.py
 ta/volatility.py
