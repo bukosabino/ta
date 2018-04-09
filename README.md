@@ -2,6 +2,8 @@
 
 It is a technical analysis library to financial time series datasets. You can use to do feature engineering. It is builded on pandas python library.
 
+![alt text](https://raw.githubusercontent.com/bukosabino/ta/master/doc/figure.png)
+
 Features you can find out here:
 
 #### Volume
