@@ -69,6 +69,7 @@ Note: To execute the notebook you will need install 'matplotlib' and 'jupyter la
 ```sh
 > pip3 install matplotlib==2.1.2
 > pip3 install jupyterlab==0.31.12
+> jupyter lab
 ```
 
 
