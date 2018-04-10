@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 .. module:: others
    :synopsis: Others Indicators.
