@@ -1,16 +1,24 @@
+"""
+.. module:: volatility
+   :synopsis: Volatility Indicators.
+
+.. moduleauthor:: Dario Lopez Padial (Bukosabino)
+
+"""
 import pandas as pd
 
 
 def average_true_range(high, low, close, n=14, fillna=False):
     """Average True Range (ATR)
 
-    http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:average_true_range_atr
-
     The indicator provide an indication of the degree of price volatility.
     Strong moves, in either direction, are often accompanied by large ranges,
     or large True Ranges.
 
+    http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:average_true_range_atr
+
     Args:
+
         high(pandas.Series): dataset 'High' column.
         low(pandas.Series): dataset 'Low' column.
         close(pandas.Series): dataset 'Close' column.
@@ -30,9 +38,9 @@ def average_true_range(high, low, close, n=14, fillna=False):
 def bollinger_mavg(close, n=20, fillna=False):
     """Bollinger Bands (BB)
 
-    https://en.wikipedia.org/wiki/Bollinger_Bands
-
     N-period simple moving average (MA).
+
+    https://en.wikipedia.org/wiki/Bollinger_Bands
 
     Args:
         close(pandas.Series): dataset 'Close' column.
@@ -50,10 +58,10 @@ def bollinger_mavg(close, n=20, fillna=False):
 def bollinger_hband(close, n=20, ndev=2, fillna=False):
     """Bollinger Bands (BB)
 
-    https://en.wikipedia.org/wiki/Bollinger_Bands
-
     Upper band at K times an N-period standard deviation above the moving
     average (MA + Kσ).
+
+    https://en.wikipedia.org/wiki/Bollinger_Bands
 
     Args:
         close(pandas.Series): dataset 'Close' column.
@@ -74,10 +82,10 @@ def bollinger_hband(close, n=20, ndev=2, fillna=False):
 def bollinger_lband(close, n=20, ndev=2, fillna=False):
     """Bollinger Bands (BB)
 
-    https://en.wikipedia.org/wiki/Bollinger_Bands
-
     Lower band at K times an N-period standard deviation below the moving
     average (MA − Kσ).
+
+    https://en.wikipedia.org/wiki/Bollinger_Bands
 
     Args:
         close(pandas.Series): dataset 'Close' column.
@@ -98,9 +106,9 @@ def bollinger_lband(close, n=20, ndev=2, fillna=False):
 def bollinger_hband_indicator(close, n=20, ndev=2, fillna=False):
     """Bollinger High Band Indicator
 
-    https://en.wikipedia.org/wiki/Bollinger_Bands
-
     Returns 1, if close is higher than bollinger high band. Else, return 0.
+
+    https://en.wikipedia.org/wiki/Bollinger_Bands
 
     Args:
         close(pandas.Series): dataset 'Close' column.
@@ -125,9 +133,9 @@ def bollinger_hband_indicator(close, n=20, ndev=2, fillna=False):
 def bollinger_lband_indicator(close, n=20, ndev=2, fillna=False):
     """Bollinger Low Band Indicator
 
-    https://en.wikipedia.org/wiki/Bollinger_Bands
-
     Returns 1, if close is lower than bollinger low band. Else, return 0.
+
+    https://en.wikipedia.org/wiki/Bollinger_Bands
 
     Args:
         close(pandas.Series): dataset 'Close' column.
@@ -152,9 +160,9 @@ def bollinger_lband_indicator(close, n=20, ndev=2, fillna=False):
 def keltner_channel_central(high, low, close, n=10, fillna=False):
     """Keltner channel (KC)
 
-    https://en.wikipedia.org/wiki/Keltner_channel
-
     Showing a simple moving average line (central) of typical price.
+
+    https://en.wikipedia.org/wiki/Keltner_channel
 
     Args:
         high(pandas.Series): dataset 'High' column.
@@ -175,9 +183,9 @@ def keltner_channel_central(high, low, close, n=10, fillna=False):
 def keltner_channel_hband(high, low, close, n=10, fillna=False):
     """Keltner channel (KC)
 
-    https://en.wikipedia.org/wiki/Keltner_channel
-
     Showing a simple moving average line (high) of typical price.
+
+    https://en.wikipedia.org/wiki/Keltner_channel
 
     Args:
         high(pandas.Series): dataset 'High' column.
@@ -198,9 +206,9 @@ def keltner_channel_hband(high, low, close, n=10, fillna=False):
 def keltner_channel_lband(high, low, close, n=10, fillna=False):
     """Keltner channel (KC)
 
-    https://en.wikipedia.org/wiki/Keltner_channel
-
     Showing a simple moving average line (low) of typical price.
+
+    https://en.wikipedia.org/wiki/Keltner_channel
 
     Args:
         high(pandas.Series): dataset 'High' column.
@@ -221,10 +229,10 @@ def keltner_channel_lband(high, low, close, n=10, fillna=False):
 def keltner_channel_hband_indicator(high, low, close, n=10, fillna=False):
     """Keltner Channel High Band Indicator (KC)
 
-    https://en.wikipedia.org/wiki/Keltner_channel
-
     Returns 1, if close is higher than keltner high band channel. Else,
     return 0.
+
+    https://en.wikipedia.org/wiki/Keltner_channel
 
     Args:
         high(pandas.Series): dataset 'High' column.
@@ -248,9 +256,9 @@ def keltner_channel_hband_indicator(high, low, close, n=10, fillna=False):
 def keltner_channel_lband_indicator(high, low, close, n=10, fillna=False):
     """Keltner Channel Low Band Indicator (KC)
 
-    https://en.wikipedia.org/wiki/Keltner_channel
-
     Returns 1, if close is lower than keltner low band channel. Else, return 0.
+
+    https://en.wikipedia.org/wiki/Keltner_channel
 
     Args:
         high(pandas.Series): dataset 'High' column.
@@ -274,9 +282,9 @@ def keltner_channel_lband_indicator(high, low, close, n=10, fillna=False):
 def donchian_channel_hband(close, n=20, fillna=False):
     """Donchian channel (DC)
 
-    https://www.investopedia.com/terms/d/donchianchannels.asp
-
     The upper band marks the highest price of an issue for n periods.
+
+    https://www.investopedia.com/terms/d/donchianchannels.asp
 
     Args:
         close(pandas.Series): dataset 'Close' column.
@@ -294,9 +302,9 @@ def donchian_channel_hband(close, n=20, fillna=False):
 def donchian_channel_lband(close, n=20, fillna=False):
     """Donchian channel (DC)
 
-    https://www.investopedia.com/terms/d/donchianchannels.asp
-
     The lower band marks the lowest price for n periods.
+
+    https://www.investopedia.com/terms/d/donchianchannels.asp
 
     Args:
         close(pandas.Series): dataset 'Close' column.
@@ -314,10 +322,10 @@ def donchian_channel_lband(close, n=20, fillna=False):
 def donchian_channel_hband_indicator(close, n=20, fillna=False):
     """Donchian High Band Indicator
 
-    https://www.investopedia.com/terms/d/donchianchannels.asp
-
     Returns 1, if close is higher than donchian high band channel. Else,
     return 0.
+
+    https://www.investopedia.com/terms/d/donchianchannels.asp
 
     Args:
         close(pandas.Series): dataset 'Close' column.
@@ -339,9 +347,9 @@ def donchian_channel_hband_indicator(close, n=20, fillna=False):
 def donchian_channel_lband_indicator(close, n=20, fillna=False):
     """Donchian Low Band Indicator
 
-    https://www.investopedia.com/terms/d/donchianchannels.asp
-
     Returns 1, if close is lower than donchian low band channel. Else, return 0.
+
+    https://www.investopedia.com/terms/d/donchianchannels.asp
 
     Args:
         close(pandas.Series): dataset 'Close' column.

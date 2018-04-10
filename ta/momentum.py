@@ -1,3 +1,10 @@
+"""
+.. module:: momentum
+   :synopsis: Momentum Indicators.
+
+.. moduleauthor:: Dario Lopez Padial (Bukosabino)
+
+"""
 import pandas as pd
 
 

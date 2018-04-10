@@ -1,13 +1,20 @@
+"""
+.. module:: others
+   :synopsis: Others Indicators.
+
+.. moduleauthor:: Dario Lopez Padial (Bukosabino)
+
+"""
 import pandas as pd
 
 
 def daily_return(close, fillna=False):
     """Daily Return (DR)
-    
+
     Args:
         close(pandas.Series): dataset 'Close' column.
         fillna(bool): if True, fill nan values.
-        
+
     Returns:
         pandas.Series: New feature generated.
     """
@@ -20,11 +27,11 @@ def daily_return(close, fillna=False):
 
 def cumulative_return(close, fillna=False):
     """Cumulative Return (CR)
-   
+
     Args:
         close(pandas.Series): dataset 'Close' column.
         fillna(bool): if True, fill nan values.
-        
+
     Returns:
         pandas.Series: New feature generated.
     """

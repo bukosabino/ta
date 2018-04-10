@@ -1,3 +1,10 @@
+"""
+.. module:: trend
+   :synopsis: Trend Indicators.
+
+.. moduleauthor:: Dario Lopez Padial (Bukosabino)
+
+"""
 import pandas as pd
 import numpy as np
 

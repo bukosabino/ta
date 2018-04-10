@@ -1,3 +1,11 @@
+"""
+.. module:: volume
+   :synopsis: Volume Indicators.
+
+.. moduleauthor:: Dario Lopez Padial (Bukosabino)
+
+"""
+
 import pandas as pd
 
 
@@ -5,16 +13,16 @@ def acc_dist_index(high, low, close, volume, fillna=False):
     """Accumulation/Distribution Index (ADI)
 
     Acting as leading indicator of price movements.
-    
+
     https://en.wikipedia.org/wiki/Accumulation/distribution_index
-    
+
     Args:
         high(pandas.Series): dataset 'High' column.
         low(pandas.Series): dataset 'Low' column.
         close(pandas.Series): dataset 'Close' column.
         volume(pandas.Series): dataset 'Volume' column.
         fillna(bool): if True, fill nan values.
-    
+
     Returns:
         pandas.Series: New feature generated.
     """
@@ -32,14 +40,14 @@ def on_balance_volume(close, volume, fillna=False):
 
     It relates price and volume in the stock market. OBV is based on a
     cumulative total volume.
-    
+
     https://en.wikipedia.org/wiki/On-balance_volume
-    
+
     Args:
         close(pandas.Series): dataset 'Close' column.
         volume(pandas.Series): dataset 'Volume' column.
         fillna(bool): if True, fill nan values.
-    
+
     Returns:
         pandas.Series: New feature generated.
     """
@@ -59,17 +67,17 @@ def on_balance_volume(close, volume, fillna=False):
 
 def on_balance_volume_mean(close, volume, n=10, fillna=False):
     """On-balance volume mean (OBV mean)
-    
+
     It's based on a cumulative total volume.
-    
+
     https://en.wikipedia.org/wiki/On-balance_volume
-    
+
     Args:
         close(pandas.Series): dataset 'Close' column.
         volume(pandas.Series): dataset 'Volume' column.
         n(int): n period.
         fillna(bool): if True, fill nan values.
-    
+
     Returns:
         pandas.Series: New feature generated.
     """
@@ -89,11 +97,11 @@ def on_balance_volume_mean(close, volume, n=10, fillna=False):
 
 def chaikin_money_flow(high, low, close, volume, n=20, fillna=False):
     """Chaikin Money Flow (CMF)
-    
+
     It measures the amount of Money Flow Volume over a specific period.
-    
+
     http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:chaikin_money_flow_cmf
-    
+
     Args:
         high(pandas.Series): dataset 'High' column.
         low(pandas.Series): dataset 'Low' column.
@@ -101,7 +109,7 @@ def chaikin_money_flow(high, low, close, volume, n=20, fillna=False):
         volume(pandas.Series): dataset 'Volume' column.
         n(int): n period.
         fillna(bool): if True, fill nan values.
-    
+
     Returns:
         pandas.Series: New feature generated.
     """
@@ -116,19 +124,19 @@ def chaikin_money_flow(high, low, close, volume, n=20, fillna=False):
 
 def force_index(close, volume, n=2, fillna=False):
     """Force Index (FI)
-    
+
     It illustrates how strong the actual buying or selling pressure is. High
     positive values mean there is a strong rising trend, and low values signify
     a strong downward trend.
-    
+
     http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:force_index
-    
+
     Args:
         close(pandas.Series): dataset 'Close' column.
         volume(pandas.Series): dataset 'Volume' column.
         n(int): n period.
         fillna(bool): if True, fill nan values.
-    
+
     Returns:
         pandas.Series: New feature generated.
     """
@@ -140,10 +148,10 @@ def force_index(close, volume, n=2, fillna=False):
 
 def ease_of_movement(high, low, close, volume, n=20, fillna=False):
     """Ease of movement (EoM, EMV)
-    
+
     It relate an asset's price change to its volume and is particularly useful
     for assessing the strength of a trend.
-    
+
     https://en.wikipedia.org/wiki/Ease_of_movement
 
     Args:
@@ -153,7 +161,7 @@ def ease_of_movement(high, low, close, volume, n=20, fillna=False):
         volume(pandas.Series): dataset 'Volume' column.
         n(int): n period.
         fillna(bool): if True, fill nan values.
-    
+
     Returns:
         pandas.Series: New feature generated.
     """
@@ -170,15 +178,15 @@ def volume_price_trend(close, volume, fillna=False):
     Is based on a running cumulative volume that adds or substracts a multiple
     of the percentage change in share price trend and current volume, depending
     upon the investment's upward or downward movements.
-    
+
     https://en.wikipedia.org/wiki/Volume%E2%80%93price_trend
-    
+
     Args:
         close(pandas.Series): dataset 'Close' column.
         volume(pandas.Series): dataset 'Volume' column.
         n(int): n period.
         fillna(bool): if True, fill nan values.
-    
+
     Returns:
         pandas.Series: New feature generated.
     """

@@ -2,3 +2,6 @@ numpy==1.14.2
 pandas==0.22.0
 matplotlib==2.1.2
 jupyterlab==0.31.12
+Sphinx==1.7.2
+sphinx-autobuild==0.7.1
+sphinx_rtd_theme=0.3.0
