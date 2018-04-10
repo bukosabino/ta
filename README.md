@@ -47,6 +47,11 @@ The library has implemented 25 indicators and 46 features:
 * Cumulative Return (CR)
 
 
+# Documentation
+
+http://technical-analysis-library-in-python.readthedocs.io/en/latest/
+
+
 # How to use
 
 
