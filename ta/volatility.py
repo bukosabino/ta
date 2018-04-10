@@ -59,7 +59,7 @@ def bollinger_hband(close, n=20, ndev=2, fillna=False):
     """Bollinger Bands (BB)
 
     Upper band at K times an N-period standard deviation above the moving
-    average (MA + Kσ).
+    average (MA + Kdeviation).
 
     https://en.wikipedia.org/wiki/Bollinger_Bands
 
@@ -83,7 +83,7 @@ def bollinger_lband(close, n=20, ndev=2, fillna=False):
     """Bollinger Bands (BB)
 
     Lower band at K times an N-period standard deviation below the moving
-    average (MA − Kσ).
+    average (MA − Kdeviation).
 
     https://en.wikipedia.org/wiki/Bollinger_Bands
 
