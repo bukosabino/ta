@@ -132,9 +132,7 @@ df['bb_low_indicator'] = bollinger_lband_indicator(df["Close"], n=20, ndev=2, fi
 
 # TODO:
 
-* generate online documentation (https://readthedocs.org/ , http://www.sphinx-doc.org/en/master/)
 * add ta features
-* more documentation
 
 
 # Credits:
