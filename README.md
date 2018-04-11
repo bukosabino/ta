@@ -49,8 +49,12 @@ The library has implemented 25 indicators and 46 features:
 
 # Documentation
 
-http://technical-analysis-library-in-python.readthedocs.io/en/latest/
+http://technical-analysis-library-in-python.readthedocs.io
 
+
+# Motivation to use
+
+https://steemit.com/machine-learning/@dariolp/technical-analysis-library-to-financial-datasets-with-pandas-python
 
 # How to use
 
@@ -58,7 +62,7 @@ http://technical-analysis-library-in-python.readthedocs.io/en/latest/
 ```sh
 > virtualenv -p python3 virtualenvironment
 > source virtualenvironment/bin/activate
-> pip3 install ta
+> pip install ta
 ```
 
 To use this library you should have a financial time series dataset including “Timestamp”, “Open”, “High”, “Low”, “Close” and “Volume” columns.
@@ -118,14 +122,14 @@ df['bb_low_indicator'] = bollinger_lband_indicator(df["Close"], n=20, ndev=2, fi
 # Deploy to developers
 
 ```sh
-> pip3 install -r requirements.txt
+> pip install -r requirements.txt
 ```
 
 
 # Based on:
 
 * https://en.wikipedia.org/wiki/Technical_analysis
-* https://pandas.pydata.org/
+* https://pandas.pydata.org
 * https://github.com/FreddieWitherden/ta
 * https://github.com/femtotrader/pandas_talib
 
@@ -139,4 +143,4 @@ df['bb_low_indicator'] = bollinger_lband_indicator(df["Close"], n=20, ndev=2, fi
 
 Developed by Bukosabino at Lecrin Technologies - http://lecrintech.com
 
-We are glad to receive any contribution, idea or feedback.
+Please, let us know about any comment or feedback.

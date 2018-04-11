@@ -15,7 +15,7 @@ Installing
 
     > virtualenv -p python3 virtualenvironment
     > source virtualenvironment/bin/activate
-    > pip3 install ta
+    > pip install ta
 
 Examples
 ==================
@@ -55,6 +55,11 @@ Adding individual features:
 
    # Add bollinger band low indicator filling Nans values
    df['bb_low_indicator'] = bollinger_lband_indicator(df["Close"], n=20, ndev=2, fillna=True)
+
+
+Motivation
+==================
+https://steemit.com/machine-learning/@dariolp/technical-analysis-library-to-financial-datasets-with-pandas-python
 
 
 Contents
