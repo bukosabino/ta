@@ -76,8 +76,8 @@ If you don't know any feature you can view [this notebook](https://github.com/bu
 Note: To execute the notebook you will need install 'matplotlib' and 'jupyter lab'. So:
 
 ```sh
-> pip3 install matplotlib==2.1.2
-> pip3 install jupyterlab==0.31.12
+> pip install matplotlib==2.1.2
+> pip install jupyterlab==0.31.12
 > jupyter lab
 ```
 
