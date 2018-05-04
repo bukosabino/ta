@@ -57,8 +57,7 @@ http://technical-analysis-library-in-python.readthedocs.io
 * English: https://medium.com/@bukosabino/technical-analysis-library-to-financial-datasets-with-pandas-python-4b2b390d3543
 * Spanish: https://medium.com/datos-y-ciencia/biblioteca-de-an%C3%A1lisis-t%C3%A9cnico-sobre-series-temporales-financieras-para-machine-learning-con-cb28f9427d0
 
-# How to use
-
+# How to use (python 3)
 
 ```sh
 > virtualenv -p python3 virtualenvironment
