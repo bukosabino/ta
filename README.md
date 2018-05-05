@@ -49,7 +49,7 @@ The library has implemented 25 indicators and 48 features:
 
 # Documentation
 
-http://technical-analysis-library-in-python.readthedocs.io/en/latest/
+https://technical-analysis-library-in-python.readthedocs.io/en/latest/
 
 # Motivation to use
 
