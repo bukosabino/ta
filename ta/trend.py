@@ -482,7 +482,7 @@ def dpo(close, n=20, fillna=False):
     return pd.Series(dpo, name='dpo_'+str(n))
 
 
-def kst(close, r1=10, r2=15, r3=20, r4=30, n1=10, n2=10, n3=10, n4=15, nsig=9, fillna=False):
+def kst(close, r1=10, r2=15, r3=20, r4=30, n1=10, n2=10, n3=10, n4=15, fillna=False):
     """KST Oscillator (KST)
 
     It is useful to identify major stock market cycle junctures because its
@@ -507,15 +507,51 @@ def kst(close, r1=10, r2=15, r3=20, r4=30, n1=10, n2=10, n3=10, n4=15, nsig=9, f
     Returns:
         pandas.Series: New feature generated.
     """
-    rocma1 = (close / close.shift(r1) - 1).rolling(n1).mean()
-    rocma2 = (close / close.shift(r2) - 1).rolling(n2).mean()
-    rocma3 = (close / close.shift(r3) - 1).rolling(n3).mean()
-    rocma4 = (close / close.shift(r4) - 1).rolling(n4).mean()
+    rocma1 = ((close - close.shift(r1)) / close.shift(r1)).rolling(n1).mean()
+    rocma2 = ((close - close.shift(r2)) / close.shift(r2)).rolling(n2).mean()
+    rocma3 = ((close - close.shift(r3)) / close.shift(r3)).rolling(n3).mean()
+    rocma4 = ((close - close.shift(r4)) / close.shift(r4)).rolling(n4).mean()
     kst = 100*(rocma1 + 2*rocma2 + 3*rocma3 + 4*rocma4)
-    sig = kst.rolling(nsig).mean()
     if fillna:
-        sig = sig.fillna(0)
-    return pd.Series(sig, name='sig')
+        kst = kst.fillna(0)
+    return pd.Series(kst, name='kst')
+
+
+def kst_sig(close, r1=10, r2=15, r3=20, r4=30, n1=10, n2=10, n3=10, n4=15, nsig=9, fillna=False):
+    """KST Oscillator (KST Signal)
+
+    It is useful to identify major stock market cycle junctures because its
+    formula is weighed to be more greatly influenced by the longer and more
+    dominant time spans, in order to better reflect the primary swings of stock
+    market cycle.
+
+    http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:know_sure_thing_kst
+
+    Args:
+        close(pandas.Series): dataset 'Close' column.
+        r1(int): r1 period.
+        r2(int): r2 period.
+        r3(int): r3 period.
+        r4(int): r4 period.
+        n1(int): n1 smoothed period.
+        n2(int): n2 smoothed period.
+        n3(int): n3 smoothed period.
+        n4(int): n4 smoothed period.
+        nsig(int): n period to signal.
+        fillna(bool): if True, fill nan values.
+
+    Returns:
+        pandas.Series: New feature generated.
+    """
+    rocma1 = ((close - close.shift(r1)) / close.shift(r1)).rolling(n1).mean()
+    rocma2 = ((close - close.shift(r2)) / close.shift(r2)).rolling(n2).mean()
+    rocma3 = ((close - close.shift(r3)) / close.shift(r3)).rolling(n3).mean()
+    rocma4 = ((close - close.shift(r4)) / close.shift(r4)).rolling(n4).mean()
+    kst = 100*(rocma1 + 2*rocma2 + 3*rocma3 + 4*rocma4)
+    kst_sig = kst.rolling(nsig).mean()
+    if fillna:
+        kst_sig = kst_sig.fillna(0)
+    return pd.Series(kst_sig, name='kst_sig')
 
 
 def ichimoku_a(high, low, n1=9, n2=26, fillna=False):

@@ -3,14 +3,14 @@ from distutils.core import setup
 setup(
     name = 'ta',
     packages = ['ta'],
-    version = '0.1.4',
+    version = '0.1.5',
     description='Technical Analysis Library in Python',
-    long_description='It is a technical analysis library to financial time series datasets. You can use to do feature engineering. It is builded on pandas python library.',
+    long_description='It is a Technical Analysis library to financial time series datasets. You can use to do feature engineering. It is builded on Python Pandas library.',
     author = 'Dario Lopez Padial (Bukosabino)',
-    author_email = 'bukosabino@gmail.com',
+    author_email = 'Bukosabino@gmail.com',
     url = 'https://github.com/bukosabino/ta',
     maintainer='Dario Lopez Padial (Bukosabino)',
-    maintainer_email='bukosabino@gmail.com',
+    maintainer_email='Bukosabino@gmail.com',
     install_requires=[
         'numpy',
         'pandas'

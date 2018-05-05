@@ -116,9 +116,12 @@ def add_trend_ta(df, high, low, close, fillna=False):
                                     fillna=fillna)
     df['trend16'] = dpo(df[close], n=20, fillna=fillna)
     df['trend17'] = kst(df[close], r1=10, r2=15, r3=20, r4=30, n1=10,
+                            n2=10, n3=10, n4=15, fillna=fillna)
+    df['trend18'] = kst_sig(df[close], r1=10, r2=15, r3=20, r4=30, n1=10,
                             n2=10, n3=10, n4=15, nsig=9, fillna=fillna)
-    df['trend18'] = ichimoku_a(df[high], df[low], n1=9, n2=26, fillna=fillna)
-    df['trend19'] = ichimoku_b(df[high], df[low], n2=26, n3=52, fillna=fillna)
+    df['trend19'] = df['trend17'] - df['trend18']
+    df['trend20'] = ichimoku_a(df[high], df[low], n1=9, n2=26, fillna=fillna)
+    df['trend21'] = ichimoku_b(df[high], df[low], n2=26, n3=52, fillna=fillna)
     return df
 
 
