@@ -137,7 +137,7 @@ df['bb_low_indicator'] = bollinger_lband_indicator(df["Close"], n=20, ndev=2, fi
 # TODO:
 
 * add more technical analysis features
-* use dask to parallelize
+* use dask library to parallelize
 
 # Credits:
 
