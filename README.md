@@ -54,10 +54,10 @@ https://technical-analysis-library-in-python.readthedocs.io
 
 # Motivation to use
 
-https://steemit.com/machine-learning/@dariolp/technical-analysis-library-to-financial-datasets-with-pandas-python
+* English: https://medium.com/@bukosabino/technical-analysis-library-to-financial-datasets-with-pandas-python-4b2b390d3543
+* Spanish: https://medium.com/datos-y-ciencia/biblioteca-de-an%C3%A1lisis-t%C3%A9cnico-sobre-series-temporales-financieras-para-machine-learning-con-cb28f9427d0
 
-# How to use
-
+# How to use (python 3)
 
 ```sh
 > virtualenv -p python3 virtualenvironment
@@ -136,8 +136,8 @@ df['bb_low_indicator'] = bollinger_lband_indicator(df["Close"], n=20, ndev=2, fi
 
 # TODO:
 
-* add ta features
-
+* add more technical analysis features
+* use dask to parallelize
 
 # Credits:
 
