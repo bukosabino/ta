@@ -6,10 +6,10 @@
 Welcome to Technical Analysis Library in Python's documentation!
 ================================================================
 
-It is a technical analysis library to financial time series datasets (open, close, high, low, volume). You can use it to do feature engineering from financial datasets. It is builded on pandas python library.
+It is a Technical Analysis library to financial time series datasets (open, close, high, low, volume). You can use it to do feature engineering from financial datasets. It is builded on Python Pandas library.
 
-Installing
-==================
+Installation (python 3)
+=========================
 
 .. code-block:: bash
 
@@ -59,8 +59,9 @@ Adding individual features:
 
 Motivation
 ==================
-English: https://medium.com/@bukosabino/technical-analysis-library-to-financial-datasets-with-pandas-python-4b2b390d3543
-Spanish: https://medium.com/datos-y-ciencia/biblioteca-de-an%C3%A1lisis-t%C3%A9cnico-sobre-series-temporales-financieras-para-machine-learning-con-cb28f9427d0
+
+* English: https://towardsdatascience.com/technical-analysis-library-to-financial-datasets-with-pandas-python-4b2b390d3543
+* Spanish: https://medium.com/datos-y-ciencia/biblioteca-de-an%C3%A1lisis-t%C3%A9cnico-sobre-series-temporales-financieras-para-machine-learning-con-cb28f9427d0
 
 
 Contents
