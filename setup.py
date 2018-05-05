@@ -15,7 +15,7 @@ setup(
         'numpy',
         'pandas'
     ],
-    download_url = 'https://github.com/bukosabino/ta/tarball/0.1.4',
+    download_url = 'https://github.com/bukosabino/ta/tarball/0.1.5',
     keywords = ['technical analysis', 'python3', 'pandas'],
     license='The MIT License (MIT)',
     classifiers = [],
