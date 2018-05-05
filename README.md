@@ -67,20 +67,11 @@ https://technical-analysis-library-in-python.readthedocs.io
 
 To use this library you should have a financial time series dataset including “Timestamp”, “Open”, “High”, “Low”, “Close” and “Volume” columns.
 
-You should clean or fill Nans values in your dataset before add technical analysis features.
+You should clean or fill NaN values in your dataset before add technical analysis features.
 
 You can get code examples in [examples_to_use](https://github.com/bukosabino/ta/tree/master/examples_to_use) folder.
 
-If you don't know any feature you can view [this notebook](https://github.com/bukosabino/ta/blob/master/examples_to_use/visualize_features.ipynb).
-
-Note: To execute the notebook you will need install 'matplotlib' and 'jupyter lab'. So:
-
-```sh
-> pip install matplotlib==2.1.2
-> pip install jupyterlab==0.31.12
-> jupyter lab
-```
-
+You can visualize the features in [this notebook](https://github.com/bukosabino/ta/blob/master/examples_to_use/visualize_features.ipynb).
 
 #### Example adding all features
 
@@ -91,10 +82,10 @@ from ta import *
 # Load datas
 df = pd.read_csv('your-file.csv', sep=',')
 
-# Clean nan values
+# Clean NaN values
 df = utils.dropna(df)
 
-# Add ta features filling Nans values
+# Add ta features filling NaN values
 df = add_all_ta_features(df, "Open", "High", "Low", "Close", "Volume_BTC", fillna=True)
 ```
 
@@ -108,13 +99,13 @@ from ta import *
 # Load datas
 df = pd.read_csv('your-file.csv', sep=',')
 
-# Clean nan values
+# Clean NaN values
 df = utils.dropna(df)
 
-# Add bollinger band high indicator filling Nans values
+# Add bollinger band high indicator filling NaN values
 df['bb_high_indicator'] = bollinger_hband_indicator(df["Close"], n=20, ndev=2, fillna=True)
 
-# Add bollinger band low indicator filling Nans values
+# Add bollinger band low indicator filling NaN values
 df['bb_low_indicator'] = bollinger_lband_indicator(df["Close"], n=20, ndev=2, fillna=True)
 ```
 
