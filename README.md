@@ -1,10 +1,10 @@
 # Technical Analysis Library in Python
 
-It is a technical analysis library to financial time series datasets (open, close, high, low, volume). You can use it to do feature engineering from financial datasets. It is builded on pandas python library.
+It is a Technical Analysis library to financial time series datasets (open, close, high, low, volume). You can use it to do feature engineering from financial datasets. It is builded on Python Pandas library.
 
 ![alt text](https://raw.githubusercontent.com/bukosabino/ta/master/doc/figure.png)
 
-The library has implemented 25 indicators and 46 features:
+The library has implemented 25 indicators and 48 features:
 
 #### Volume
 
@@ -49,7 +49,7 @@ The library has implemented 25 indicators and 46 features:
 
 # Documentation
 
-http://technical-analysis-library-in-python.readthedocs.io
+https://technical-analysis-library-in-python.readthedocs.io
 
 
 # Motivation to use
