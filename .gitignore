@@ -7,6 +7,7 @@ __pycache__/
 *.so
 
 data/
+env_ta/
 
 .DS_Store
 
