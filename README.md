@@ -113,6 +113,8 @@ df['bb_low_indicator'] = bollinger_lband_indicator(df["Close"], n=20, ndev=2, fi
 # Deploy to developers
 
 ```sh
+> git clone https://github.com/bukosabino/ta.git
+> cd ta
 > pip install -r requirements.txt
 ```
 
@@ -127,7 +129,7 @@ df['bb_low_indicator'] = bollinger_lband_indicator(df["Close"], n=20, ndev=2, fi
 
 # TODO:
 
-* add more technical analysis features
+* add [more technical analysis features](https://en.wikipedia.org/wiki/Technical_analysis).
 * use dask library to parallelize
 
 # Credits:
