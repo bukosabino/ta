@@ -4,7 +4,7 @@ It is a Technical Analysis library to financial time series datasets (open, clos
 
 ![alt text](https://raw.githubusercontent.com/bukosabino/ta/master/doc/figure.png)
 
-The library has implemented 25 indicators and 48 features:
+The library has implemented 26 indicators and 49 features:
 
 #### Volume
 
@@ -40,6 +40,7 @@ The library has implemented 25 indicators and 48 features:
 * Money Flow Index (MFI)
 * Relative Strength Index (RSI)
 * True strength index (TSI)
+* Ultimate Oscillator (UO)
 
 #### Others
 
