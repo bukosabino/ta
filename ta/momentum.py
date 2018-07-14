@@ -165,6 +165,58 @@ def uo(high, low, close, s=7, m=14, l=28, ws=4.0, wm=2.0, wl=1.0, fillna=False):
         uo = uo.fillna(50)
     return pd.Series(uo, name='uo')
 
+def stoch(high, low, close, n=14, fillna=False):
+    """Stochastic Oscillator
+
+    Developed in the late 1950s by George Lane. The stochastic
+    oscillator presents the location of the closing price of a
+    stock in relation to the high and low range of the price
+    of a stock over a period of time, typically a 14-day period.
+
+    https://www.investopedia.com/terms/s/stochasticoscillator.asp
+
+    Args:
+        high(pandas.Series): dataset 'High' column.
+        low(pandas.Series): dataset 'Low' column.
+        close(pandas.Series): dataset 'Close' column.
+        n(int): n period.
+        fillna(bool): if True, fill nan values.
+
+    Returns:
+        pandas.Series: New feature generated.
+    """
+    smin = low.rolling(n).min()
+    smax = high.rolling(n).max()
+    stoch_k = 100 * (close - smin) / (smax - smin)
+
+    if fillna:
+        stoch_k = stoch_k.fillna(50)
+    return pd.Series(stoch_k, name='stoch_k')
+
+def stoch_signal(high, low, close, n=14, d_n=3, fillna=False):
+    """Stochastic Oscillator Signal
+
+    Shows SMA of Stochastic Oscillator. Typically a 3 day SMA.
+
+    https://www.investopedia.com/terms/s/stochasticoscillator.asp
+
+    Args:
+        high(pandas.Series): dataset 'High' column.
+        low(pandas.Series): dataset 'Low' column.
+        close(pandas.Series): dataset 'Close' column.
+        n(int): n period.
+        d_n(int): sma period over stoch_k
+        fillna(bool): if True, fill nan values.
+
+    Returns:
+        pandas.Series: New feature generated.
+    """
+    stoch_k = stoch(high, low, close, n, fillna=fillna)
+    stoch_d = stoch_k.rolling(d_n).mean()
+
+    if fillna:
+        stoch_d = stoch_d.fillna(50)
+    return pd.Series(stoch_d, name='stoch_d')
 
 # TODO:
-# Stochastic oscillator / Williams %R (%R)
+# Williams %R (%R)
