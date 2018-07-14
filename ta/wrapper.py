@@ -142,6 +142,7 @@ def add_momentum_ta(df, high, low, close, volume, fillna=False):
     df['momentum2'] = money_flow_index(df[high], df[low], df[close],
                                         df[volume], n=14, fillna=fillna)
     df['momentum3'] = tsi(df[close], r=25, s=13, fillna=fillna)
+    df['momentum4'] = uo(df[high], df[low], df[close], fillna=fillna)
     return df
 
 

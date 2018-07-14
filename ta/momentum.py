@@ -120,6 +120,51 @@ def tsi(close, r=25, s=13, fillna=False):
         tsi = tsi.fillna(0)
     return pd.Series(tsi, name='tsi')
 
+def uo(high, low, close, s=7, m=14, l=28, ws=4.0, wm=2.0, wl=1.0, fillna=False):
+    """Ultimate Oscillator
+
+    Larry Williams' (1976) signal, a momentum oscillator designed to capture momentum
+    across three different timeframes.
+
+    http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:ultimate_oscillator
+
+    Args:
+        high(pandas.Series): dataset 'High' column.
+        low(pandas.Series): dataset 'Low' column.
+        close(pandas.Series): dataset 'Close' column.
+        s(int): short period
+        m(int): medium period
+        l(int): long period
+        ws(float): weight of short BP average for UO
+        wm(float): weight of medium BP average for UO
+        wl(float): weight of long BP average for UO
+        fillna(bool): if True, fill nan values with 50.
+
+
+    BP = Close - Minimum(Low or Prior Close). 
+    TR = Maximum(High or Prior Close)  -  Minimum(Low or Prior Close)
+    Average7 = (7-period BP Sum) / (7-period TR Sum)
+    Average14 = (14-period BP Sum) / (14-period TR Sum)
+    Average28 = (28-period BP Sum) / (28-period TR Sum)
+
+    UO = 100 x [(4 x Average7)+(2 x Average14)+Average28]/(4+2+1)
+
+    """
+    min_l_or_pc = close.shift(1).combine(low, min)
+    max_h_or_pc = close.shift(1).combine(high, max)
+
+    bp = close - min_l_or_pc
+    tr = max_h_or_pc - min_l_or_pc
+
+    avg_s = bp.rolling(s).sum() / tr.rolling(s).sum()
+    avg_m = bp.rolling(m).sum() / tr.rolling(m).sum()
+    avg_l = bp.rolling(l).sum() / tr.rolling(l).sum()
+
+    uo = 100.0 * ( (ws * avg_s) + (wm * avg_m) + (wl * avg_l) ) / (ws + wm + wl)
+    if fillna:
+        uo = uo.fillna(50)
+    return pd.Series(uo, name='uo')
+
 
 # TODO:
-# Stochastic oscillator / Ultimate oscillator / Williams %R (%R)
+# Stochastic oscillator / Williams %R (%R)
