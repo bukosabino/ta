@@ -33,6 +33,7 @@ def add_volume_ta(df, high, low, close, volume, fillna=False):
     df['volume7'] = ease_of_movement(df[high], df[low], df[close],
                                         df[volume], 14, fillna=fillna)
     df['volume8'] = volume_price_trend(df[close], df[volume], fillna=fillna)
+    df['volume_nvi'] = negative_volume_index(df[close], df[volume], fillna=fillna)
     return df
 
 
