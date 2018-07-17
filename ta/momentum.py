@@ -128,6 +128,14 @@ def uo(high, low, close, s=7, m=14, l=28, ws=4.0, wm=2.0, wl=1.0, fillna=False):
 
     http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:ultimate_oscillator
 
+    BP = Close - Minimum(Low or Prior Close). 
+    TR = Maximum(High or Prior Close)  -  Minimum(Low or Prior Close)
+    Average7 = (7-period BP Sum) / (7-period TR Sum)
+    Average14 = (14-period BP Sum) / (14-period TR Sum)
+    Average28 = (28-period BP Sum) / (28-period TR Sum)
+
+    UO = 100 x [(4 x Average7)+(2 x Average14)+Average28]/(4+2+1)
+
     Args:
         high(pandas.Series): dataset 'High' column.
         low(pandas.Series): dataset 'Low' column.
@@ -140,15 +148,9 @@ def uo(high, low, close, s=7, m=14, l=28, ws=4.0, wm=2.0, wl=1.0, fillna=False):
         wl(float): weight of long BP average for UO
         fillna(bool): if True, fill nan values with 50.
 
-
-    BP = Close - Minimum(Low or Prior Close). 
-    TR = Maximum(High or Prior Close)  -  Minimum(Low or Prior Close)
-    Average7 = (7-period BP Sum) / (7-period TR Sum)
-    Average14 = (14-period BP Sum) / (14-period TR Sum)
-    Average28 = (28-period BP Sum) / (28-period TR Sum)
-
-    UO = 100 x [(4 x Average7)+(2 x Average14)+Average28]/(4+2+1)
-
+    Returns:
+        pandas.Series: New feature generated.
+        
     """
     min_l_or_pc = close.shift(1).combine(low, min)
     max_h_or_pc = close.shift(1).combine(high, max)
@@ -253,6 +255,9 @@ def wr(high, low, close, lbp=14, fillna=False):
         close(pandas.Series): dataset 'Close' column.
         lbp(int): lookback period
         fillna(bool): if True, fill nan values with -50.
+        
+    Returns:
+        pandas.Series: New feature generated.
     """
 
     hh=high.rolling(lbp).max() #highest high over lookback period lbp
@@ -286,6 +291,16 @@ def ao(high, low, s=5, l=34, fillna=False):
     where
 
     SMA — Simple Moving Average.
+    
+    Args:
+        high(pandas.Series): dataset 'High' column.
+        low(pandas.Series): dataset 'Low' column.
+        s(int): short period
+        l(int): long period
+        fillna(bool): if True, fill nan values with -50.
+        
+    Returns:
+        pandas.Series: New feature generated.
     """
 
     mp = (high+low)/2.0
