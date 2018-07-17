@@ -8,6 +8,7 @@
 """
 
 import pandas as pd
+import numpy as np
 
 
 def acc_dist_index(high, low, close, volume, fillna=False):
@@ -198,17 +199,67 @@ def volume_price_trend(close, volume, fillna=False):
     return pd.Series(vpt, name='vpt')
 
 
-# TODO
-
-def negative_volume_index():
+def negative_volume_index(close, volume, fillna=False):
     """Negative Volume Index (NVI)
+
+    From: http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:negative_volume_inde
+
+    The Negative Volume Index (NVI) is a cumulative indicator that uses the change in volume to decide when the 
+    smart money is active. Paul Dysart first developed this indicator in the 1930s. [...] Dysart's Negative Volume 
+    Index works under the assumption that the smart money is active on days when volume decreases and the not-so-smart 
+    money is active on days when volume increases.
+   
+    The cumulative NVI line was unchanged when volume increased from one period to the other. In other words, 
+    nothing was done. Norman Fosback, of Stock Market Logic, adjusted the indicator by substituting the percentage 
+    price change for Net Advances. 
+    
+    This implementation is the Fosback version. 
+
+    If today's volume is less than yesterday's volume then:
+        nvi(t) = nvi(t-1) * ( 1 + (close(t) - close(t-1)) / close(t-1) )
+    Else
+        nvi(t) = nvi(t-1)
+
+    Please note: the "stockcharts.com" example calculation just adds the percentange change of price to previous
+    NVI when volumes decline; other sources indicate that the same percentage of the previous NVI value should
+    be added, which is what is implemented here.
+
+    Args:
+        close(pandas.Series): dataset 'Close' column.
+        volume(pandas.Series): dataset 'Volume' column.
+        fosback(bool): if True, calculates in Fosback's style (% price change instead of net advance)
+        fillna(bool): if True, fill nan values with 1000.
+
+    Returns:
+        pandas.Series: New feature generated.
+
+    See also:
     https://en.wikipedia.org/wiki/Negative_volume_index
     """
-    # TODO
-    return
+    price_change = close.pct_change()
+    vol_decrease = (volume.shift(1) > volume)
 
+    nvi = pd.Series(data=np.nan, index=close.index, dtype='float64', name='nvi')
+    
+    #i don't think you can avoid a loop with this one, and if you could, it would be a loop in the background
+    #assuming here that data is sorted with newer data at higher row numbers    
+    nvi.iloc[0] = 1000
+    for i in range(1,len(nvi)):
+        if vol_decrease.iloc[i]:
+            nvi.iloc[i] = nvi.iloc[i-1] * ( 1.0 + price_change.iloc[i] )
+        else:
+            nvi.iloc[i] = nvi.iloc[i-1]
+    
+    if fillna:
+        nvi = nvi.fillna(1000) #there shouldn't be any na; might be better to throw exception
+
+    return pd.Series(nvi, name='nvi')
+
+# TODO
 
 def put_call_ratio():
+    # will need options volumes for this put/call ratio
+
     """Put/Call ratio (PCR)
     https://en.wikipedia.org/wiki/Put/call_ratio
     """
