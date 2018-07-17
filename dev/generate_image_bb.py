@@ -15,9 +15,9 @@ df = add_all_ta_features(df, "Open", "High", "Low", "Close", "Volume_BTC",
                             fillna=True)
 
 plt.plot(df[40700:41000].Close)
-plt.plot(df[40700:41000].volatility2, label='High BB')
-plt.plot(df[40700:41000].volatility3, label='Low BB')
-plt.plot(df[40700:41000].volatility4, label='EMA BB')
+plt.plot(df[40700:41000].volatility_bbh, label='High BB')
+plt.plot(df[40700:41000].volatility_bbl, label='Low BB')
+plt.plot(df[40700:41000].volatility_bbm, label='EMA BB')
 plt.title('Bollinger Bands')
 plt.legend()
 plt.savefig("bb.png")

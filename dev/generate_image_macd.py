@@ -14,9 +14,9 @@ df = utils.dropna(df)
 df = add_all_ta_features(df, "Open", "High", "Low", "Close", "Volume_BTC",
                             fillna=True)
 # Generate macd image
-plt.plot(df[40500:41000].trend1, label='MACD')
-plt.plot(df[40500:41000].trend2, label='MACD Signal')
-plt.plot(df[40500:41000].trend3, label='MACD Difference')
+plt.plot(df[40500:41000].trend_macd, label='MACD')
+plt.plot(df[40500:41000].trend_macd_signal, label='MACD Signal')
+plt.plot(df[40500:41000].trend_macd_diff, label='MACD Difference')
 plt.title('MACD, MACD Signal and MACD Difference')
 plt.legend()
 plt.savefig("macd.png")
