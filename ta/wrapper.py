@@ -143,8 +143,10 @@ def add_momentum_ta(df, high, low, close, volume, fillna=False):
                                         df[volume], n=14, fillna=fillna)
     df['momentum3'] = tsi(df[close], r=25, s=13, fillna=fillna)
     df['momentum4'] = uo(df[high], df[low], df[close], fillna=fillna)
-    df['momentum_wr'] = wr(df[high], df[low], df[close], fillna=fillna)
-    df['momentum_ao'] = ao(df[high], df[low], fillna=fillna)
+    df['momentum5'] = stoch(df[high], df[low], df[close], fillna=fillna)
+    df['momentum6'] = stoch_signal(df[high], df[low], df[close], fillna=fillna)
+    df['momentum7'] = wr(df[high], df[low], df[close], fillna=fillna)
+    df['momentum8'] = ao(df[high], df[low], fillna=fillna)
     return df
 
 

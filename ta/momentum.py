@@ -135,9 +135,9 @@ def uo(high, low, close, s=7, m=14, l=28, ws=4.0, wm=2.0, wl=1.0, fillna=False):
         s(int): short period
         m(int): medium period
         l(int): long period
-        ws(float): weight of short period average for UO
-        wm(float): weight of medium period average for UO
-        wl(float): weight of long period average for UO
+        ws(float): weight of short BP average for UO
+        wm(float): weight of medium BP average for UO
+        wl(float): weight of long BP average for UO
         fillna(bool): if True, fill nan values with 50.
 
 
@@ -165,10 +165,65 @@ def uo(high, low, close, s=7, m=14, l=28, ws=4.0, wm=2.0, wl=1.0, fillna=False):
         uo = uo.fillna(50)
     return pd.Series(uo, name='uo')
 
+def stoch(high, low, close, n=14, fillna=False):
+    """Stochastic Oscillator
+
+    Developed in the late 1950s by George Lane. The stochastic
+    oscillator presents the location of the closing price of a
+    stock in relation to the high and low range of the price
+    of a stock over a period of time, typically a 14-day period.
+
+    https://www.investopedia.com/terms/s/stochasticoscillator.asp
+
+    Args:
+        high(pandas.Series): dataset 'High' column.
+        low(pandas.Series): dataset 'Low' column.
+        close(pandas.Series): dataset 'Close' column.
+        n(int): n period.
+        fillna(bool): if True, fill nan values.
+
+    Returns:
+        pandas.Series: New feature generated.
+    """
+    smin = low.rolling(n).min()
+    smax = high.rolling(n).max()
+    stoch_k = 100 * (close - smin) / (smax - smin)
+
+    if fillna:
+        stoch_k = stoch_k.fillna(50)
+    return pd.Series(stoch_k, name='stoch_k')
+
+def stoch_signal(high, low, close, n=14, d_n=3, fillna=False):
+    """Stochastic Oscillator Signal
+
+    Shows SMA of Stochastic Oscillator. Typically a 3 day SMA.
+
+    https://www.investopedia.com/terms/s/stochasticoscillator.asp
+
+    Args:
+        high(pandas.Series): dataset 'High' column.
+        low(pandas.Series): dataset 'Low' column.
+        close(pandas.Series): dataset 'Close' column.
+        n(int): n period.
+        d_n(int): sma period over stoch_k
+        fillna(bool): if True, fill nan values.
+
+    Returns:
+        pandas.Series: New feature generated.
+    """
+    stoch_k = stoch(high, low, close, n, fillna=fillna)
+    stoch_d = stoch_k.rolling(d_n).mean()
+
+    if fillna:
+        stoch_d = stoch_d.fillna(50)
+    return pd.Series(stoch_d, name='stoch_d')
+
+
 def wr(high, low, close, lbp=14, fillna=False):
     """Williams %R
 
-    From: http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:williams_r
+    From: http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:williams_r
+
     Developed by Larry Williams, Williams %R is a momentum indicator that is the inverse of the 
     Fast Stochastic Oscillator. Also referred to as %R, Williams %R reflects the level of the close 
     relative to the highest high for the look-back period. In contrast, the Stochastic Oscillator 
@@ -213,7 +268,8 @@ def wr(high, low, close, lbp=14, fillna=False):
 def ao(high, low, s=5, l=34, fillna=False):
     """Awesome Oscillator
 
-    From: https://www.tradingview.com/wiki/Awesome_Oscillator_(AO)
+    From: https://www.tradingview.com/wiki/Awesome_Oscillator_(AO)
+
     The Awesome Oscillator is an indicator used to measure market momentum. AO calculates the difference of a 
     34 Period and 5 Period Simple Moving Averages. The Simple Moving Averages that are used are not calculated 
     using closing price but rather each bar's midpoints. AO is generally used to affirm trends or to anticipate 
@@ -238,6 +294,3 @@ def ao(high, low, s=5, l=34, fillna=False):
     if fillna:
         ao = ao.fillna(0)
     return pd.Series(ao, name='ao')
-
-# TODO:
-# what else?
