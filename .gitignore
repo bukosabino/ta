@@ -6,7 +6,6 @@ __pycache__/
 # C extensions
 *.so
 
-data/
 env_ta/
 
 .DS_Store
