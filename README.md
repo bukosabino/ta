@@ -4,7 +4,7 @@ It is a Technical Analysis library to financial time series datasets (open, clos
 
 ![alt text](https://raw.githubusercontent.com/bukosabino/ta/master/doc/figure.png)
 
-The library has implemented 26 indicators and 49 features:
+The library has implemented 30 indicators and 54 features:
 
 #### Volume
 
@@ -15,6 +15,7 @@ The library has implemented 26 indicators and 49 features:
 * Force Index (FI)
 * Ease of Movement (EoM, EMV)
 * Volume-price Trend (VPT)
+* Negative Volume Index (NVI)
 
 #### Volatility
 
@@ -41,6 +42,9 @@ The library has implemented 26 indicators and 49 features:
 * Relative Strength Index (RSI)
 * True strength index (TSI)
 * Ultimate Oscillator (UO)
+* Stochastic Oscillator (SR)
+* Williams %R (WR)
+* Awesome Oscillator (AO)
 
 #### Others
 
