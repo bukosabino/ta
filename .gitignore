@@ -107,3 +107,6 @@ env/**
 
 # vscode settings
 .vscode/**
+
+# Original Source (Dev)
+ta/_wrapper.py

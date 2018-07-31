@@ -88,10 +88,10 @@ def macd_diff(close, n_fast=12, n_slow=26, n_sign=9, fillna=False):
     return pd.Series(macd_diff, name='MACD_diff')
 
 
-def ema_fast(close, n_fast=12, fillna=False):
+def ema(close, n=12, fillna=False):
     """EMA
 
-    Short Period Exponential Moving Average
+    Exponential Moving Average via Pandas
 
     Args:
         close(pandas.Series): dataset 'Close' column.
@@ -101,29 +101,10 @@ def ema_fast(close, n_fast=12, fillna=False):
     Returns:
         pandas.Series: New feature generated.
     """
-    emafast = close.ewm(n_fast).mean()
+    ema = close.ewm(n).mean()
     if fillna:
-        emafast = emafast.fillna(method='backfill')
-    return pd.Series(emafast, name='emafast')
-
-
-def ema_slow(close, n_slow=26, fillna=False):
-    """EMA
-
-    Long Period Exponential Moving Average
-
-    Args:
-        close(pandas.Series): dataset 'Close' column.
-        n_slow(int): n period long-term.
-        fillna(bool): if True, fill nan values.
-
-    Returns:
-        pandas.Series: New feature generated.
-    """
-    emaslow = close.ewm(n_slow).mean()
-    if fillna:
-        emaslow = emaslow.fillna(method='backfill')
-    return pd.Series(emaslow, name='emaslow')
+        ema = ema.fillna(method='backfill')
+    return pd.Series(ema, name='ema')
 
 
 def adx(high, low, close, n=14, fillna=False):
