@@ -148,7 +148,7 @@ def adx(high, low, close, n=14, fillna=False):
     dip = 100 * pos.rolling(n).sum() / trs
     din = 100 * neg.rolling(n).sum() / trs
 
-    dx = 100 * np.abs((dip - din)/(dip + din))
+    dx = 100 * np.abs((dip - din) / (dip + din))
     adx = dx.ewm(n).mean()
 
     if fillna:
