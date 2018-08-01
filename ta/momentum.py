@@ -260,10 +260,10 @@ def wr(high, low, close, lbp=14, fillna=False):
         pandas.Series: New feature generated.
     """
 
-    hh=high.rolling(lbp).max() #highest high over lookback period lbp
-    ll=low.rolling(lbp).min()  #lowest low over lookback period lbp
+    hh = high.rolling(lbp).max() #highest high over lookback period lbp
+    ll = low.rolling(lbp).min()  #lowest low over lookback period lbp
 
-    wr = -100*(hh-close)/(hh-ll)
+    wr = -100 * (hh - close) / (hh - ll)
 
     if fillna:
         wr = wr.fillna(-50)
