@@ -30,6 +30,8 @@ def daily_return(close, fillna=False):
 def daily_log_return(close, fillna=False):
     """Daily Log Return (DLR)
 
+    https://stackoverflow.com/questions/31287552/logarithmic-returns-in-pandas-dataframe    
+
     Args:
         close(pandas.Series): dataset 'Close' column.
         fillna(bool): if True, fill nan values.
