@@ -149,7 +149,7 @@ def bollinger_lband_indicator(close, n=20, ndev=2, fillna=False):
     df = pd.DataFrame([close]).transpose()
     mavg = close.rolling(n).mean()
     mstd = close.rolling(n).std()
-    lband = mavg - ndev*mstd
+    lband = mavg - ndev * mstd
     df['lband'] = 0.0
     df.loc[close < lband, 'lband'] = 1.0
     lband = df['lband']
