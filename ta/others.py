@@ -41,7 +41,7 @@ def daily_log_return(close, fillna=False):
     dr *= 100
     if fillna:
         dr = dr.fillna(0)
-    return pd.Series(dr, name='d_ret')
+    return pd.Series(dr, name='d_logret')
 
 
 def cumulative_return(close, fillna=False):
