@@ -197,7 +197,7 @@ def keltner_channel_hband(high, low, close, n=10, fillna=False):
     Returns:
         pandas.Series: New feature generated.
     """
-    tp = ((4 * high) - ( 2 *low) + close) / 3.0
+    tp = ((4 * high) - (2 * low) + close) / 3.0
     tp = tp.rolling(n).mean()
     if fillna:
         tp = tp.fillna(method='backfill')
