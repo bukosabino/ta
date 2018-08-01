@@ -243,9 +243,9 @@ def negative_volume_index(close, volume, fillna=False):
     nvi.iloc[0] = 1000
     for i in range(1,len(nvi)):
         if vol_decrease.iloc[i]:
-            nvi.iloc[i] = nvi.iloc[i-1] * ( 1.0 + price_change.iloc[i] )
+            nvi.iloc[i] = nvi.iloc[i - 1] * (1.0 + price_change.iloc[i])
         else:
-            nvi.iloc[i] = nvi.iloc[i-1]
+            nvi.iloc[i] = nvi.iloc[i - 1]
 
     if fillna:
         nvi = nvi.fillna(1000) # IDEA: There shouldn't be any na; might be better to throw exception
