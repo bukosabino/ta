@@ -122,7 +122,7 @@ def bollinger_hband_indicator(close, n=20, ndev=2, fillna=False):
     df = pd.DataFrame([close]).transpose()
     mavg = close.rolling(n).mean()
     mstd = close.rolling(n).std()
-    hband = mavg + ndev*mstd
+    hband = mavg + ndev * mstd
     df['hband'] = 0.0
     df.loc[close > hband, 'hband'] = 1.0
     hband = df['hband']
