@@ -246,7 +246,7 @@ def keltner_channel_hband_indicator(high, low, close, n=10, fillna=False):
     """
     df = pd.DataFrame([close]).transpose()
     df['hband'] = 0.0
-    hband = ((4*high) - (2*low) + close) / 3.0
+    hband = ((4 * high) - (2 * low) + close) / 3.0
     df.loc[close > hband, 'hband'] = 1.0
     hband = df['hband']
     if fillna:
@@ -272,7 +272,7 @@ def keltner_channel_lband_indicator(high, low, close, n=10, fillna=False):
     """
     df = pd.DataFrame([close]).transpose()
     df['lband'] = 0.0
-    lband = ((-2*high) + (4*low) + close) / 3.0
+    lband = ((-2 * high) + (4 * low) + close) / 3.0
     df.loc[close < lband, 'lband'] = 1.0
     lband = df['lband']
     if fillna:
