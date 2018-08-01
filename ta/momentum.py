@@ -303,8 +303,8 @@ def ao(high, low, s=5, l=34, fillna=False):
         pandas.Series: New feature generated.
     """
 
-    mp = (high+low)/2.0
-    ao = mp.rolling(s).mean()-mp.rolling(l).mean()
+    mp = 0.5 * (high + low)
+    ao = mp.rolling(s).mean() - mp.rolling(l).mean()
 
     if fillna:
         ao = ao.fillna(0)
