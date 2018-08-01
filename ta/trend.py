@@ -491,7 +491,7 @@ def kst(close, r1=10, r2=15, r3=20, r4=30, n1=10, n2=10, n3=10, n4=15, fillna=Fa
     rocma2 = ((close - close.shift(r2)) / close.shift(r2)).rolling(n2).mean()
     rocma3 = ((close - close.shift(r3)) / close.shift(r3)).rolling(n3).mean()
     rocma4 = ((close - close.shift(r4)) / close.shift(r4)).rolling(n4).mean()
-    kst = 100*(rocma1 + 2*rocma2 + 3*rocma3 + 4*rocma4)
+    kst = 100 * (rocma1 + 2 * rocma2 + 3 * rocma3 + 4 * rocma4)
     if fillna:
         kst = kst.fillna(0)
     return pd.Series(kst, name='kst')
