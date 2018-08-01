@@ -551,10 +551,10 @@ def ichimoku_a(high, low, n1=9, n2=26, fillna=False):
     Returns:
         pandas.Series: New feature generated.
     """
-    conv = (high.rolling(n1).max() + low.rolling(n1).min()) / 2
-    base = (high.rolling(n2).max() + low.rolling(n2).min()) / 2
+    conv = 0.5 * (high.rolling(n1).max() + low.rolling(n1).min())
+    base = 0.5 * (high.rolling(n2).max() + low.rolling(n2).min())
 
-    spana = (conv + base) / 2
+    spana = 0.5 * (conv + base)
     spana = spana.shift(n2)
     if fillna:
         spana = spana.fillna(method='backfill')
