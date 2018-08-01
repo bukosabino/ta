@@ -433,7 +433,7 @@ def cci(high, low, close, n=20, c=0.015, fillna=False):
         pandas.Series: New feature generated.
 
     """
-    pp = (high + low + close)/3
+    pp = (high + low + close) / 3.0
     cci = (pp - pp.rolling(n).mean()) / (c * pp.rolling(n).std())
     if fillna:
         cci = cci.fillna(0)
