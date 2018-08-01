@@ -36,7 +36,7 @@ def rsi(close, n=14, fillna=False):
     emaup = up.ewm(n).mean()
     emadn = dn.ewm(n).mean()
 
-    rsi = 100 * emaup/(emaup + emadn)
+    rsi = 100 * emaup / (emaup + emadn)
     if fillna:
         rsi = rsi.fillna(50)
     return pd.Series(rsi, name='rsi')
@@ -162,7 +162,7 @@ def uo(high, low, close, s=7, m=14, l=28, ws=4.0, wm=2.0, wl=1.0, fillna=False):
     avg_m = bp.rolling(m).sum() / tr.rolling(m).sum()
     avg_l = bp.rolling(l).sum() / tr.rolling(l).sum()
 
-    uo = 100.0 * ( (ws * avg_s) + (wm * avg_m) + (wl * avg_l) ) / (ws + wm + wl)
+    uo = 100.0 * ((ws * avg_s) + (wm * avg_m) + (wl * avg_l)) / (ws + wm + wl)
     if fillna:
         uo = uo.fillna(50)
     return pd.Series(uo, name='uo')
