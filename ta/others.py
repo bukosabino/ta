@@ -6,8 +6,8 @@
 .. moduleauthor:: Dario Lopez Padial (Bukosabino)
 
 """
+import numpy as np
 import pandas as pd
-from math import log
 
 
 def daily_return(close, fillna=False):
@@ -37,7 +37,7 @@ def daily_log_return(close, fillna=False):
     Returns:
         pandas.Series: New feature generated.
     """
-    dr = math.log(close / close.shift(1))
+    dr = np.log(close).diff()
     dr *= 100
     if fillna:
         dr = dr.fillna(0)
