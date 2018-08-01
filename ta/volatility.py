@@ -98,7 +98,7 @@ def bollinger_lband(close, n=20, ndev=2, fillna=False):
     """
     mavg = close.rolling(n).mean()
     mstd = close.rolling(n).std()
-    lband = mavg - ndev*mstd
+    lband = mavg - ndev * mstd
     if fillna:
         lband = lband.fillna(method='backfill')
     return pd.Series(lband, name='lband')
