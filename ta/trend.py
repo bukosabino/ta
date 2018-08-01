@@ -578,7 +578,7 @@ def ichimoku_b(high, low, n2=26, n3=52, fillna=False):
     Returns:
         pandas.Series: New feature generated.
     """
-    spanb = (high.rolling(n3).max() + low.rolling(n3).min()) / 2
+    spanb = 0.5 * (high.rolling(n3).max() + low.rolling(n3).min())
     spanb = spanb.shift(n2)
     if fillna:
         spanb = spanb.fillna(method='backfill')
