@@ -114,7 +114,7 @@ def tsi(close, r=25, s=13, fillna=False):
     m = close - close.shift(1)
     m1 = m.ewm(r).mean().ewm(s).mean()
     m2 = abs(m).ewm(r).mean().ewm(s).mean()
-    tsi = m1/m2
+    tsi = m1 / m2
     tsi *= 100
     if fillna:
         tsi = tsi.fillna(0)
