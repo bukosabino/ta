@@ -401,9 +401,9 @@ def mass_index(high, low, n=9, n2=25, fillna=False):
 
     """
     amplitude = high - low
-    ema1 = amplitude.ewm(span=n, min_periods=n-1).mean()
-    ema2 = ema1.ewm(span=n, min_periods=n-1).mean()
-    mass = ema1/ema2
+    ema1 = amplitude.ewm(span=n, min_periods=n - 1).mean()
+    ema2 = ema1.ewm(span=n, min_periods=n - 1).mean()
+    mass = ema1 / ema2
     mass = mass.rolling(n2).sum()
     if fillna:
         mass = mass.fillna(n2)
