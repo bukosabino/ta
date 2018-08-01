@@ -457,7 +457,7 @@ def dpo(close, n=20, fillna=False):
     Returns:
         pandas.Series: New feature generated.
     """
-    dpo = close.shift(int(n/(2+1))) - close.rolling(n).mean()
+    dpo = close.shift(int((0.5 * n) + 1)) - close.rolling(n).mean()
     if fillna:
         dpo = dpo.fillna(0)
     return pd.Series(dpo, name='dpo_'+str(n))
