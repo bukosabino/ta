@@ -7,6 +7,7 @@
 
 """
 import pandas as pd
+from math import log
 
 
 def daily_return(close, fillna=False):
@@ -20,6 +21,23 @@ def daily_return(close, fillna=False):
         pandas.Series: New feature generated.
     """
     dr = (close / close.shift(1)) - 1
+    dr *= 100
+    if fillna:
+        dr = dr.fillna(0)
+    return pd.Series(dr, name='d_ret')
+
+
+def daily_log_return(close, fillna=False):
+    """Daily Log Return (DLR)
+
+    Args:
+        close(pandas.Series): dataset 'Close' column.
+        fillna(bool): if True, fill nan values.
+
+    Returns:
+        pandas.Series: New feature generated.
+    """
+    dr = math.log(close / close.shift(1))
     dr *= 100
     if fillna:
         dr = dr.fillna(0)
