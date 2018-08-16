@@ -163,6 +163,7 @@ def add_others_ta(df, close, fillna=False):
         pandas.core.frame.DataFrame: Dataframe with new features.
     """
     df['others_dr'] = daily_return(df[close], fillna=fillna)
+    df['others_dlr'] = daily_log_return(df[close], fillna=fillna)
     df['others_cr'] = cumulative_return(df[close], fillna=fillna)
     return df
 
