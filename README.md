@@ -4,7 +4,7 @@ It is a Technical Analysis library to financial time series datasets (open, clos
 
 ![alt text](https://raw.githubusercontent.com/bukosabino/ta/master/doc/figure.png)
 
-The library has implemented 30 indicators and 54 features:
+The library has implemented 31 indicators and 55 features:
 
 #### Volume
 
