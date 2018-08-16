@@ -49,6 +49,7 @@ The library has implemented 30 indicators and 54 features:
 #### Others
 
 * Daily Return (DR)
+* Daily Log Return (DLR)
 * Cumulative Return (CR)
 
 

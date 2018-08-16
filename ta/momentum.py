@@ -36,7 +36,7 @@ def rsi(close, n=14, fillna=False):
     emaup = up.ewm(n).mean()
     emadn = dn.ewm(n).mean()
 
-    rsi = 100 * emaup/(emaup + emadn)
+    rsi = 100 * emaup / (emaup + emadn)
     if fillna:
         rsi = rsi.fillna(50)
     return pd.Series(rsi, name='rsi')
@@ -114,7 +114,7 @@ def tsi(close, r=25, s=13, fillna=False):
     m = close - close.shift(1)
     m1 = m.ewm(r).mean().ewm(s).mean()
     m2 = abs(m).ewm(r).mean().ewm(s).mean()
-    tsi = m1/m2
+    tsi = m1 / m2
     tsi *= 100
     if fillna:
         tsi = tsi.fillna(0)
@@ -162,7 +162,7 @@ def uo(high, low, close, s=7, m=14, l=28, ws=4.0, wm=2.0, wl=1.0, fillna=False):
     avg_m = bp.rolling(m).sum() / tr.rolling(m).sum()
     avg_l = bp.rolling(l).sum() / tr.rolling(l).sum()
 
-    uo = 100.0 * ( (ws * avg_s) + (wm * avg_m) + (wl * avg_l) ) / (ws + wm + wl)
+    uo = 100.0 * ((ws * avg_s) + (wm * avg_m) + (wl * avg_l)) / (ws + wm + wl)
     if fillna:
         uo = uo.fillna(50)
     return pd.Series(uo, name='uo')
@@ -260,10 +260,10 @@ def wr(high, low, close, lbp=14, fillna=False):
         pandas.Series: New feature generated.
     """
 
-    hh=high.rolling(lbp).max() #highest high over lookback period lbp
-    ll=low.rolling(lbp).min()  #lowest low over lookback period lbp
+    hh = high.rolling(lbp).max() #highest high over lookback period lbp
+    ll = low.rolling(lbp).min()  #lowest low over lookback period lbp
 
-    wr = -100*(hh-close)/(hh-ll)
+    wr = -100 * (hh - close) / (hh - ll)
 
     if fillna:
         wr = wr.fillna(-50)
@@ -303,8 +303,8 @@ def ao(high, low, s=5, l=34, fillna=False):
         pandas.Series: New feature generated.
     """
 
-    mp = (high+low)/2.0
-    ao = mp.rolling(s).mean()-mp.rolling(l).mean()
+    mp = 0.5 * (high + low)
+    ao = mp.rolling(s).mean() - mp.rolling(l).mean()
 
     if fillna:
         ao = ao.fillna(0)

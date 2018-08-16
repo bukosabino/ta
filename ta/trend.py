@@ -88,10 +88,10 @@ def macd_diff(close, n_fast=12, n_slow=26, n_sign=9, fillna=False):
     return pd.Series(macd_diff, name='MACD_diff')
 
 
-def ema_fast(close, n_fast=12, fillna=False):
+def ema(close, n=12, fillna=False):
     """EMA
 
-    Short Period Exponential Moving Average
+    Exponential Moving Average via Pandas
 
     Args:
         close(pandas.Series): dataset 'Close' column.
@@ -101,29 +101,10 @@ def ema_fast(close, n_fast=12, fillna=False):
     Returns:
         pandas.Series: New feature generated.
     """
-    emafast = close.ewm(n_fast).mean()
+    ema = close.ewm(n).mean()
     if fillna:
-        emafast = emafast.fillna(method='backfill')
-    return pd.Series(emafast, name='emafast')
-
-
-def ema_slow(close, n_slow=26, fillna=False):
-    """EMA
-
-    Long Period Exponential Moving Average
-
-    Args:
-        close(pandas.Series): dataset 'Close' column.
-        n_slow(int): n period long-term.
-        fillna(bool): if True, fill nan values.
-
-    Returns:
-        pandas.Series: New feature generated.
-    """
-    emaslow = close.ewm(n_slow).mean()
-    if fillna:
-        emaslow = emaslow.fillna(method='backfill')
-    return pd.Series(emaslow, name='emaslow')
+        ema = ema.fillna(method='backfill')
+    return pd.Series(ema, name='ema')
 
 
 def adx(high, low, close, n=14, fillna=False):
@@ -167,7 +148,7 @@ def adx(high, low, close, n=14, fillna=False):
     dip = 100 * pos.rolling(n).sum() / trs
     din = 100 * neg.rolling(n).sum() / trs
 
-    dx = 100 * np.abs((dip - din)/(dip + din))
+    dx = 100 * np.abs((dip - din) / (dip + din))
     adx = dx.ewm(n).mean()
 
     if fillna:
@@ -420,9 +401,9 @@ def mass_index(high, low, n=9, n2=25, fillna=False):
 
     """
     amplitude = high - low
-    ema1 = amplitude.ewm(span=n, min_periods=n-1).mean()
-    ema2 = ema1.ewm(span=n, min_periods=n-1).mean()
-    mass = ema1/ema2
+    ema1 = amplitude.ewm(span=n, min_periods=n - 1).mean()
+    ema2 = ema1.ewm(span=n, min_periods=n - 1).mean()
+    mass = ema1 / ema2
     mass = mass.rolling(n2).sum()
     if fillna:
         mass = mass.fillna(n2)
@@ -452,9 +433,8 @@ def cci(high, low, close, n=20, c=0.015, fillna=False):
         pandas.Series: New feature generated.
 
     """
-    pp = (high+low+close)/3
-    cci = (pp-pp.rolling(n).mean())/pp.rolling(n).std()
-    cci = 1/c * cci
+    pp = (high + low + close) / 3.0
+    cci = (pp - pp.rolling(n).mean()) / (c * pp.rolling(n).std())
     if fillna:
         cci = cci.fillna(0)
     return pd.Series(cci, name='cci')
@@ -476,7 +456,7 @@ def dpo(close, n=20, fillna=False):
     Returns:
         pandas.Series: New feature generated.
     """
-    dpo = close.shift(int(n/(2+1))) - close.rolling(n).mean()
+    dpo = close.shift(int((0.5 * n) + 1)) - close.rolling(n).mean()
     if fillna:
         dpo = dpo.fillna(0)
     return pd.Series(dpo, name='dpo_'+str(n))
@@ -511,7 +491,7 @@ def kst(close, r1=10, r2=15, r3=20, r4=30, n1=10, n2=10, n3=10, n4=15, fillna=Fa
     rocma2 = ((close - close.shift(r2)) / close.shift(r2)).rolling(n2).mean()
     rocma3 = ((close - close.shift(r3)) / close.shift(r3)).rolling(n3).mean()
     rocma4 = ((close - close.shift(r4)) / close.shift(r4)).rolling(n4).mean()
-    kst = 100*(rocma1 + 2*rocma2 + 3*rocma3 + 4*rocma4)
+    kst = 100 * (rocma1 + 2 * rocma2 + 3 * rocma3 + 4 * rocma4)
     if fillna:
         kst = kst.fillna(0)
     return pd.Series(kst, name='kst')
@@ -547,7 +527,7 @@ def kst_sig(close, r1=10, r2=15, r3=20, r4=30, n1=10, n2=10, n3=10, n4=15, nsig=
     rocma2 = ((close - close.shift(r2)) / close.shift(r2)).rolling(n2).mean()
     rocma3 = ((close - close.shift(r3)) / close.shift(r3)).rolling(n3).mean()
     rocma4 = ((close - close.shift(r4)) / close.shift(r4)).rolling(n4).mean()
-    kst = 100*(rocma1 + 2*rocma2 + 3*rocma3 + 4*rocma4)
+    kst = 100 * (rocma1 + 2 * rocma2 + 3 * rocma3 + 4 * rocma4)
     kst_sig = kst.rolling(nsig).mean()
     if fillna:
         kst_sig = kst_sig.fillna(0)
@@ -571,10 +551,10 @@ def ichimoku_a(high, low, n1=9, n2=26, fillna=False):
     Returns:
         pandas.Series: New feature generated.
     """
-    conv = (high.rolling(n1).max() + low.rolling(n1).min()) / 2
-    base = (high.rolling(n2).max() + low.rolling(n2).min()) / 2
+    conv = 0.5 * (high.rolling(n1).max() + low.rolling(n1).min())
+    base = 0.5 * (high.rolling(n2).max() + low.rolling(n2).min())
 
-    spana = (conv + base) / 2
+    spana = 0.5 * (conv + base)
     spana = spana.shift(n2)
     if fillna:
         spana = spana.fillna(method='backfill')
@@ -598,7 +578,7 @@ def ichimoku_b(high, low, n2=26, n3=52, fillna=False):
     Returns:
         pandas.Series: New feature generated.
     """
-    spanb = (high.rolling(n3).max() + low.rolling(n3).min()) / 2
+    spanb = 0.5 * (high.rolling(n3).max() + low.rolling(n3).min())
     spanb = spanb.shift(n2)
     if fillna:
         spanb = spanb.fillna(method='backfill')
