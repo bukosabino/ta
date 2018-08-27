@@ -65,9 +65,9 @@ https://technical-analysis-library-in-python.readthedocs.io/en/latest/
 # How to use (python 3)
 
 ```sh
-> virtualenv -p python3 virtualenvironment
-> source virtualenvironment/bin/activate
-> pip install ta
+$ virtualenv -p python3 virtualenvironment
+$ source virtualenvironment/bin/activate
+$ pip install ta
 ```
 
 To use this library you should have a financial time series dataset including “Timestamp”, “Open”, “High”, “Low”, “Close” and “Volume” columns.
@@ -118,9 +118,11 @@ df['bb_low_indicator'] = bollinger_lband_indicator(df["Close"], n=20, ndev=2, fi
 # Deploy to developers
 
 ```sh
-> git clone https://github.com/bukosabino/ta.git
-> cd ta
-> pip install -r requirements.txt
+$ git clone https://github.com/bukosabino/ta.git
+$ cd ta
+$ pip install -r requirements.txt
+$ cd dev
+$ python bollinger_band_features_example.py 
 ```
 
 
