@@ -31,7 +31,7 @@ def macd(close, n_fast=12, n_slow=26, fillna=False):
     emaslow = close.ewm(n_slow).mean()
     macd = emafast - emaslow
     if fillna:
-        macd = macd.fillna(0)
+        macd = macd.replace([np.inf, -np.inf], np.nan).fillna(0)
     return pd.Series(macd, name='MACD_%d_%d' % (n_fast, n_slow))
 
 
@@ -57,7 +57,7 @@ def macd_signal(close, n_fast=12, n_slow=26, n_sign=9, fillna=False):
     macd = emafast - emaslow
     macd_signal = macd.ewm(n_sign).mean()
     if fillna:
-        macd_signal = macd_signal.fillna(0)
+        macd_signal = macd_signal.replace([np.inf, -np.inf], np.nan).fillna(0)
     return pd.Series(macd_signal, name='MACD_sign')
 
 
@@ -84,7 +84,7 @@ def macd_diff(close, n_fast=12, n_slow=26, n_sign=9, fillna=False):
     macdsign = macd.ewm(n_sign).mean()
     macd_diff = macd - macdsign
     if fillna:
-        macd_diff = macd_diff.fillna(0)
+        macd_diff = macd_diff.replace([np.inf, -np.inf], np.nan).fillna(0)
     return pd.Series(macd_diff, name='MACD_diff')
 
 
@@ -103,7 +103,7 @@ def ema(close, n=12, fillna=False):
     """
     ema = close.ewm(n).mean()
     if fillna:
-        ema = ema.fillna(method='backfill')
+        ema = ema.replace([np.inf, -np.inf], np.nan).fillna(method='backfill')
     return pd.Series(ema, name='ema')
 
 
@@ -152,7 +152,7 @@ def adx(high, low, close, n=14, fillna=False):
     adx = dx.ewm(n).mean()
 
     if fillna:
-        adx = adx.fillna(40)
+        adx = adx.replace([np.inf, -np.inf], np.nan).fillna(40)
     return pd.Series(adx, name='adx')
 
 
@@ -197,7 +197,7 @@ def adx_pos(high, low, close, n=14, fillna=False):
     dip = 100 * pos.rolling(n).sum() / trs
 
     if fillna:
-        dip = dip.fillna(20)
+        dip = dip.replace([np.inf, -np.inf], np.nan).fillna(20)
     return pd.Series(dip, name='adx_pos')
 
 
@@ -242,7 +242,7 @@ def adx_neg(high, low, close, n=14, fillna=False):
     din = 100 * neg.rolling(n).sum() / trs
 
     if fillna:
-        din = din.fillna(20)
+        din = din.replace([np.inf, -np.inf], np.nan).fillna(20)
     return pd.Series(din, name='adx_neg')
 
 
@@ -288,7 +288,7 @@ def adx_indicator(high, low, close, n=14, fillna=False):
     adx_ind = df['adx_ind']
 
     if fillna:
-        adx_ind = adx_ind.fillna(0)
+        adx_ind = adx_ind.replace([np.inf, -np.inf], np.nan).fillna(0)
     return pd.Series(adx_ind, name='adx_ind')
 
 
@@ -319,7 +319,7 @@ def vortex_indicator_pos(high, low, close, n=14, fillna=False):
 
     vip = vmp.rolling(n).sum() / trn
     if fillna:
-        vip = vip.fillna(1)
+        vip = vip.replace([np.inf, -np.inf], np.nan).fillna(1)
     return pd.Series(vip, name='vip')
 
 
@@ -350,7 +350,7 @@ def vortex_indicator_neg(high, low, close, n=14, fillna=False):
 
     vin = vmm.rolling(n).sum() / trn
     if fillna:
-        vin = vin.fillna(1)
+        vin = vin.replace([np.inf, -np.inf], np.nan).fillna(1)
     return pd.Series(vin, name='vin')
 
 
@@ -376,7 +376,7 @@ def trix(close, n=15, fillna=False):
     trix = (ema3 - ema3.shift(1)) / ema3.shift(1)
     trix *= 100
     if fillna:
-        trix = trix.fillna(0)
+        trix = trix.replace([np.inf, -np.inf], np.nan).fillna(0)
     return pd.Series(trix, name='trix_'+str(n))
 
 
@@ -406,7 +406,7 @@ def mass_index(high, low, n=9, n2=25, fillna=False):
     mass = ema1 / ema2
     mass = mass.rolling(n2).sum()
     if fillna:
-        mass = mass.fillna(n2)
+        mass = mass.replace([np.inf, -np.inf], np.nan).fillna(n2)
     return pd.Series(mass, name='mass_index_'+str(n))
 
 
@@ -436,7 +436,7 @@ def cci(high, low, close, n=20, c=0.015, fillna=False):
     pp = (high + low + close) / 3.0
     cci = (pp - pp.rolling(n).mean()) / (c * pp.rolling(n).std())
     if fillna:
-        cci = cci.fillna(0)
+        cci = cci.replace([np.inf, -np.inf], np.nan).fillna(0)
     return pd.Series(cci, name='cci')
 
 
@@ -458,7 +458,7 @@ def dpo(close, n=20, fillna=False):
     """
     dpo = close.shift(int((0.5 * n) + 1)) - close.rolling(n).mean()
     if fillna:
-        dpo = dpo.fillna(0)
+        dpo = dpo.replace([np.inf, -np.inf], np.nan).fillna(0)
     return pd.Series(dpo, name='dpo_'+str(n))
 
 
@@ -493,7 +493,7 @@ def kst(close, r1=10, r2=15, r3=20, r4=30, n1=10, n2=10, n3=10, n4=15, fillna=Fa
     rocma4 = ((close - close.shift(r4)) / close.shift(r4)).rolling(n4).mean()
     kst = 100 * (rocma1 + 2 * rocma2 + 3 * rocma3 + 4 * rocma4)
     if fillna:
-        kst = kst.fillna(0)
+        kst = kst.replace([np.inf, -np.inf], np.nan).fillna(0)
     return pd.Series(kst, name='kst')
 
 
@@ -530,7 +530,7 @@ def kst_sig(close, r1=10, r2=15, r3=20, r4=30, n1=10, n2=10, n3=10, n4=15, nsig=
     kst = 100 * (rocma1 + 2 * rocma2 + 3 * rocma3 + 4 * rocma4)
     kst_sig = kst.rolling(nsig).mean()
     if fillna:
-        kst_sig = kst_sig.fillna(0)
+        kst_sig = kst_sig.replace([np.inf, -np.inf], np.nan).fillna(0)
     return pd.Series(kst_sig, name='kst_sig')
 
 
@@ -557,7 +557,7 @@ def ichimoku_a(high, low, n1=9, n2=26, fillna=False):
     spana = 0.5 * (conv + base)
     spana = spana.shift(n2)
     if fillna:
-        spana = spana.fillna(method='backfill')
+        spana = spana.replace([np.inf, -np.inf], np.nan).fillna(method='backfill')
     return pd.Series(spana, name='ichimoku_a_'+str(n2))
 
 
@@ -581,5 +581,5 @@ def ichimoku_b(high, low, n2=26, n3=52, fillna=False):
     spanb = 0.5 * (high.rolling(n3).max() + low.rolling(n3).min())
     spanb = spanb.shift(n2)
     if fillna:
-        spanb = spanb.fillna(method='backfill')
+        spanb = spanb.replace([np.inf, -np.inf], np.nan).fillna(method='backfill')
     return pd.Series(spanb, name='ichimoku_b_'+str(n2))

@@ -33,7 +33,7 @@ def acc_dist_index(high, low, close, volume, fillna=False):
     ad = clv * volume
     ad = ad + ad.shift(1)
     if fillna:
-        ad = ad.fillna(0)
+        ad = ad.replace([np.inf, -np.inf], np.nan).fillna(0)
     return pd.Series(ad, name='adi')
 
 
@@ -63,7 +63,7 @@ def on_balance_volume(close, volume, fillna=False):
         df.loc[c2, 'OBV'] = volume
     obv = df['OBV']
     if fillna:
-        obv = obv.fillna(0)
+        obv = obv.replace([np.inf, -np.inf], np.nan).fillna(0)
     return pd.Series(obv, name='obv')
 
 
@@ -93,7 +93,7 @@ def on_balance_volume_mean(close, volume, n=10, fillna=False):
         df.loc[c2, 'OBV'] = volume
     obv = df['OBV'].rolling(n).mean()
     if fillna:
-        obv = obv.fillna(0)
+        obv = obv.replace([np.inf, -np.inf], np.nan).fillna(0)
     return pd.Series(obv, name='obv')
 
 
@@ -120,7 +120,7 @@ def chaikin_money_flow(high, low, close, volume, n=20, fillna=False):
     mfv *= volume
     cmf = mfv.rolling(n).sum() / volume.rolling(n).sum()
     if fillna:
-        cmf = cmf.fillna(0)
+        cmf = cmf.replace([np.inf, -np.inf], np.nan).fillna(0)
     return pd.Series(cmf, name='cmf')
 
 
@@ -144,7 +144,7 @@ def force_index(close, volume, n=2, fillna=False):
     """
     fi = close.diff(n) * volume.diff(n)
     if fillna:
-        fi = fi.fillna(0)
+        fi = fi.replace([np.inf, -np.inf], np.nan).fillna(0)
     return pd.Series(fi, name='fi_'+str(n))
 
 
@@ -170,7 +170,7 @@ def ease_of_movement(high, low, close, volume, n=20, fillna=False):
     emv = (high.diff(1) + low.diff(1)) * (high - low) / (2 * volume)
     emv = emv.rolling(n).mean()
     if fillna:
-        emv = emv.fillna(0)
+        emv = emv.replace([np.inf, -np.inf], np.nan).fillna(0)
     return pd.Series(emv, name='eom_' + str(n))
 
 
@@ -195,7 +195,7 @@ def volume_price_trend(close, volume, fillna=False):
     vpt = volume * ((close - close.shift(1)) / close.shift(1))
     vpt = vpt.shift(1) + vpt
     if fillna:
-        vpt = vpt.fillna(0)
+        vpt = vpt.replace([np.inf, -np.inf], np.nan).fillna(0)
     return pd.Series(vpt, name='vpt')
 
 
@@ -248,7 +248,7 @@ def negative_volume_index(close, volume, fillna=False):
             nvi.iloc[i] = nvi.iloc[i - 1]
 
     if fillna:
-        nvi = nvi.fillna(1000) # IDEA: There shouldn't be any na; might be better to throw exception
+        nvi = nvi.replace([np.inf, -np.inf], np.nan).fillna(1000) # IDEA: There shouldn't be any na; might be better to throw exception
 
     return pd.Series(nvi, name='nvi')
 

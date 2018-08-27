@@ -23,14 +23,14 @@ def daily_return(close, fillna=False):
     dr = (close / close.shift(1)) - 1
     dr *= 100
     if fillna:
-        dr = dr.fillna(0)
+        dr = dr.replace([np.inf, -np.inf], np.nan).fillna(0)
     return pd.Series(dr, name='d_ret')
 
 
 def daily_log_return(close, fillna=False):
     """Daily Log Return (DLR)
 
-    https://stackoverflow.com/questions/31287552/logarithmic-returns-in-pandas-dataframe    
+    https://stackoverflow.com/questions/31287552/logarithmic-returns-in-pandas-dataframe
 
     Args:
         close(pandas.Series): dataset 'Close' column.
@@ -42,7 +42,7 @@ def daily_log_return(close, fillna=False):
     dr = np.log(close).diff()
     dr *= 100
     if fillna:
-        dr = dr.fillna(0)
+        dr = dr.replace([np.inf, -np.inf], np.nan).fillna(0)
     return pd.Series(dr, name='d_logret')
 
 
@@ -59,5 +59,5 @@ def cumulative_return(close, fillna=False):
     cr = (close / close.iloc[0]) - 1
     cr *= 100
     if fillna:
-        cr = cr.fillna(method='backfill')
+        cr = cr.replace([np.inf, -np.inf], np.nan).fillna(method='backfill')
     return pd.Series(cr, name='cum_ret')

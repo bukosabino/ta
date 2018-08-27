@@ -7,6 +7,7 @@
 
 """
 import pandas as pd
+import numpy as np
 
 
 def average_true_range(high, low, close, n=14, fillna=False):
@@ -19,7 +20,6 @@ def average_true_range(high, low, close, n=14, fillna=False):
     http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:average_true_range_atr
 
     Args:
-
         high(pandas.Series): dataset 'High' column.
         low(pandas.Series): dataset 'Low' column.
         close(pandas.Series): dataset 'Close' column.
@@ -32,7 +32,7 @@ def average_true_range(high, low, close, n=14, fillna=False):
     tr = high.combine(cs, max) - low.combine(cs, min)
     tr = tr.ewm(n).mean()
     if fillna:
-        tr = tr.fillna(0)
+        tr = tr.replace([np.inf, -np.inf], np.nan).fillna(0)
     return pd.Series(tr, name='atr')
 
 
@@ -52,7 +52,7 @@ def bollinger_mavg(close, n=20, fillna=False):
     """
     mavg = close.rolling(n).mean()
     if fillna:
-        mavg = mavg.fillna(method='backfill')
+        mavg = mavg.replace([np.inf, -np.inf], np.nan).fillna(method='backfill')
     return pd.Series(mavg, name='mavg')
 
 
@@ -76,7 +76,7 @@ def bollinger_hband(close, n=20, ndev=2, fillna=False):
     mstd = close.rolling(n).std()
     hband = mavg + ndev*mstd
     if fillna:
-        hband = hband.fillna(method='backfill')
+        hband = hband.replace([np.inf, -np.inf], np.nan).fillna(method='backfill')
     return pd.Series(hband, name='hband')
 
 
@@ -100,7 +100,7 @@ def bollinger_lband(close, n=20, ndev=2, fillna=False):
     mstd = close.rolling(n).std()
     lband = mavg - ndev * mstd
     if fillna:
-        lband = lband.fillna(method='backfill')
+        lband = lband.replace([np.inf, -np.inf], np.nan).fillna(method='backfill')
     return pd.Series(lband, name='lband')
 
 
@@ -127,7 +127,7 @@ def bollinger_hband_indicator(close, n=20, ndev=2, fillna=False):
     df.loc[close > hband, 'hband'] = 1.0
     hband = df['hband']
     if fillna:
-        hband = hband.fillna(0)
+        hband = hband.replace([np.inf, -np.inf], np.nan).fillna(0)
     return pd.Series(hband, name='bbihband')
 
 
@@ -154,7 +154,7 @@ def bollinger_lband_indicator(close, n=20, ndev=2, fillna=False):
     df.loc[close < lband, 'lband'] = 1.0
     lband = df['lband']
     if fillna:
-        lband = lband.fillna(0)
+        lband = lband.replace([np.inf, -np.inf], np.nan).fillna(0)
     return pd.Series(lband, name='bbilband')
 
 
@@ -177,7 +177,7 @@ def keltner_channel_central(high, low, close, n=10, fillna=False):
     tp = (high + low + close) / 3.0
     tp = tp.rolling(n).mean()
     if fillna:
-        tp = tp.fillna(method='backfill')
+        tp = tp.replace([np.inf, -np.inf], np.nan).fillna(method='backfill')
     return pd.Series(tp, name='kc_central')
 
 
@@ -200,7 +200,7 @@ def keltner_channel_hband(high, low, close, n=10, fillna=False):
     tp = ((4 * high) - (2 * low) + close) / 3.0
     tp = tp.rolling(n).mean()
     if fillna:
-        tp = tp.fillna(method='backfill')
+        tp = tp.replace([np.inf, -np.inf], np.nan).fillna(method='backfill')
     return pd.Series(tp, name='kc_hband')
 
 
@@ -223,7 +223,7 @@ def keltner_channel_lband(high, low, close, n=10, fillna=False):
     tp = ((-2 * high) + (4 * low) + close) / 3.0
     tp = tp.rolling(n).mean()
     if fillna:
-        tp = tp.fillna(method='backfill')
+        tp = tp.replace([np.inf, -np.inf], np.nan).fillna(method='backfill')
     return pd.Series(tp, name='kc_lband')
 
 
@@ -250,7 +250,7 @@ def keltner_channel_hband_indicator(high, low, close, n=10, fillna=False):
     df.loc[close > hband, 'hband'] = 1.0
     hband = df['hband']
     if fillna:
-        hband = hband.fillna(0)
+        hband = hband.replace([np.inf, -np.inf], np.nan).fillna(0)
     return pd.Series(hband, name='kci_hband')
 
 
@@ -276,7 +276,7 @@ def keltner_channel_lband_indicator(high, low, close, n=10, fillna=False):
     df.loc[close < lband, 'lband'] = 1.0
     lband = df['lband']
     if fillna:
-        lband = lband.fillna(0)
+        lband = lband.replace([np.inf, -np.inf], np.nan).fillna(0)
     return pd.Series(lband, name='kci_lband')
 
 
@@ -296,7 +296,7 @@ def donchian_channel_hband(close, n=20, fillna=False):
     """
     hband = close.rolling(n).max()
     if fillna:
-        hband = hband.fillna(method='backfill')
+        hband = hband.replace([np.inf, -np.inf], np.nan).fillna(method='backfill')
     return pd.Series(hband, name='dchband')
 
 
@@ -316,7 +316,7 @@ def donchian_channel_lband(close, n=20, fillna=False):
     """
     lband = close.rolling(n).min()
     if fillna:
-        lband = lband.fillna(method='backfill')
+        lband = lband.replace([np.inf, -np.inf], np.nan).fillna(method='backfill')
     return pd.Series(lband, name='dclband')
 
 
@@ -341,7 +341,7 @@ def donchian_channel_hband_indicator(close, n=20, fillna=False):
     df.loc[close >= hband, 'hband'] = 1.0
     hband = df['hband']
     if fillna:
-        hband = hband.fillna(0)
+        hband = hband.replace([np.inf, -np.inf], np.nan).fillna(0)
     return pd.Series(hband, name='dcihband')
 
 
@@ -365,5 +365,5 @@ def donchian_channel_lband_indicator(close, n=20, fillna=False):
     df.loc[close <= lband, 'lband'] = 1.0
     lband = df['lband']
     if fillna:
-        lband = lband.fillna(0)
+        lband = lband.replace([np.inf, -np.inf], np.nan).fillna(0)
     return pd.Series(lband, name='dcilband')
