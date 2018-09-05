@@ -583,3 +583,38 @@ def ichimoku_b(high, low, n2=26, n3=52, fillna=False):
     if fillna:
         spanb = spanb.replace([np.inf, -np.inf], np.nan).fillna(method='backfill')
     return pd.Series(spanb, name='ichimoku_b_'+str(n2))
+
+
+def aroon_up(df, n=25, fillna=False):
+    """
+    Aroon Indicator
+    https://www.investopedia.com/terms/a/aroon.asp
+
+    """
+
+    #    Aroon Up - ((N - Days Since N-day High) / N) x 100
+
+    df['idxmax_series'] = df.Close.rolling(n).apply(lambda x: x.idxmax(), raw=False)
+    aroon_up = (n - (df.idxmax_series.reset_index().index - df.idxmax_series)) / p * 100
+    if fillna:
+        aroon_up = aroon_up.replace([np.inf, -np.inf], np.nan).fillna(0)
+    df.drop('idxmax_series', axis=1)
+    return aroon_up;
+
+def aroon_down(df, n=25, fillna=False):
+    """
+    Aroon Indicator
+    https://www.investopedia.com/terms/a/aroon.asp
+
+    """
+
+    #    Aroon Down - ((N - Days Since N-day Low) / N) x 100
+    p = 25
+
+    df['idxmin_series'] = df.Close.rolling(p).apply(lambda x: x.idxmin(), raw=False)
+    aroon_down = (p - (df.idxmin_series.reset_index().index - df.idxmin_series)) / p * 100
+    if fillna:
+        aroon_down = aroon_down.replace([np.inf, -np.inf], np.nan).fillna(0)
+    df.drop('idxmin_series', axis=1)
+    return aroon_down;
+
