@@ -13,5 +13,5 @@ def dropna(df):
 
 def ema(series, periods):
     sma = series.rolling(window=periods, min_periods=periods).mean()[:periods]
-    rest = series[series:]
+    rest = series[periods:]
     return pd.concat([sma, rest]).ewm(span=periods, adjust=False).mean()
