@@ -585,20 +585,46 @@ def ichimoku_b(high, low, n2=26, n3=52, fillna=False):
     return pd.Series(spanb, name='ichimoku_b_'+str(n2))
 
 
-def aroon_up(series, n=25, fillna=False):
-    """
-    Aroon Indicator
+def aroon_up(close, n=25, fillna=False):
+    """Aroon Indicator (AI)
+
+    Identify when trends are likely to change direction (uptrend).
+
+    Aroon Up - ((N - Days Since N-day High) / N) x 100
+
     https://www.investopedia.com/terms/a/aroon.asp
+    Args:
+        close(pandas.Series): dataset 'Close' column.
+        n(int): n period.
+        fillna(bool): if True, fill nan values.
+
+    Returns:
+        pandas.Series: New feature generated.
 
     """
-    #    Aroon Up - ((N - Days Since N-day High) / N) x 100
-    return series.rolling(n).apply(lambda x: float(np.argmax(x) + 1) / n * 100)
+    aroon_up = close.rolling(n).apply(lambda x: float(np.argmax(x) + 1) / n * 100)
+    if fillna:
+        aroon_up = aroon_up.replace([np.inf, -np.inf], np.nan).fillna(0)
+    return pd.Series(aroon_up, name='aroon_up'+str(n))
 
-def aroon_down(series, n=25, fillna=False):
-    """
-    Aroon Indicator
+
+def aroon_down(close, n=25, fillna=False):
+    """Aroon Indicator (AI)
+
+    Identify when trends are likely to change direction (downtrend).
+
+    Aroon Down - ((N - Days Since N-day Low) / N) x 100
+
     https://www.investopedia.com/terms/a/aroon.asp
+    Args:
+        close(pandas.Series): dataset 'Close' column.
+        n(int): n period.
+        fillna(bool): if True, fill nan values.
 
+    Returns:
+        pandas.Series: New feature generated.
     """
-    #    Aroon Down - ((N - Days Since N-day Low) / N) x 100
-    return series.rolling(n).apply(lambda x: float(np.argmin(x) + 1) / n * 100)
+    aroon_down = close.rolling(n).apply(lambda x: float(np.argmin(x) + 1) / n * 100)
+    if fillna:
+        aroon_down = aroon_down.replace([np.inf, -np.inf], np.nan).fillna(0)
+    return pd.Series(aroon_down, name='aroon_down'+str(n))

@@ -4,7 +4,7 @@ It is a Technical Analysis library to financial time series datasets (open, clos
 
 ![alt text](https://raw.githubusercontent.com/bukosabino/ta/master/doc/figure.png)
 
-The library has implemented 31 indicators and 55 features:
+The library has implemented 32 indicators and 58 features:
 
 #### Volume
 
@@ -122,7 +122,7 @@ $ git clone https://github.com/bukosabino/ta.git
 $ cd ta
 $ pip install -r requirements.txt
 $ cd dev
-$ python bollinger_band_features_example.py 
+$ python bollinger_band_features_example.py
 ```
 
 
@@ -138,6 +138,7 @@ $ python bollinger_band_features_example.py
 
 * add [more technical analysis features](https://en.wikipedia.org/wiki/Technical_analysis).
 * use dask library to parallelize
+
 
 # Credits:
 
