@@ -591,14 +591,8 @@ def aroon_up(series, n=25, fillna=False):
     https://www.investopedia.com/terms/a/aroon.asp
 
     """
-
     #    Aroon Up - ((N - Days Since N-day High) / N) x 100
-
-    idxmax_series = series.rolling(n).apply(lambda x: pd.Series(x).idxmax())
-    aroon_up = (n - (idxmax_series.reset_index().index - idxmax_series)) / n * 100
-    if fillna:
-        aroon_up = aroon_up.replace([np.inf, -np.inf], np.nan).fillna(0)
-    return aroon_up;
+    return series.rolling(n).apply(lambda x: float(np.argmax(x) + 1) / n * 100)
 
 def aroon_down(series, n=25, fillna=False):
     """
@@ -606,12 +600,5 @@ def aroon_down(series, n=25, fillna=False):
     https://www.investopedia.com/terms/a/aroon.asp
 
     """
-
     #    Aroon Down - ((N - Days Since N-day Low) / N) x 100
-
-    idxmin_series = series.rolling(n).apply(lambda x: pd.Series(x).idxmin())
-    aroon_down = (n - (idxmin_series.reset_index().index - idxmin_series)) / n * 100
-    if fillna:
-        aroon_down = aroon_down.replace([np.inf, -np.inf], np.nan).fillna(0)
-    return aroon_down;
-
+    return series.rolling(n).apply(lambda x: float(np.argmin(x) + 1) / n * 100)
