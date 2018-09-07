@@ -8,7 +8,9 @@
 """
 import pandas as pd
 import numpy as np
-import utils
+
+from .utils import *
+
 
 def rsi(close, n=14, fillna=False):
     """Relative Strength Index (RSI)
@@ -34,8 +36,8 @@ def rsi(close, n=14, fillna=False):
     up, dn = diff, diff*0
     up[which_dn], dn[which_dn] = 0, -up[which_dn]
 
-    emaup = utils.ema(up, n)
-    emadn = utils.ema(dn, n)
+    emaup = ema(up, n)
+    emadn = ema(dn, n)
 
     rsi = 100 * emaup / (emaup + emadn)
     if fillna:

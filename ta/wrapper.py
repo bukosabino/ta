@@ -99,8 +99,8 @@ def add_trend_ta(df, high, low, close, fillna=False):
                                     fillna=fillna)
     df['trend_macd_diff'] = macd_diff(df[close], n_fast=12, n_slow=26, n_sign=9,
                                     fillna=fillna)
-    df['trend_ema_fast'] = ema(df[close], n=12, fillna=fillna)
-    df['trend_ema_slow'] = ema(df[close], n=26, fillna=fillna)
+    df['trend_ema_fast'] = ema_indicator(df[close], n=12, fillna=fillna)
+    df['trend_ema_slow'] = ema_indicator(df[close], n=26, fillna=fillna)
     df['trend_adx'] = adx(df[high], df[low], df[close], n=14, fillna=fillna)
     df['trend_adx_pos'] = adx_pos(df[high], df[low], df[close], n=14, fillna=fillna)
     df['trend_adx_neg'] = adx_neg(df[high], df[low], df[close], n=14, fillna=fillna)
