@@ -9,6 +9,8 @@
 import pandas as pd
 import numpy as np
 
+from .utils import *
+
 
 def average_true_range(high, low, close, n=14, fillna=False):
     """Average True Range (ATR)
@@ -30,7 +32,7 @@ def average_true_range(high, low, close, n=14, fillna=False):
     """
     cs = close.shift(1)
     tr = high.combine(cs, max) - low.combine(cs, min)
-    tr = tr.ewm(n).mean()
+    tr = ema(tr, n)
     if fillna:
         tr = tr.replace([np.inf, -np.inf], np.nan).fillna(0)
     return pd.Series(tr, name='atr')
