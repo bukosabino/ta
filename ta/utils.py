@@ -10,3 +10,8 @@ def dropna(df):
     df = df[df != 0.0]
     df = df.dropna()
     return df
+
+def ema(series, periods):
+    sma = series.rolling(window=periods, min_periods=periods).mean()[:periods]
+    rest = series[periods:]
+    return pd.concat([sma, rest]).ewm(span=periods, adjust=False).mean()
