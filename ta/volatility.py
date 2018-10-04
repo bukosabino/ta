@@ -32,7 +32,7 @@ def average_true_range(high, low, close, n=14, fillna=False):
     """
     cs = close.shift(1)
     tr = high.combine(cs, max) - low.combine(cs, min)
-    tr = ema(tr, n)
+    tr = ema(tr, n, fillna)
     if fillna:
         tr = tr.replace([np.inf, -np.inf], np.nan).fillna(0)
     return pd.Series(tr, name='atr')

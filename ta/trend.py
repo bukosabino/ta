@@ -29,8 +29,8 @@ def macd(close, n_fast=12, n_slow=26, fillna=False):
     Returns:
         pandas.Series: New feature generated.
     """
-    emafast = ema(close, n_fast)
-    emaslow = ema(close, n_slow)
+    emafast = ema(close, n_fast, fillna)
+    emaslow = ema(close, n_slow, fillna)
     macd = emafast - emaslow
     if fillna:
         macd = macd.replace([np.inf, -np.inf], np.nan).fillna(0)
@@ -54,10 +54,10 @@ def macd_signal(close, n_fast=12, n_slow=26, n_sign=9, fillna=False):
     Returns:
         pandas.Series: New feature generated.
     """
-    emafast = ema(close, n_fast)
-    emaslow = ema(close, n_slow)
+    emafast = ema(close, n_fast, fillna)
+    emaslow = ema(close, n_slow, fillna)
     macd = emafast - emaslow
-    macd_signal = ema(macd, n_sign)
+    macd_signal = ema(macd, n_sign, fillna)
     if fillna:
         macd_signal = macd_signal.replace([np.inf, -np.inf], np.nan).fillna(0)
     return pd.Series(macd_signal, name='MACD_sign')
@@ -80,10 +80,10 @@ def macd_diff(close, n_fast=12, n_slow=26, n_sign=9, fillna=False):
     Returns:
         pandas.Series: New feature generated.
     """
-    emafast = ema(close, n_fast)
-    emaslow = ema(close, n_slow)
+    emafast = ema(close, n_fast, fillna)
+    emaslow = ema(close, n_slow, fillna)
     macd = emafast - emaslow
-    macdsign = ema(macd, n_sign)
+    macdsign = ema(macd, n_sign, fillna)
     macd_diff = macd - macdsign
     if fillna:
         macd_diff = macd_diff.replace([np.inf, -np.inf], np.nan).fillna(0)
@@ -103,9 +103,7 @@ def ema_indicator(close, n=12, fillna=False):
     Returns:
         pandas.Series: New feature generated.
     """
-    ema_ = ema(close, n)
-    if fillna:
-        ema_ = ema_.replace([np.inf, -np.inf], np.nan).fillna(method='backfill')
+    ema_ = ema(close, n, fillna)
     return pd.Series(ema_, name='ema')
 
 
@@ -151,7 +149,7 @@ def adx(high, low, close, n=14, fillna=False):
     din = 100 * neg.rolling(n).sum() / trs
 
     dx = 100 * np.abs((dip - din) / (dip + din))
-    adx = ema(dx, n)
+    adx = ema(dx, n, fillna)
 
     if fillna:
         adx = adx.replace([np.inf, -np.inf], np.nan).fillna(40)
@@ -372,9 +370,9 @@ def trix(close, n=15, fillna=False):
     Returns:
         pandas.Series: New feature generated.
     """
-    ema1 = ema(close, n)
-    ema2 = ema(ema1, n)
-    ema3 = ema(ema2, n)
+    ema1 = ema(close, n, fillna)
+    ema2 = ema(ema1, n, fillna)
+    ema3 = ema(ema2, n, fillna)
     trix = (ema3 - ema3.shift(1)) / ema3.shift(1)
     trix *= 100
     if fillna:
@@ -403,8 +401,8 @@ def mass_index(high, low, n=9, n2=25, fillna=False):
 
     """
     amplitude = high - low
-    ema1 = ema(amplitude, n)
-    ema2 = ema(ema1, n)
+    ema1 = ema(amplitude, n, fillna)
+    ema2 = ema(ema1, n, fillna)
     mass = ema1 / ema2
     mass = mass.rolling(n2).sum()
     if fillna:
