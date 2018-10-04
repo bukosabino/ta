@@ -36,8 +36,8 @@ def rsi(close, n=14, fillna=False):
     up, dn = diff, diff*0
     up[which_dn], dn[which_dn] = 0, -up[which_dn]
 
-    emaup = ema(up, n)
-    emadn = ema(dn, n)
+    emaup = ema(up, n, fillna)
+    emadn = ema(dn, n, fillna)
 
     rsi = 100 * emaup / (emaup + emadn)
     if fillna:
