@@ -13,6 +13,5 @@ def dropna(df):
 
 def ema(series, periods, fillna=False):
     if fillna:
-        return series.ewm(span=periods, min_periods=0, adjust=False).mean()
-
-    return series.ewm(span=periods, min_periods=periods, adjust=False).mean()
+        return series.ewm(span=periods, min_periods=0).mean()
+    return series.ewm(span=periods, min_periods=periods).mean()
