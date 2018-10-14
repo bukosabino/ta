@@ -30,12 +30,23 @@ def average_true_range(high, low, close, n=14, fillna=False):
     Returns:
         pandas.Series: New feature generated.
     """
+    
+    # with first nan value
+    # tr = np.maximum(np.array(abs(df.high - df.low)), np.array(abs(df.high - df.close.shift(1))), np.array(abs(df.low - df.close.shift(1))))
+
+    # without first nan value
     cs = close.shift(1)
     tr = high.combine(cs, max) - low.combine(cs, min)
-    tr = ema(tr, n, fillna)
+
+    atr = np.zeros(len(close))
+    atr[0] = tr[1::].mean()
+    for i in range(1, len(atr)):
+        atr[i] = (atr[i-1] * 13 + tr[i]) / 14
+
     if fillna:
-        tr = tr.replace([np.inf, -np.inf], np.nan).fillna(0)
-    return pd.Series(tr, name='atr')
+        atr = atr.replace([np.inf, -np.inf], np.nan).fillna(0)
+
+    return pd.Series(atr, name='atr')
 
 
 def bollinger_mavg(close, n=20, fillna=False):
