@@ -30,7 +30,7 @@ def average_true_range(high, low, close, n=14, fillna=False):
     Returns:
         pandas.Series: New feature generated.
     """
-    
+
     # with first nan value
     # tr = np.maximum(np.array(abs(df.high - df.low)), np.array(abs(df.high - df.close.shift(1))), np.array(abs(df.low - df.close.shift(1))))
 
@@ -41,7 +41,7 @@ def average_true_range(high, low, close, n=14, fillna=False):
     atr = np.zeros(len(close))
     atr[0] = tr[1::].mean()
     for i in range(1, len(atr)):
-        atr[i] = (atr[i-1] * 13 + tr[i]) / 14
+        atr[i] = (atr[i-1] * (n-1) + tr[i]) / n
 
     if fillna:
         atr = atr.replace([np.inf, -np.inf], np.nan).fillna(0)
