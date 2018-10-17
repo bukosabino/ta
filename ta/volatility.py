@@ -41,7 +41,9 @@ def average_true_range(high, low, close, n=14, fillna=False):
     atr = np.zeros(len(close))
     atr[0] = tr[1::].mean()
     for i in range(1, len(atr)):
-        atr[i] = (atr[i-1] * (n-1) + tr[i]) / n
+        atr[i] = (atr[i-1] * (n-1) + tr.iloc[i]) / float(n)
+        
+    atr = pd.Series(data=atr, index=tr.index)
 
     if fillna:
         atr = atr.replace([np.inf, -np.inf], np.nan).fillna(0)
