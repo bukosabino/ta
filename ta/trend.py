@@ -135,23 +135,51 @@ def adx(high, low, close, n=14, fillna=False):
         pandas.Series: New feature generated.
     """
     cs = close.shift(1)
+    tr = high.combine(cs, lambda x1, x2: max(x1, x2) if np.isnan(x1) == False and np.isnan(x2) == False else np.nan) - low.combine(cs,  lambda x1, x2: min(x1, x2) if np.isnan(x1) == False and np.isnan(x2) == False else np.nan)
 
-    tr = high.combine(cs, max) - low.combine(cs, min)
-    trs = tr.rolling(n).sum()
-
+    trs = np.zeros(len(close) - (n + 1))
+    trs[0] = tr.dropna()[0:n].sum()        
+    tr = tr.reset_index(drop=True)
+    for i in range(1, len(trs)):
+        trs[i] = trs[i-1] - (trs[i-1]/float(n)) + tr[n+i]
+            
     up = high - high.shift(1)
     dn = low.shift(1) - low
+    pos = abs(((up > dn) & (up > 0)) * up)
+    neg = abs(((dn > up) & (dn > 0)) * dn)
 
-    pos = ((up > dn) & (up > 0)) * up
-    neg = ((dn > up) & (dn > 0)) * dn
+    dip_mio = np.zeros(len(close) - (n + 1))
+    dip_mio[0] = pos.dropna()[0:n].sum()
+    
+    pos = pos.reset_index(drop=True)
+    for i in range(1, len(dip_mio)):
+        dip_mio[i] = dip_mio[i-1] - (dip_mio[i-1]/float(n)) + pos[n+i]
 
-    dip = 100 * pos.rolling(n).sum() / trs
-    din = 100 * neg.rolling(n).sum() / trs
+    din_mio = np.zeros(len(close) - (n + 1))
+    din_mio[0] = neg.dropna()[0:n].sum()
+    
+    neg = neg.reset_index(drop=True)
+    for i in range(1, len(din_mio)):
+        din_mio[i] = din_mio[i-1] - (din_mio[i-1]/float(n)) + neg[n+i]
+
+    dip = np.zeros(len(trs))
+    for i in range(len(trs)):
+        dip[i] = 100 * (dip_mio[i]/trs[i])
+
+    din = np.zeros(len(trs))
+    for i in range(len(trs)):
+        din[i] = 100 * (din_mio[i]/trs[i])
 
     dx = 100 * np.abs((dip - din) / (dip + din))
-    adx = ema(dx, n, fillna)
+
+    adx = np.zeros(len(trs))
+    adx[n] = dx[0:n].mean()
+
+    for i in range(n+1, len(adx)):
+        adx[i] = ((adx[i-1] * (n - 1)) + dx[i-1]) / float(n)
 
     if fillna:
+        adx = pd.Series(data=adx)
         adx = adx.replace([np.inf, -np.inf], np.nan).fillna(40)
     return pd.Series(adx, name='adx')
 
