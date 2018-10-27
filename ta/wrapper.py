@@ -102,10 +102,6 @@ def add_trend_ta(df, high, low, close, fillna=False):
     df['trend_ema_fast'] = ema_indicator(df[close], n=12, fillna=fillna)
     df['trend_ema_slow'] = ema_indicator(df[close], n=26, fillna=fillna)
     df['trend_adx'] = adx(df[high], df[low], df[close], n=14, fillna=fillna)
-    df['trend_adx_pos'] = adx_pos(df[high], df[low], df[close], n=14, fillna=fillna)
-    df['trend_adx_neg'] = adx_neg(df[high], df[low], df[close], n=14, fillna=fillna)
-    df['trend_adx_ind'] = adx_indicator(df[high], df[low], df[close], n=14,
-                                    fillna=fillna)
     df['trend_vortex_ind_pos'] = vortex_indicator_pos(df[high], df[low], df[close], n=14,
                                     fillna=fillna)
     df['trend_vortex_ind_neg'] = vortex_indicator_neg(df[high], df[low], df[close], n=14,

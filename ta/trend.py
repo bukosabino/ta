@@ -135,31 +135,34 @@ def adx(high, low, close, n=14, fillna=False):
         pandas.Series: New feature generated.
     """
     cs = close.shift(1)
-    tr = high.combine(cs, lambda x1, x2: max(x1, x2) if np.isnan(x1) == False and np.isnan(x2) == False else np.nan) - low.combine(cs,  lambda x1, x2: min(x1, x2) if np.isnan(x1) == False and np.isnan(x2) == False else np.nan)
+    pdm = high.combine(cs, lambda x1, x2: max(x1, x2) if np.isnan(x1) == False and np.isnan(x2) == False else np.nan)
+    pdn = low.combine(cs,  lambda x1, x2: min(x1, x2) if np.isnan(x1) == False and np.isnan(x2) == False else np.nan)
+    tr = pdm - pdn
 
-    trs = np.zeros(len(close) - (n + 1))
-    trs[0] = tr.dropna()[0:n].sum()        
+    trs_initial = np.zeros(n-1)
+    trs = np.zeros(len(close) - (n - 1))
+    trs[0] = tr.dropna()[0:n].sum()
     tr = tr.reset_index(drop=True)
-    for i in range(1, len(trs)):
+    for i in range(1, len(trs)-1):
         trs[i] = trs[i-1] - (trs[i-1]/float(n)) + tr[n+i]
-            
+
     up = high - high.shift(1)
     dn = low.shift(1) - low
     pos = abs(((up > dn) & (up > 0)) * up)
     neg = abs(((dn > up) & (dn > 0)) * dn)
 
-    dip_mio = np.zeros(len(close) - (n + 1))
+    dip_mio = np.zeros(len(close) - (n - 1))
     dip_mio[0] = pos.dropna()[0:n].sum()
-    
+
     pos = pos.reset_index(drop=True)
-    for i in range(1, len(dip_mio)):
+    for i in range(1, len(dip_mio)-1):
         dip_mio[i] = dip_mio[i-1] - (dip_mio[i-1]/float(n)) + pos[n+i]
 
-    din_mio = np.zeros(len(close) - (n + 1))
+    din_mio = np.zeros(len(close) - (n - 1))
     din_mio[0] = neg.dropna()[0:n].sum()
-    
+
     neg = neg.reset_index(drop=True)
-    for i in range(1, len(din_mio)):
+    for i in range(1, len(din_mio)-1):
         din_mio[i] = din_mio[i-1] - (din_mio[i-1]/float(n)) + neg[n+i]
 
     dip = np.zeros(len(trs))
@@ -178,146 +181,13 @@ def adx(high, low, close, n=14, fillna=False):
     for i in range(n+1, len(adx)):
         adx[i] = ((adx[i-1] * (n - 1)) + dx[i-1]) / float(n)
 
+    adx = np.concatenate((trs_initial, adx), axis=0)
+    adx = pd.Series(data=adx, index=close.index)
+
     if fillna:
-        adx = pd.Series(data=adx)
         adx = adx.replace([np.inf, -np.inf], np.nan).fillna(40)
+
     return pd.Series(adx, name='adx')
-
-
-def adx_pos(high, low, close, n=14, fillna=False):
-    """Average Directional Movement Index Positive (ADX)
-
-    The Plus Directional Indicator (+DI) and Minus Directional Indicator (-DI)
-    are derived from smoothed averages of these differences, and measure trend
-    direction over time. These two indicators are often referred to collectively
-    as the Directional Movement Indicator (DMI).
-
-    The Average Directional Index (ADX) is in turn derived from the smoothed
-    averages of the difference between +DI and -DI, and measures the strength
-    of the trend (regardless of direction) over time.
-
-    Using these three indicators together, chartists can determine both the
-    direction and strength of the trend.
-
-    http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:average_directional_index_adx
-
-    Args:
-        high(pandas.Series): dataset 'High' column.
-        low(pandas.Series): dataset 'Low' column.
-        close(pandas.Series): dataset 'Close' column.
-        n(int): n period.
-        fillna(bool): if True, fill nan values.
-
-    Returns:
-        pandas.Series: New feature generated.
-    """
-    cs = close.shift(1)
-
-    tr = high.combine(cs, max) - low.combine(cs, min)
-    trs = tr.rolling(n).sum()
-
-    up = high - high.shift(1)
-    dn = low.shift(1) - low
-
-    pos = ((up > dn) & (up > 0)) * up
-    neg = ((dn > up) & (dn > 0)) * dn
-
-    dip = 100 * pos.rolling(n).sum() / trs
-
-    if fillna:
-        dip = dip.replace([np.inf, -np.inf], np.nan).fillna(20)
-    return pd.Series(dip, name='adx_pos')
-
-
-def adx_neg(high, low, close, n=14, fillna=False):
-    """Average Directional Movement Index Negative (ADX)
-
-    The Plus Directional Indicator (+DI) and Minus Directional Indicator (-DI)
-    are derived from smoothed averages of these differences, and measure trend
-    direction over time. These two indicators are often referred to collectively
-    as the Directional Movement Indicator (DMI).
-
-    The Average Directional Index (ADX) is in turn derived from the smoothed
-    averages of the difference between +DI and -DI, and measures the strength
-    of the trend (regardless of direction) over time.
-
-    Using these three indicators together, chartists can determine both the
-    direction and strength of the trend.
-
-    http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:average_directional_index_adx
-
-    Args:
-        high(pandas.Series): dataset 'High' column.
-        low(pandas.Series): dataset 'Low' column.
-        close(pandas.Series): dataset 'Close' column.
-        n(int): n period.
-        fillna(bool): if True, fill nan values.
-
-    Returns:
-        pandas.Series: New feature generated.
-    """
-    cs = close.shift(1)
-
-    tr = high.combine(cs, max) - low.combine(cs, min)
-    trs = tr.rolling(n).sum()
-
-    up = high - high.shift(1)
-    dn = low.shift(1) - low
-
-    pos = ((up > dn) & (up > 0)) * up
-    neg = ((dn > up) & (dn > 0)) * dn
-
-    din = 100 * neg.rolling(n).sum() / trs
-
-    if fillna:
-        din = din.replace([np.inf, -np.inf], np.nan).fillna(20)
-    return pd.Series(din, name='adx_neg')
-
-
-def adx_indicator(high, low, close, n=14, fillna=False):
-    """Average Directional Movement Index Indicator (ADX)
-
-    Returns 1, if Plus Directional Indicator (+DI) is higher than Minus
-    Directional Indicator (-DI). Else, return 0.
-
-    http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:average_directional_index_adx
-
-    Args:
-        high(pandas.Series): dataset 'High' column.
-        low(pandas.Series): dataset 'Low' column.
-        close(pandas.Series): dataset 'Close' column.
-        n(int): n period.
-        fillna(bool): if True, fill nan values.
-
-    Returns:
-        pandas.Series: New feature generated.
-    """
-    cs = close.shift(1)
-
-    tr = high.combine(cs, max) - low.combine(cs, min)
-    trs = tr.rolling(n).sum()
-
-    up = high - high.shift(1)
-    dn = low.shift(1) - low
-
-    pos = ((up > dn) & (up > 0)) * up
-    neg = ((dn > up) & (dn > 0)) * dn
-
-    dip = 100 * pos.rolling(n).sum() / trs
-    din = 100 * neg.rolling(n).sum() / trs
-
-    adx_diff = dip - din
-
-    # prepare indicator
-    df = pd.DataFrame([adx_diff]).T
-    df.columns = ['adx_diff']
-    df['adx_ind'] = 0
-    df.loc[df['adx_diff'] > 0, 'adx_ind'] = 1
-    adx_ind = df['adx_ind']
-
-    if fillna:
-        adx_ind = adx_ind.replace([np.inf, -np.inf], np.nan).fillna(0)
-    return pd.Series(adx_ind, name='adx_ind')
 
 
 def vortex_indicator_pos(high, low, close, n=14, fillna=False):
