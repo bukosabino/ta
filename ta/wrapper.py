@@ -121,6 +121,8 @@ def add_trend_ta(df, high, low, close, fillna=False):
     df['trend_kst_diff'] = df['trend_kst'] - df['trend_kst_sig']
     df['trend_ichimoku_a'] = ichimoku_a(df[high], df[low], n1=9, n2=26, fillna=fillna)
     df['trend_ichimoku_b'] = ichimoku_b(df[high], df[low], n2=26, n3=52, fillna=fillna)
+    df['trend_visual_ichimoku_a'] = ichimoku_a(df[high], df[low], n1=9, n2=26, visual=True, fillna=fillna)
+    df['trend_visual_ichimoku_b'] = ichimoku_b(df[high], df[low], n2=26, n3=52, visual=True, fillna=fillna)
     df['trend_aroon_up'] = aroon_up(df[close], n=25, fillna=fillna)
     df['trend_aroon_down'] = aroon_down(df[close], n=25, fillna=fillna)
     df['trend_aroon_ind'] = df['trend_aroon_up'] - df['trend_aroon_down']

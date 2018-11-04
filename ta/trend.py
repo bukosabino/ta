@@ -556,7 +556,7 @@ def kst_sig(close, r1=10, r2=15, r3=20, r4=30, n1=10, n2=10, n3=10, n4=15, nsig=
     return pd.Series(kst_sig, name='kst_sig')
 
 
-def ichimoku_a(high, low, n1=9, n2=26, fillna=False):
+def ichimoku_a(high, low, n1=9, n2=26, visual=False, fillna=False):
     """Ichimoku Kinkō Hyō (Ichimoku)
 
     It identifies the trend and look for potential signals within that trend.
@@ -577,13 +577,17 @@ def ichimoku_a(high, low, n1=9, n2=26, fillna=False):
     base = 0.5 * (high.rolling(n2).max() + low.rolling(n2).min())
 
     spana = 0.5 * (conv + base)
-    spana = spana.shift(n2)
+
+    if visual:
+        spana = spana.shift(n2)
+
     if fillna:
         spana = spana.replace([np.inf, -np.inf], np.nan).fillna(method='backfill')
+
     return pd.Series(spana, name='ichimoku_a_'+str(n2))
 
 
-def ichimoku_b(high, low, n2=26, n3=52, fillna=False):
+def ichimoku_b(high, low, n2=26, n3=52, visual=False, fillna=False):
     """Ichimoku Kinkō Hyō (Ichimoku)
 
     It identifies the trend and look for potential signals within that trend.
@@ -601,9 +605,13 @@ def ichimoku_b(high, low, n2=26, n3=52, fillna=False):
         pandas.Series: New feature generated.
     """
     spanb = 0.5 * (high.rolling(n3).max() + low.rolling(n3).min())
-    spanb = spanb.shift(n2)
+
+    if visual:
+        spanb = spanb.shift(n2)
+
     if fillna:
         spanb = spanb.replace([np.inf, -np.inf], np.nan).fillna(method='backfill')
+
     return pd.Series(spanb, name='ichimoku_b_'+str(n2))
 
 
