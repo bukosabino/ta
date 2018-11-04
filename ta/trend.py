@@ -453,6 +453,8 @@ def ichimoku_a(high, low, n1=9, n2=26, fillna=False):
     base = 0.5 * (high.rolling(n2).max() + low.rolling(n2).min())
 
     spana = 0.5 * (conv + base)
+    spana = spana.append(pd.Series([np.nan]*n2))
+    spana = spana.shift(n2)
     if fillna:
         spana = spana.replace([np.inf, -np.inf], np.nan).fillna(method='backfill')
     return pd.Series(spana, name='ichimoku_a_'+str(n2))
@@ -476,6 +478,8 @@ def ichimoku_b(high, low, n2=26, n3=52, fillna=False):
         pandas.Series: New feature generated.
     """
     spanb = 0.5 * (high.rolling(n3).max() + low.rolling(n3).min())
+    spanb = spanb.append(pd.Series([np.nan]*n2))
+    spanb = spanb.shift(n2)
     if fillna:
         spanb = spanb.replace([np.inf, -np.inf], np.nan).fillna(method='backfill')
     return pd.Series(spanb, name='ichimoku_b_'+str(n2))
