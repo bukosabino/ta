@@ -147,4 +147,4 @@ Developed by Darío López Padial (aka Bukosabino) and other contributors: https
 
 Please, let me know about any comment or feedback.
 
-Also, I am a software freelance focused on Data Science using Python tools such as Pandas, Scikit-Learn, Zipline or Catalyst. Don't hesitate to contact with me if you need something related with this library, Technical Analysis, Algo Trading, Machine Learning, etc.
+Also, I am a software freelance focused on Data Science using Python tools such as Pandas, Scikit-Learn, Zipline or Catalyst. Don't hesitate to contact me if you need something related to this library, Technical Analysis, Algo Trading, Machine Learning, etc.
