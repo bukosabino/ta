@@ -186,7 +186,6 @@ def adx(high, low, close, n=14, fillna=False):
 
     if fillna:
         adx = adx.replace([np.inf, -np.inf], np.nan).fillna(20)
-
     return pd.Series(adx, name='adx')
 
 

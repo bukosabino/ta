@@ -5,3 +5,4 @@ jupyterlab==0.31.12
 Sphinx==1.7.2
 sphinx-autobuild==0.7.1
 sphinx_rtd_theme==0.3.0
+scikit-learn==0.20.0

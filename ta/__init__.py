@@ -8,3 +8,4 @@ on pandas python library.
 """
 from .wrapper import *
 from .utils import *
+from .pipeline_wrapper import *
