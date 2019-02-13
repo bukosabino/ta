@@ -8,6 +8,9 @@ from .momentum import *
 from .others import *
 
 
+def test(x):
+	return x+1
+
 def add_volume_ta(df, high, low, close, volume, fillna=False):
     """Add volume technical analysis features to dataframe.
 

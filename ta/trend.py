@@ -332,13 +332,13 @@ def vortex_indicator_pos(high, low, close, n=14, fillna=False):
     Returns:
         pandas.Series: New feature generated.
     """
-    tr = high.combine(close.shift(1), max) - low.combine(close.shift(1), min)
+    tr = high.combine(close.shift(1,fill_value=close.mean()), max) - low.combine(close.shift(1,fill_value=close.mean()), min)
     trn = tr.rolling(n).sum()
 
-    vmp = np.abs(high - low.shift(1))
-    vmm = np.abs(low - high.shift(1))
+    vmp = np.abs(high - low.shift(1,fill_value=low.mean()))
+    vmm = np.abs(low - high.shift(1,fill_value=high.mean()))
 
-    vip = vmp.rolling(n).sum() / trn
+    vip = vmp.rolling(n,min_periods=0).sum() / trn
     if fillna:
         vip = vip.replace([np.inf, -np.inf], np.nan).fillna(1)
     return pd.Series(vip, name='vip')
@@ -394,7 +394,7 @@ def trix(close, n=15, fillna=False):
     ema1 = ema(close, n, fillna)
     ema2 = ema(ema1, n, fillna)
     ema3 = ema(ema2, n, fillna)
-    trix = (ema3 - ema3.shift(1)) / ema3.shift(1)
+    trix = (ema3 - ema3.shift(1,fill_value=ema3.mean())) / ema3.shift(1,fill_value=ema3.mean())
     trix *= 100
     if fillna:
         trix = trix.replace([np.inf, -np.inf], np.nan).fillna(0)
@@ -425,7 +425,7 @@ def mass_index(high, low, n=9, n2=25, fillna=False):
     ema1 = ema(amplitude, n, fillna)
     ema2 = ema(ema1, n, fillna)
     mass = ema1 / ema2
-    mass = mass.rolling(n2).sum()
+    mass = mass.rolling(n2,min_periods=0).sum()
     if fillna:
         mass = mass.replace([np.inf, -np.inf], np.nan).fillna(n2)
     return pd.Series(mass, name='mass_index_'+str(n))
@@ -455,7 +455,7 @@ def cci(high, low, close, n=20, c=0.015, fillna=False):
 
     """
     pp = (high + low + close) / 3.0
-    cci = (pp - pp.rolling(n).mean()) / (c * pp.rolling(n).std())
+    cci = (pp - pp.rolling(n,min_periods=0).mean()) / (c * pp.rolling(n,min_periods=0).std())
     if fillna:
         cci = cci.replace([np.inf, -np.inf], np.nan).fillna(0)
     return pd.Series(cci, name='cci')
@@ -477,7 +477,7 @@ def dpo(close, n=20, fillna=False):
     Returns:
         pandas.Series: New feature generated.
     """
-    dpo = close.shift(int((0.5 * n) + 1)) - close.rolling(n).mean()
+    dpo = close.shift(int((0.5 * n) + 1),fill_value=close.mean()) - close.rolling(n,min_periods=0).mean()
     if fillna:
         dpo = dpo.replace([np.inf, -np.inf], np.nan).fillna(0)
     return pd.Series(dpo, name='dpo_'+str(n))
@@ -508,10 +508,10 @@ def kst(close, r1=10, r2=15, r3=20, r4=30, n1=10, n2=10, n3=10, n4=15, fillna=Fa
     Returns:
         pandas.Series: New feature generated.
     """
-    rocma1 = ((close - close.shift(r1)) / close.shift(r1)).rolling(n1).mean()
-    rocma2 = ((close - close.shift(r2)) / close.shift(r2)).rolling(n2).mean()
-    rocma3 = ((close - close.shift(r3)) / close.shift(r3)).rolling(n3).mean()
-    rocma4 = ((close - close.shift(r4)) / close.shift(r4)).rolling(n4).mean()
+    rocma1 = ((close - close.shift(r1,fill_value=close.mean())) / close.shift(r1,fill_value=close.mean())).rolling(n1,min_periods=0).mean()
+    rocma2 = ((close - close.shift(r2,fill_value=close.mean())) / close.shift(r2,fill_value=close.mean())).rolling(n2,min_periods=0).mean()
+    rocma3 = ((close - close.shift(r3,fill_value=close.mean())) / close.shift(r3,fill_value=close.mean())).rolling(n3,min_periods=0).mean()
+    rocma4 = ((close - close.shift(r4,fill_value=close.mean())) / close.shift(r4,fill_value=close.mean())).rolling(n4,min_periods=0).mean()
     kst = 100 * (rocma1 + 2 * rocma2 + 3 * rocma3 + 4 * rocma4)
     if fillna:
         kst = kst.replace([np.inf, -np.inf], np.nan).fillna(0)
@@ -544,12 +544,12 @@ def kst_sig(close, r1=10, r2=15, r3=20, r4=30, n1=10, n2=10, n3=10, n4=15, nsig=
     Returns:
         pandas.Series: New feature generated.
     """
-    rocma1 = ((close - close.shift(r1)) / close.shift(r1)).rolling(n1).mean()
-    rocma2 = ((close - close.shift(r2)) / close.shift(r2)).rolling(n2).mean()
-    rocma3 = ((close - close.shift(r3)) / close.shift(r3)).rolling(n3).mean()
-    rocma4 = ((close - close.shift(r4)) / close.shift(r4)).rolling(n4).mean()
+    rocma1 = ((close - close.shift(r1,fill_value=close.mean())) / close.shift(r1,fill_value=close.mean())).rolling(n1,min_periods=0).mean()
+    rocma2 = ((close - close.shift(r2,fill_value=close.mean())) / close.shift(r2,fill_value=close.mean())).rolling(n2,min_periods=0).mean()
+    rocma3 = ((close - close.shift(r3,fill_value=close.mean())) / close.shift(r3,fill_value=close.mean())).rolling(n3,min_periods=0).mean()
+    rocma4 = ((close - close.shift(r4,fill_value=close.mean())) / close.shift(r4,fill_value=close.mean())).rolling(n4,min_periods=0).mean()
     kst = 100 * (rocma1 + 2 * rocma2 + 3 * rocma3 + 4 * rocma4)
-    kst_sig = kst.rolling(nsig).mean()
+    kst_sig = kst.rolling(nsig,min_periods=0).mean()
     if fillna:
         kst_sig = kst_sig.replace([np.inf, -np.inf], np.nan).fillna(0)
     return pd.Series(kst_sig, name='kst_sig')
@@ -572,13 +572,13 @@ def ichimoku_a(high, low, n1=9, n2=26, visual=False, fillna=False):
     Returns:
         pandas.Series: New feature generated.
     """
-    conv = 0.5 * (high.rolling(n1).max() + low.rolling(n1).min())
-    base = 0.5 * (high.rolling(n2).max() + low.rolling(n2).min())
+    conv = 0.5 * (high.rolling(n1,min_periods=0).max() + low.rolling(n1,min_periods=0).min())
+    base = 0.5 * (high.rolling(n2,min_periods=0).max() + low.rolling(n2,min_periods=0).min())
 
     spana = 0.5 * (conv + base)
 
     if visual:
-        spana = spana.shift(n2)
+        spana = spana.shift(n2,fill_value=spana.mean())
 
     if fillna:
         spana = spana.replace([np.inf, -np.inf], np.nan).fillna(method='backfill')
@@ -603,10 +603,10 @@ def ichimoku_b(high, low, n2=26, n3=52, visual=False, fillna=False):
     Returns:
         pandas.Series: New feature generated.
     """
-    spanb = 0.5 * (high.rolling(n3).max() + low.rolling(n3).min())
+    spanb = 0.5 * (high.rolling(n3,min_periods=0).max() + low.rolling(n3,min_periods=0).min())
 
     if visual:
-        spanb = spanb.shift(n2)
+        spanb = spanb.shift(n2,fill_value=spanb.mean())
 
     if fillna:
         spanb = spanb.replace([np.inf, -np.inf], np.nan).fillna(method='backfill')
@@ -631,7 +631,7 @@ def aroon_up(close, n=25, fillna=False):
         pandas.Series: New feature generated.
 
     """
-    aroon_up = close.rolling(n).apply(lambda x: float(np.argmax(x) + 1) / n * 100)
+    aroon_up = close.rolling(n,min_periods=0).apply(lambda x: float(np.argmax(x) + 1) / n * 100)
     if fillna:
         aroon_up = aroon_up.replace([np.inf, -np.inf], np.nan).fillna(0)
     return pd.Series(aroon_up, name='aroon_up'+str(n))
@@ -653,7 +653,7 @@ def aroon_down(close, n=25, fillna=False):
     Returns:
         pandas.Series: New feature generated.
     """
-    aroon_down = close.rolling(n).apply(lambda x: float(np.argmin(x) + 1) / n * 100)
+    aroon_down = close.rolling(n,min_periods=0).apply(lambda x: float(np.argmin(x) + 1) / n * 100)
     if fillna:
         aroon_down = aroon_down.replace([np.inf, -np.inf], np.nan).fillna(0)
     return pd.Series(aroon_down, name='aroon_down'+str(n))
