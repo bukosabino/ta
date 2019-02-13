@@ -31,7 +31,7 @@ def acc_dist_index(high, low, close, volume, fillna=False):
     clv = ((close - low) - (high - close)) / (high - low)
     clv = clv.fillna(0.0) # float division by zero
     ad = clv * volume
-    ad = ad + ad.shift(1)
+    ad = ad + ad.shift(1,fill_value=ad.mean())
     if fillna:
         ad = ad.replace([np.inf, -np.inf], np.nan).fillna(0)
     return pd.Series(ad, name='adi')
