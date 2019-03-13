@@ -18,6 +18,7 @@ def add_volume_ta(df, high, low, close, volume, fillna=False, colprefix=""):
         close (str): Name of 'close' column.
         volume (str): Name of 'volume' column.
         fillna(bool): if True, fill nan values.
+        colprefix(str): Prefix column names inserted
 
     Returns:
         pandas.core.frame.DataFrame: Dataframe with new features.
@@ -46,6 +47,7 @@ def add_volatility_ta(df, high, low, close, fillna=False, colprefix=""):
         low (str): Name of 'low' column.
         close (str): Name of 'close' column.
         fillna(bool): if True, fill nan values.
+        colprefix(str): Prefix column names inserted
 
     Returns:
         pandas.core.frame.DataFrame: Dataframe with new features.
@@ -90,6 +92,7 @@ def add_trend_ta(df, high, low, close, fillna=False, colprefix=""):
         low (str): Name of 'low' column.
         close (str): Name of 'close' column.
         fillna(bool): if True, fill nan values.
+        colprefix(str): Prefix column names inserted
 
     Returns:
         pandas.core.frame.DataFrame: Dataframe with new features.
@@ -138,6 +141,7 @@ def add_momentum_ta(df, high, low, close, volume, fillna=False, colprefix=""):
         low (str): Name of 'low' column.
         close (str): Name of 'close' column.
         fillna(bool): if True, fill nan values.
+        colprefix(str): Prefix column names inserted
 
     Returns:
         pandas.core.frame.DataFrame: Dataframe with new features.
@@ -161,6 +165,7 @@ def add_others_ta(df, close, fillna=False, colprefix=""):
         df (pandas.core.frame.DataFrame): Dataframe base.
         close (str): Name of 'close' column.
         fillna(bool): if True, fill nan values.
+        colprefix(str): Prefix column names inserted
 
     Returns:
         pandas.core.frame.DataFrame: Dataframe with new features.
@@ -182,6 +187,7 @@ def add_all_ta_features(df, open, high, low, close, volume, fillna=False, colpre
         close (str): Name of 'close' column.
         volume (str): Name of 'volume' column.
         fillna(bool): if True, fill nan values.
+        colprefix(str): Prefix column names inserted
 
     Returns:
         pandas.core.frame.DataFrame: Dataframe with new features.
