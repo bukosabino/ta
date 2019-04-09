@@ -6,8 +6,8 @@
 .. moduleauthor:: Dario Lopez Padial (Bukosabino)
 
 """
-import pandas as pd
 import numpy as np
+import pandas as pd
 
 from .utils import *
 
@@ -112,8 +112,8 @@ def adx(high, low, close, n=14, fillna=False):
 
     The Plus Directional Indicator (+DI) and Minus Directional Indicator (-DI)
     are derived from smoothed averages of these differences, and measure trend
-    direction over time. These two indicators are often referred to collectively
-    as the Directional Movement Indicator (DMI).
+    direction over time. These two indicators are often referred to
+    collectively as the Directional Movement Indicator (DMI).
 
     The Average Directional Index (ADX) is in turn derived from the smoothed
     averages of the difference between +DI and -DI, and measures the strength
@@ -135,8 +135,8 @@ def adx(high, low, close, n=14, fillna=False):
         pandas.Series: New feature generated.
     """
     cs = close.shift(1)
-    pdm = high.combine(cs, lambda x1, x2: max(x1, x2) if np.isnan(x1) == False and np.isnan(x2) == False else np.nan)
-    pdn = low.combine(cs,  lambda x1, x2: min(x1, x2) if np.isnan(x1) == False and np.isnan(x2) == False else np.nan)
+    pdm = high.combine(cs, lambda x1, x2: get_min_max(x1, x2, 'max'))
+    pdn = low.combine(cs, lambda x1, x2: get_min_max(x1, x2, 'min'))
     tr = pdm - pdn
 
     trs_initial = np.zeros(n-1)
@@ -194,8 +194,8 @@ def adx_pos(high, low, close, n=14, fillna=False):
 
     The Plus Directional Indicator (+DI) and Minus Directional Indicator (-DI)
     are derived from smoothed averages of these differences, and measure trend
-    direction over time. These two indicators are often referred to collectively
-    as the Directional Movement Indicator (DMI).
+    direction over time. These two indicators are often referred to
+    collectively as the Directional Movement Indicator (DMI).
 
     The Average Directional Index (ADX) is in turn derived from the smoothed
     averages of the difference between +DI and -DI, and measures the strength
@@ -217,8 +217,8 @@ def adx_pos(high, low, close, n=14, fillna=False):
         pandas.Series: New feature generated.
     """
     cs = close.shift(1)
-    pdm = high.combine(cs, lambda x1, x2: max(x1, x2) if np.isnan(x1) == False and np.isnan(x2) == False else np.nan)
-    pdn = low.combine(cs,  lambda x1, x2: min(x1, x2) if np.isnan(x1) == False and np.isnan(x2) == False else np.nan)
+    pdm = high.combine(cs, lambda x1, x2: get_min_max(x1, x2, 'max'))
+    pdn = low.combine(cs, lambda x1, x2: get_min_max(x1, x2, 'min'))
     tr = pdm - pdn
 
     trs_initial = np.zeros(n-1)
@@ -256,8 +256,8 @@ def adx_neg(high, low, close, n=14, fillna=False):
 
     The Plus Directional Indicator (+DI) and Minus Directional Indicator (-DI)
     are derived from smoothed averages of these differences, and measure trend
-    direction over time. These two indicators are often referred to collectively
-    as the Directional Movement Indicator (DMI).
+    direction over time. These two indicators are often referred to
+    collectively as the Directional Movement Indicator (DMI).
 
     The Average Directional Index (ADX) is in turn derived from the smoothed
     averages of the difference between +DI and -DI, and measures the strength
@@ -279,8 +279,8 @@ def adx_neg(high, low, close, n=14, fillna=False):
         pandas.Series: New feature generated.
     """
     cs = close.shift(1)
-    pdm = high.combine(cs, lambda x1, x2: max(x1, x2) if np.isnan(x1) == False and np.isnan(x2) == False else np.nan)
-    pdn = low.combine(cs,  lambda x1, x2: min(x1, x2) if np.isnan(x1) == False and np.isnan(x2) == False else np.nan)
+    pdm = high.combine(cs, lambda x1, x2: get_min_max(x1, x2, 'max'))
+    pdn = low.combine(cs, lambda x1, x2: get_min_max(x1, x2, 'min'))
     tr = pdm - pdn
 
     trs_initial = np.zeros(n-1)
@@ -405,8 +405,8 @@ def mass_index(high, low, n=9, n2=25, fillna=False):
     """Mass Index (MI)
 
     It uses the high-low range to identify trend reversals based on range
-    expansions. It identifies range bulges that can foreshadow a reversal of the
-    current trend.
+    expansions. It identifies range bulges that can foreshadow a reversal of
+    the current trend.
 
     http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:mass_index
 

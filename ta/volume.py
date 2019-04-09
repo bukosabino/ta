@@ -7,8 +7,8 @@
 
 """
 
-import pandas as pd
 import numpy as np
+import pandas as pd
 
 
 def acc_dist_index(high, low, close, volume, fillna=False):
@@ -29,7 +29,7 @@ def acc_dist_index(high, low, close, volume, fillna=False):
         pandas.Series: New feature generated.
     """
     clv = ((close - low) - (high - close)) / (high - low)
-    clv = clv.fillna(0.0) # float division by zero
+    clv = clv.fillna(0.0)  # float division by zero
     ad = clv * volume
     ad = ad + ad.shift(1)
     if fillna:
@@ -116,7 +116,7 @@ def chaikin_money_flow(high, low, close, volume, n=20, fillna=False):
         pandas.Series: New feature generated.
     """
     mfv = ((close - low) - (high - close)) / (high - low)
-    mfv = mfv.fillna(0.0) # float division by zero
+    mfv = mfv.fillna(0.0)  # float division by zero
     mfv *= volume
     cmf = mfv.rolling(n).sum() / volume.rolling(n).sum()
     if fillna:
@@ -202,15 +202,18 @@ def volume_price_trend(close, volume, fillna=False):
 def negative_volume_index(close, volume, fillna=False):
     """Negative Volume Index (NVI)
 
-    From: http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:negative_volume_inde
+    http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:negative_volume_inde
 
-    The Negative Volume Index (NVI) is a cumulative indicator that uses the change in volume to decide when the
-    smart money is active. Paul Dysart first developed this indicator in the 1930s. [...] Dysart's Negative Volume
-    Index works under the assumption that the smart money is active on days when volume decreases and the not-so-smart
-    money is active on days when volume increases.
+    The Negative Volume Index (NVI) is a cumulative indicator that uses the
+    change in volume to decide when the smart money is active. Paul Dysart
+    first developed this indicator in the 1930s. [...] Dysart's Negative Volume
+    Index works under the assumption that the smart money is active on days
+    when volume decreases and the not-so-smart money is active on days when
+    volume increases.
 
-    The cumulative NVI line was unchanged when volume increased from one period to the other. In other words,
-    nothing was done. Norman Fosback, of Stock Market Logic, adjusted the indicator by substituting the percentage
+    The cumulative NVI line was unchanged when volume increased from one
+    period to the other. In other words, nothing was done. Norman Fosback, of
+    Stock Market Logic, adjusted the indicator by substituting the percentage
     price change for Net Advances.
 
     This implementation is the Fosback version.
@@ -220,8 +223,9 @@ def negative_volume_index(close, volume, fillna=False):
     Else
         nvi(t) = nvi(t-1)
 
-    Please note: the "stockcharts.com" example calculation just adds the percentange change of price to previous
-    NVI when volumes decline; other sources indicate that the same percentage of the previous NVI value should
+    Please note: the "stockcharts.com" example calculation just adds the
+    percentange change of price to previous NVI when volumes decline; other
+    sources indicate that the same percentage of the previous NVI value should
     be added, which is what is implemented here.
 
     Args:
@@ -238,22 +242,24 @@ def negative_volume_index(close, volume, fillna=False):
     price_change = close.pct_change()
     vol_decrease = (volume.shift(1) > volume)
 
-    nvi = pd.Series(data=np.nan, index=close.index, dtype='float64', name='nvi')
+    nvi = pd.Series(
+        data=np.nan, index=close.index, dtype='float64', name='nvi')
 
     nvi.iloc[0] = 1000
-    for i in range(1,len(nvi)):
+    for i in range(1, len(nvi)):
         if vol_decrease.iloc[i]:
             nvi.iloc[i] = nvi.iloc[i - 1] * (1.0 + price_change.iloc[i])
         else:
             nvi.iloc[i] = nvi.iloc[i - 1]
 
     if fillna:
-        nvi = nvi.replace([np.inf, -np.inf], np.nan).fillna(1000) # IDEA: There shouldn't be any na; might be better to throw exception
+        # IDEA: There shouldn't be any na; might be better to throw exception
+        nvi = nvi.replace([np.inf, -np.inf], np.nan).fillna(1000)
 
     return pd.Series(nvi, name='nvi')
 
-# TODO
 
+# TODO
 def put_call_ratio():
     # will need options volumes for this put/call ratio
 

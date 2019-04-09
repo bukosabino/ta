@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from sklearn.base import TransformerMixin, BaseEstimator
+from sklearn.base import BaseEstimator, TransformerMixin
 
 from .wrapper import *
 
@@ -21,7 +21,7 @@ class TAFeaturesTransform(BaseEstimator, TransformerMixin):
     """
 
     def __init__(self, open_column, high_column, low_column, close_column,
-                     volume_column, fillna=False):
+                 volume_column, fillna=False, colprefix=""):
         self.open_column = open_column
         self.high_column = high_column
         self.low_column = low_column
@@ -31,13 +31,12 @@ class TAFeaturesTransform(BaseEstimator, TransformerMixin):
 
     def fit(self, X, y=None, **fit_params):
         return self
-    
+
     def transform(self, X, **transform_params):
-            
+
         X = add_all_ta_features(X, self.open_column, self.high_column,
                                 self.low_column, self.close_column,
-                                self.volume_column, fillna=self.fillna)
+                                self.volume_column, fillna=self.fillna,
+                                colprefix=self.colprefix)
 
         return X.values
-
-
