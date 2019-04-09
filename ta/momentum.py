@@ -6,8 +6,8 @@
 .. moduleauthor:: Dario Lopez Padial (Bukosabino)
 
 """
-import pandas as pd
 import numpy as np
+import pandas as pd
 
 from .utils import *
 
@@ -123,11 +123,13 @@ def tsi(close, r=25, s=13, fillna=False):
         tsi = tsi.replace([np.inf, -np.inf], np.nan).fillna(0)
     return pd.Series(tsi, name='tsi')
 
-def uo(high, low, close, s=7, m=14, l=28, ws=4.0, wm=2.0, wl=1.0, fillna=False):
+
+def uo(high, low, close, s=7, m=14, len=28, ws=4.0, wm=2.0, wl=1.0,
+       fillna=False):
     """Ultimate Oscillator
 
-    Larry Williams' (1976) signal, a momentum oscillator designed to capture momentum
-    across three different timeframes.
+    Larry Williams' (1976) signal, a momentum oscillator designed to capture
+    momentum across three different timeframes.
 
     http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:ultimate_oscillator
 
@@ -145,7 +147,7 @@ def uo(high, low, close, s=7, m=14, l=28, ws=4.0, wm=2.0, wl=1.0, fillna=False):
         close(pandas.Series): dataset 'Close' column.
         s(int): short period
         m(int): medium period
-        l(int): long period
+        len(int): long period
         ws(float): weight of short BP average for UO
         wm(float): weight of medium BP average for UO
         wl(float): weight of long BP average for UO
@@ -161,14 +163,15 @@ def uo(high, low, close, s=7, m=14, l=28, ws=4.0, wm=2.0, wl=1.0, fillna=False):
     bp = close - min_l_or_pc
     tr = max_h_or_pc - min_l_or_pc
 
-    avg_s = bp.rolling(s,min_periods=0).sum() / tr.rolling(s,min_periods=0).sum()
-    avg_m = bp.rolling(m,min_periods=0).sum() / tr.rolling(m,min_periods=0).sum()
-    avg_l = bp.rolling(l,min_periods=0).sum() / tr.rolling(l,min_periods=0).sum()
+    avg_s = bp.rolling(s, min_periods=0).sum() / tr.rolling(s, min_periods=0).sum()
+    avg_m = bp.rolling(m, min_periods=0).sum() / tr.rolling(m, min_periods=0).sum()
+    avg_l = bp.rolling(len, min_periods=0).sum() / tr.rolling(len, min_periods=0).sum()
 
     uo = 100.0 * ((ws * avg_s) + (wm * avg_m) + (wl * avg_l)) / (ws + wm + wl)
     if fillna:
         uo = uo.replace([np.inf, -np.inf], np.nan).fillna(50)
     return pd.Series(uo, name='uo')
+
 
 def stoch(high, low, close, n=14, fillna=False):
     """Stochastic Oscillator
@@ -197,6 +200,7 @@ def stoch(high, low, close, n=14, fillna=False):
     if fillna:
         stoch_k = stoch_k.replace([np.inf, -np.inf], np.nan).fillna(50)
     return pd.Series(stoch_k, name='stoch_k')
+
 
 def stoch_signal(high, low, close, n=14, d_n=3, fillna=False):
     """Stochastic Oscillator Signal
@@ -229,17 +233,20 @@ def wr(high, low, close, lbp=14, fillna=False):
 
     From: http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:williams_r
 
-    Developed by Larry Williams, Williams %R is a momentum indicator that is the inverse of the
-    Fast Stochastic Oscillator. Also referred to as %R, Williams %R reflects the level of the close
-    relative to the highest high for the look-back period. In contrast, the Stochastic Oscillator
-    reflects the level of the close relative to the lowest low. %R corrects for the inversion by
-    multiplying the raw value by -100. As a result, the Fast Stochastic Oscillator and Williams %R
-    produce the exact same lines, only the scaling is different. Williams %R oscillates from 0 to -100.
+    Developed by Larry Williams, Williams %R is a momentum indicator that is
+    the inverse of the Fast Stochastic Oscillator. Also referred to as %R,
+    Williams %R reflects the level of the close relative to the highest high
+    for the look-back period. In contrast, the Stochastic Oscillator reflects
+    the level of the close relative to the lowest low. %R corrects for the
+    inversion by multiplying the raw value by -100. As a result, the Fast
+    Stochastic Oscillator and Williams %R produce the exact same lines, only
+    the scaling is different. Williams %R oscillates from 0 to -100.
 
-    Readings from 0 to -20 are considered overbought. Readings from -80 to -100 are considered oversold.
+    Readings from 0 to -20 are considered overbought. Readings from -80 to -100
+    are considered oversold.
 
-    Unsurprisingly, signals derived from the Stochastic Oscillator are also applicable to Williams %R.
-
+    Unsurprisingly, signals derived from the Stochastic Oscillator are also
+    applicable to Williams %R.
 
     %R = (Highest High - Close)/(Highest High - Lowest Low) * -100
 
@@ -248,9 +255,9 @@ def wr(high, low, close, lbp=14, fillna=False):
     %R is multiplied by -100 correct the inversion and move the decimal.
 
     From: https://www.investopedia.com/terms/w/williamsr.asp
-    The Williams %R oscillates from 0 to -100. When the indicator produces readings from 0 to -20, this indicates
-    overbought market conditions. When readings are -80 to -100, it indicates oversold market conditions.
-
+    The Williams %R oscillates from 0 to -100. When the indicator produces
+    readings from 0 to -20, this indicates overbought market conditions. When
+    readings are -80 to -100, it indicates oversold market conditions.
 
     Args:
         high(pandas.Series): dataset 'High' column.
@@ -263,8 +270,8 @@ def wr(high, low, close, lbp=14, fillna=False):
         pandas.Series: New feature generated.
     """
 
-    hh = high.rolling(lbp,min_periods=0).max() #highest high over lookback period lbp
-    ll = low.rolling(lbp,min_periods=0).min()  #lowest low over lookback period lbp
+    hh = high.rolling(lbp, min_periods=0).max()  # highest high over lookback period lbp
+    ll = low.rolling(lbp, min_periods=0).min()  # lowest low over lookback period lbp
 
     wr = -100 * (hh - close) / (hh - ll)
 
@@ -273,21 +280,26 @@ def wr(high, low, close, lbp=14, fillna=False):
     return pd.Series(wr, name='wr')
 
 
-def ao(high, low, s=5, l=34, fillna=False):
+def ao(high, low, s=5, len=34, fillna=False):
     """Awesome Oscillator
 
     From: https://www.tradingview.com/wiki/Awesome_Oscillator_(AO)
 
-    The Awesome Oscillator is an indicator used to measure market momentum. AO calculates the difference of a
-    34 Period and 5 Period Simple Moving Averages. The Simple Moving Averages that are used are not calculated
-    using closing price but rather each bar's midpoints. AO is generally used to affirm trends or to anticipate
-    possible reversals.
+    The Awesome Oscillator is an indicator used to measure market momentum. AO
+    calculates the difference of a 34 Period and 5 Period Simple Moving
+    Averages. The Simple Moving Averages that are used are not calculated
+    using closing price but rather each bar's midpoints. AO is generally used
+    to affirm trends or to anticipate possible reversals.
 
     From: https://www.ifcm.co.uk/ntx-indicators/awesome-oscillator
 
-    Awesome Oscillator is a 34-period simple moving average, plotted through the central points of the bars (H+L)/2,
-    and subtracted from the 5-period simple moving average, graphed across the central points of the bars (H+L)/2.
+    Awesome Oscillator is a 34-period simple moving average, plotted through
+    the central points of the bars (H+L)/2, and subtracted from the 5-period
+    simple moving average, graphed across the central points of the bars
+    (H+L)/2.
+
     MEDIAN PRICE = (HIGH+LOW)/2
+
     AO = SMA(MEDIAN PRICE, 5)-SMA(MEDIAN PRICE, 34)
 
     where
@@ -298,7 +310,7 @@ def ao(high, low, s=5, l=34, fillna=False):
         high(pandas.Series): dataset 'High' column.
         low(pandas.Series): dataset 'Low' column.
         s(int): short period
-        l(int): long period
+        len(int): long period
         fillna(bool): if True, fill nan values with -50.
 
     Returns:
@@ -306,7 +318,7 @@ def ao(high, low, s=5, l=34, fillna=False):
     """
 
     mp = 0.5 * (high + low)
-    ao = mp.rolling(s,min_periods=0).mean() - mp.rolling(l,min_periods=0).mean()
+    ao = mp.rolling(s, min_periods=0).mean() - mp.rolling(len, min_periods=0).mean()
 
     if fillna:
         ao = ao.replace([np.inf, -np.inf], np.nan).fillna(0)

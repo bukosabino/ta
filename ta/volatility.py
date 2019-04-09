@@ -6,8 +6,8 @@
 .. moduleauthor:: Dario Lopez Padial (Bukosabino)
 
 """
-import pandas as pd
 import numpy as np
+import pandas as pd
 
 from .utils import *
 
@@ -62,7 +62,8 @@ def bollinger_mavg(close, n=20, fillna=False):
     """
     mavg = close.rolling(n,min_periods=0).mean()
     if fillna:
-        mavg = mavg.replace([np.inf, -np.inf], np.nan).fillna(method='backfill')
+        mavg = mavg.replace(
+            [np.inf, -np.inf], np.nan).fillna(method='backfill')
     return pd.Series(mavg, name='mavg')
 
 
@@ -86,7 +87,8 @@ def bollinger_hband(close, n=20, ndev=2, fillna=False):
     mstd = close.rolling(n,min_periods=0).std()
     hband = mavg + ndev*mstd
     if fillna:
-        hband = hband.replace([np.inf, -np.inf], np.nan).fillna(method='backfill')
+        hband = hband.replace(
+            [np.inf, -np.inf], np.nan).fillna(method='backfill')
     return pd.Series(hband, name='hband')
 
 
@@ -110,7 +112,8 @@ def bollinger_lband(close, n=20, ndev=2, fillna=False):
     mstd = close.rolling(n,min_periods=0).std()
     lband = mavg - ndev * mstd
     if fillna:
-        lband = lband.replace([np.inf, -np.inf], np.nan).fillna(method='backfill')
+        lband = lband.replace(
+            [np.inf, -np.inf], np.nan).fillna(method='backfill')
     return pd.Series(lband, name='lband')
 
 
@@ -306,7 +309,8 @@ def donchian_channel_hband(close, n=20, fillna=False):
     """
     hband = close.rolling(n,min_periods=0).max()
     if fillna:
-        hband = hband.replace([np.inf, -np.inf], np.nan).fillna(method='backfill')
+        hband = hband.replace(
+            [np.inf, -np.inf], np.nan).fillna(method='backfill')
     return pd.Series(hband, name='dchband')
 
 
@@ -326,7 +330,8 @@ def donchian_channel_lband(close, n=20, fillna=False):
     """
     lband = close.rolling(n,min_periods=0).min()
     if fillna:
-        lband = lband.replace([np.inf, -np.inf], np.nan).fillna(method='backfill')
+        lband = lband.replace(
+            [np.inf, -np.inf], np.nan).fillna(method='backfill')
     return pd.Series(lband, name='dclband')
 
 
@@ -358,7 +363,8 @@ def donchian_channel_hband_indicator(close, n=20, fillna=False):
 def donchian_channel_lband_indicator(close, n=20, fillna=False):
     """Donchian Low Band Indicator
 
-    Returns 1, if close is lower than donchian low band channel. Else, return 0.
+    Returns 1, if close is lower than donchian low band channel. Else,
+    return 0.
 
     https://www.investopedia.com/terms/d/donchianchannels.asp
 
