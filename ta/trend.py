@@ -631,7 +631,7 @@ def aroon_up(close, n=25, fillna=False):
         pandas.Series: New feature generated.
 
     """
-    aroon_up = close.rolling(n).apply(lambda x: float(np.argmax(x) + 1) / n * 100)
+    aroon_up = close.rolling(n).apply(lambda x: float(np.argmax(x) + 1) / n * 100, raw=True)
     if fillna:
         aroon_up = aroon_up.replace([np.inf, -np.inf], np.nan).fillna(0)
     return pd.Series(aroon_up, name='aroon_up'+str(n))
@@ -653,7 +653,7 @@ def aroon_down(close, n=25, fillna=False):
     Returns:
         pandas.Series: New feature generated.
     """
-    aroon_down = close.rolling(n).apply(lambda x: float(np.argmin(x) + 1) / n * 100)
+    aroon_down = close.rolling(n).apply(lambda x: float(np.argmin(x) + 1) / n * 100, raw=True)
     if fillna:
         aroon_down = aroon_down.replace([np.inf, -np.inf], np.nan).fillna(0)
     return pd.Series(aroon_down, name='aroon_down'+str(n))
