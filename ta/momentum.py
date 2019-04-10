@@ -30,7 +30,7 @@ def rsi(close, n=14, fillna=False):
     Returns:
         pandas.Series: New feature generated.
     """
-    diff = close.diff()
+    diff = close.diff(1)
     which_dn = diff < 0
 
     up, dn = diff, diff*0
@@ -72,8 +72,8 @@ def money_flow_index(high, low, close, volume, n=14, fillna=False):
     df = pd.DataFrame([high, low, close, volume]).T
     df.columns = ['High', 'Low', 'Close', 'Volume']
     df['Up_or_Down'] = 0
-    df.loc[(df['Close'] > df['Close'].shift(1)), 'Up_or_Down'] = 1
-    df.loc[(df['Close'] < df['Close'].shift(1)), 'Up_or_Down'] = 2
+    df.loc[(df['Close'] > df['Close'].shift(1,fill_value=df['Close'].mean())), 'Up_or_Down'] = 1
+    df.loc[(df['Close'] < df['Close'].shift(1,fill_value=df['Close'].mean())), 'Up_or_Down'] = 2
 
     # 1 typical price
     tp = (df['High'] + df['Low'] + df['Close']) / 3.0
@@ -84,11 +84,11 @@ def money_flow_index(high, low, close, volume, n=14, fillna=False):
     # 3 positive and negative money flow with n periods
     df['1p_Positive_Money_Flow'] = 0.0
     df.loc[df['Up_or_Down'] == 1, '1p_Positive_Money_Flow'] = mf
-    n_positive_mf = df['1p_Positive_Money_Flow'].rolling(n).sum()
+    n_positive_mf = df['1p_Positive_Money_Flow'].rolling(n,min_periods=0).sum()
 
     df['1p_Negative_Money_Flow'] = 0.0
     df.loc[df['Up_or_Down'] == 2, '1p_Negative_Money_Flow'] = mf
-    n_negative_mf = df['1p_Negative_Money_Flow'].rolling(n).sum()
+    n_negative_mf = df['1p_Negative_Money_Flow'].rolling(n,min_periods=0).sum()
 
     # 4 money flow index
     mr = n_positive_mf / n_negative_mf
@@ -114,7 +114,7 @@ def tsi(close, r=25, s=13, fillna=False):
     Returns:
         pandas.Series: New feature generated.
     """
-    m = close - close.shift(1)
+    m = close - close.shift(1,fill_value=close.mean())
     m1 = m.ewm(r).mean().ewm(s).mean()
     m2 = abs(m).ewm(r).mean().ewm(s).mean()
     tsi = m1 / m2
@@ -157,15 +157,15 @@ def uo(high, low, close, s=7, m=14, len=28, ws=4.0, wm=2.0, wl=1.0,
         pandas.Series: New feature generated.
 
     """
-    min_l_or_pc = close.shift(1).combine(low, min)
-    max_h_or_pc = close.shift(1).combine(high, max)
+    min_l_or_pc = close.shift(1,fill_value=close.mean()).combine(low, min)
+    max_h_or_pc = close.shift(1,fill_value=close.mean()).combine(high, max)
 
     bp = close - min_l_or_pc
     tr = max_h_or_pc - min_l_or_pc
 
-    avg_s = bp.rolling(s).sum() / tr.rolling(s).sum()
-    avg_m = bp.rolling(m).sum() / tr.rolling(m).sum()
-    avg_l = bp.rolling(len).sum() / tr.rolling(len).sum()
+    avg_s = bp.rolling(s, min_periods=0).sum() / tr.rolling(s, min_periods=0).sum()
+    avg_m = bp.rolling(m, min_periods=0).sum() / tr.rolling(m, min_periods=0).sum()
+    avg_l = bp.rolling(len, min_periods=0).sum() / tr.rolling(len, min_periods=0).sum()
 
     uo = 100.0 * ((ws * avg_s) + (wm * avg_m) + (wl * avg_l)) / (ws + wm + wl)
     if fillna:
@@ -193,8 +193,8 @@ def stoch(high, low, close, n=14, fillna=False):
     Returns:
         pandas.Series: New feature generated.
     """
-    smin = low.rolling(n).min()
-    smax = high.rolling(n).max()
+    smin = low.rolling(n,min_periods=0).min()
+    smax = high.rolling(n,min_periods=0).max()
     stoch_k = 100 * (close - smin) / (smax - smin)
 
     if fillna:
@@ -221,7 +221,7 @@ def stoch_signal(high, low, close, n=14, d_n=3, fillna=False):
         pandas.Series: New feature generated.
     """
     stoch_k = stoch(high, low, close, n, fillna=fillna)
-    stoch_d = stoch_k.rolling(d_n).mean()
+    stoch_d = stoch_k.rolling(d_n,min_periods=0).mean()
 
     if fillna:
         stoch_d = stoch_d.replace([np.inf, -np.inf], np.nan).fillna(50)
@@ -270,8 +270,8 @@ def wr(high, low, close, lbp=14, fillna=False):
         pandas.Series: New feature generated.
     """
 
-    hh = high.rolling(lbp).max()  # highest high over lookback period lbp
-    ll = low.rolling(lbp).min()  # lowest low over lookback period lbp
+    hh = high.rolling(lbp, min_periods=0).max()  # highest high over lookback period lbp
+    ll = low.rolling(lbp, min_periods=0).min()  # lowest low over lookback period lbp
 
     wr = -100 * (hh - close) / (hh - ll)
 
@@ -318,7 +318,7 @@ def ao(high, low, s=5, len=34, fillna=False):
     """
 
     mp = 0.5 * (high + low)
-    ao = mp.rolling(s).mean() - mp.rolling(len).mean()
+    ao = mp.rolling(s, min_periods=0).mean() - mp.rolling(len, min_periods=0).mean()
 
     if fillna:
         ao = ao.replace([np.inf, -np.inf], np.nan).fillna(0)
