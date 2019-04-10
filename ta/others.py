@@ -20,7 +20,7 @@ def daily_return(close, fillna=False):
     Returns:
         pandas.Series: New feature generated.
     """
-    dr = (close / close.shift(1,fill_value=close.mean())) - 1
+    dr = (close / close.shift(1, fill_value=close.mean())) - 1
     dr *= 100
     if fillna:
         dr = dr.replace([np.inf, -np.inf], np.nan).fillna(0)

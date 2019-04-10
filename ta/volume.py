@@ -31,7 +31,7 @@ def acc_dist_index(high, low, close, volume, fillna=False):
     clv = ((close - low) - (high - close)) / (high - low)
     clv = clv.fillna(0.0)  # float division by zero
     ad = clv * volume
-    ad = ad + ad.shift(1,fill_value=ad.mean())
+    ad = ad + ad.shift(1, fill_value=ad.mean())
     if fillna:
         ad = ad.replace([np.inf, -np.inf], np.nan).fillna(0)
     return pd.Series(ad, name='adi')
@@ -91,7 +91,7 @@ def on_balance_volume_mean(close, volume, n=10, fillna=False):
         df.loc[c1, 'OBV'] = - volume
     if c2.any():
         df.loc[c2, 'OBV'] = volume
-    obv = df['OBV'].rolling(n,min_periods=0).mean()
+    obv = df['OBV'].rolling(n, min_periods=0).mean()
     if fillna:
         obv = obv.replace([np.inf, -np.inf], np.nan).fillna(0)
     return pd.Series(obv, name='obv')
@@ -118,7 +118,8 @@ def chaikin_money_flow(high, low, close, volume, n=20, fillna=False):
     mfv = ((close - low) - (high - close)) / (high - low)
     mfv = mfv.fillna(0.0)  # float division by zero
     mfv *= volume
-    cmf = mfv.rolling(n,min_periods=0).sum() / volume.rolling(n,min_periods=0).sum()
+    cmf = (mfv.rolling(n, min_periods=0).sum()
+           / volume.rolling(n, min_periods=0).sum())
     if fillna:
         cmf = cmf.replace([np.inf, -np.inf], np.nan).fillna(0)
     return pd.Series(cmf, name='cmf')
@@ -168,7 +169,7 @@ def ease_of_movement(high, low, close, volume, n=20, fillna=False):
         pandas.Series: New feature generated.
     """
     emv = (high.diff(1) + low.diff(1)) * (high - low) / (2 * volume)
-    emv = emv.rolling(n,min_periods=0).mean()
+    emv = emv.rolling(n, min_periods=0).mean()
     if fillna:
         emv = emv.replace([np.inf, -np.inf], np.nan).fillna(0)
     return pd.Series(emv, name='eom_' + str(n))
@@ -192,8 +193,8 @@ def volume_price_trend(close, volume, fillna=False):
     Returns:
         pandas.Series: New feature generated.
     """
-    vpt = volume * ((close - close.shift(1,fill_value=close.mean())) / close.shift(1,fill_value=close.mean()))
-    vpt = vpt.shift(1,fill_value=vpt.mean()) + vpt
+    vpt = volume * ((close - close.shift(1, fill_value=close.mean())) / close.shift(1, fill_value=close.mean()))
+    vpt = vpt.shift(1, fill_value=vpt.mean()) + vpt
     if fillna:
         vpt = vpt.replace([np.inf, -np.inf], np.nan).fillna(0)
     return pd.Series(vpt, name='vpt')

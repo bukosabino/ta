@@ -72,8 +72,8 @@ def money_flow_index(high, low, close, volume, n=14, fillna=False):
     df = pd.DataFrame([high, low, close, volume]).T
     df.columns = ['High', 'Low', 'Close', 'Volume']
     df['Up_or_Down'] = 0
-    df.loc[(df['Close'] > df['Close'].shift(1,fill_value=df['Close'].mean())), 'Up_or_Down'] = 1
-    df.loc[(df['Close'] < df['Close'].shift(1,fill_value=df['Close'].mean())), 'Up_or_Down'] = 2
+    df.loc[(df['Close'] > df['Close'].shift(1, fill_value=df['Close'].mean())), 'Up_or_Down'] = 1
+    df.loc[(df['Close'] < df['Close'].shift(1, fill_value=df['Close'].mean())), 'Up_or_Down'] = 2
 
     # 1 typical price
     tp = (df['High'] + df['Low'] + df['Close']) / 3.0
@@ -84,11 +84,11 @@ def money_flow_index(high, low, close, volume, n=14, fillna=False):
     # 3 positive and negative money flow with n periods
     df['1p_Positive_Money_Flow'] = 0.0
     df.loc[df['Up_or_Down'] == 1, '1p_Positive_Money_Flow'] = mf
-    n_positive_mf = df['1p_Positive_Money_Flow'].rolling(n,min_periods=0).sum()
+    n_positive_mf = df['1p_Positive_Money_Flow'].rolling(n, min_periods=0).sum()
 
     df['1p_Negative_Money_Flow'] = 0.0
     df.loc[df['Up_or_Down'] == 2, '1p_Negative_Money_Flow'] = mf
-    n_negative_mf = df['1p_Negative_Money_Flow'].rolling(n,min_periods=0).sum()
+    n_negative_mf = df['1p_Negative_Money_Flow'].rolling(n, min_periods=0).sum()
 
     # 4 money flow index
     mr = n_positive_mf / n_negative_mf
@@ -114,7 +114,7 @@ def tsi(close, r=25, s=13, fillna=False):
     Returns:
         pandas.Series: New feature generated.
     """
-    m = close - close.shift(1,fill_value=close.mean())
+    m = close - close.shift(1, fill_value=close.mean())
     m1 = m.ewm(r).mean().ewm(s).mean()
     m2 = abs(m).ewm(r).mean().ewm(s).mean()
     tsi = m1 / m2
@@ -157,8 +157,8 @@ def uo(high, low, close, s=7, m=14, len=28, ws=4.0, wm=2.0, wl=1.0,
         pandas.Series: New feature generated.
 
     """
-    min_l_or_pc = close.shift(1,fill_value=close.mean()).combine(low, min)
-    max_h_or_pc = close.shift(1,fill_value=close.mean()).combine(high, max)
+    min_l_or_pc = close.shift(1, fill_value=close.mean()).combine(low, min)
+    max_h_or_pc = close.shift(1, fill_value=close.mean()).combine(high, max)
 
     bp = close - min_l_or_pc
     tr = max_h_or_pc - min_l_or_pc
@@ -193,8 +193,8 @@ def stoch(high, low, close, n=14, fillna=False):
     Returns:
         pandas.Series: New feature generated.
     """
-    smin = low.rolling(n,min_periods=0).min()
-    smax = high.rolling(n,min_periods=0).max()
+    smin = low.rolling(n, min_periods=0).min()
+    smax = high.rolling(n, min_periods=0).max()
     stoch_k = 100 * (close - smin) / (smax - smin)
 
     if fillna:
@@ -221,7 +221,7 @@ def stoch_signal(high, low, close, n=14, d_n=3, fillna=False):
         pandas.Series: New feature generated.
     """
     stoch_k = stoch(high, low, close, n, fillna=fillna)
-    stoch_d = stoch_k.rolling(d_n,min_periods=0).mean()
+    stoch_d = stoch_k.rolling(d_n, min_periods=0).mean()
 
     if fillna:
         stoch_d = stoch_d.replace([np.inf, -np.inf], np.nan).fillna(50)

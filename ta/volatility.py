@@ -60,7 +60,7 @@ def bollinger_mavg(close, n=20, fillna=False):
     Returns:
         pandas.Series: New feature generated.
     """
-    mavg = close.rolling(n,min_periods=0).mean()
+    mavg = close.rolling(n, min_periods=0).mean()
     if fillna:
         mavg = mavg.replace(
             [np.inf, -np.inf], np.nan).fillna(method='backfill')
@@ -83,8 +83,8 @@ def bollinger_hband(close, n=20, ndev=2, fillna=False):
     Returns:
         pandas.Series: New feature generated.
     """
-    mavg = close.rolling(n,min_periods=0).mean()
-    mstd = close.rolling(n,min_periods=0).std()
+    mavg = close.rolling(n, min_periods=0).mean()
+    mstd = close.rolling(n, min_periods=0).std()
     hband = mavg + ndev*mstd
     if fillna:
         hband = hband.replace(
@@ -108,8 +108,8 @@ def bollinger_lband(close, n=20, ndev=2, fillna=False):
     Returns:
         pandas.Series: New feature generated.
     """
-    mavg = close.rolling(n,min_periods=0).mean()
-    mstd = close.rolling(n,min_periods=0).std()
+    mavg = close.rolling(n, min_periods=0).mean()
+    mstd = close.rolling(n, min_periods=0).std()
     lband = mavg - ndev * mstd
     if fillna:
         lband = lband.replace(
@@ -188,7 +188,7 @@ def keltner_channel_central(high, low, close, n=10, fillna=False):
         pandas.Series: New feature generated.
     """
     tp = (high + low + close) / 3.0
-    tp = tp.rolling(n,min_periods=0).mean()
+    tp = tp.rolling(n, min_periods=0).mean()
     if fillna:
         tp = tp.replace([np.inf, -np.inf], np.nan).fillna(method='backfill')
     return pd.Series(tp, name='kc_central')
@@ -211,7 +211,7 @@ def keltner_channel_hband(high, low, close, n=10, fillna=False):
         pandas.Series: New feature generated.
     """
     tp = ((4 * high) - (2 * low) + close) / 3.0
-    tp = tp.rolling(n,min_periods=0).mean()
+    tp = tp.rolling(n, min_periods=0).mean()
     if fillna:
         tp = tp.replace([np.inf, -np.inf], np.nan).fillna(method='backfill')
     return pd.Series(tp, name='kc_hband')
@@ -234,7 +234,7 @@ def keltner_channel_lband(high, low, close, n=10, fillna=False):
         pandas.Series: New feature generated.
     """
     tp = ((-2 * high) + (4 * low) + close) / 3.0
-    tp = tp.rolling(n,min_periods=0).mean()
+    tp = tp.rolling(n, min_periods=0).mean()
     if fillna:
         tp = tp.replace([np.inf, -np.inf], np.nan).fillna(method='backfill')
     return pd.Series(tp, name='kc_lband')
@@ -307,7 +307,7 @@ def donchian_channel_hband(close, n=20, fillna=False):
     Returns:
         pandas.Series: New feature generated.
     """
-    hband = close.rolling(n,min_periods=0).max()
+    hband = close.rolling(n, min_periods=0).max()
     if fillna:
         hband = hband.replace(
             [np.inf, -np.inf], np.nan).fillna(method='backfill')
@@ -328,7 +328,7 @@ def donchian_channel_lband(close, n=20, fillna=False):
     Returns:
         pandas.Series: New feature generated.
     """
-    lband = close.rolling(n,min_periods=0).min()
+    lband = close.rolling(n, min_periods=0).min()
     if fillna:
         lband = lband.replace(
             [np.inf, -np.inf], np.nan).fillna(method='backfill')
