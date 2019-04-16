@@ -11,7 +11,11 @@ setup(
     url = 'https://github.com/bukosabino/ta',
     maintainer='Dario Lopez Padial (Bukosabino)',
     maintainer_email='Bukosabino@gmail.com',
-    install_requires=open('requirements.txt').readlines(),
+    install_requires=[
+        numpy==1.16.2,
+        pandas==0.24.2,
+        scikit-learn==0.20.3
+    ],
     download_url = 'https://github.com/bukosabino/ta/tarball/0.4.2',
     keywords = ['technical analysis', 'python3', 'pandas'],
     license='The MIT License (MIT)',
