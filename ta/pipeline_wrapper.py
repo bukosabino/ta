@@ -28,6 +28,7 @@ class TAFeaturesTransform(BaseEstimator, TransformerMixin):
         self.close_column = close_column
         self.volume_column = volume_column
         self.fillna = fillna
+        self.colprefix = colprefix
 
     def fit(self, X, y=None, **fit_params):
         return self
