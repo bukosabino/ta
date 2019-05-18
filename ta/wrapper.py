@@ -31,11 +31,6 @@ def add_volume_ta(df, high, low, close, volume, fillna=False, colprefix=""):
     df['{}volume_obv'.format(colprefix)] = on_balance_volume(df[close],
                                                              df[volume],
                                                              fillna=fillna)
-    df['{}volume_obvm'.format(colprefix)] = on_balance_volume_mean(
-                                                            df[close],
-                                                            df[volume],
-                                                            n=10,
-                                                            fillna=fillna)
     df['{}volume_cmf'.format(colprefix)] = chaikin_money_flow(df[high],
                                                               df[low],
                                                               df[close],
