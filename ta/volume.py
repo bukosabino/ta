@@ -67,36 +67,6 @@ def on_balance_volume(close, volume, fillna=False):
     return pd.Series(obv, name='obv')
 
 
-def on_balance_volume_mean(close, volume, n=10, fillna=False):
-    """On-balance volume mean (OBV mean)
-
-    It's based on a cumulative total volume.
-
-    https://en.wikipedia.org/wiki/On-balance_volume
-
-    Args:
-        close(pandas.Series): dataset 'Close' column.
-        volume(pandas.Series): dataset 'Volume' column.
-        n(int): n period.
-        fillna(bool): if True, fill nan values.
-
-    Returns:
-        pandas.Series: New feature generated.
-    """
-    df = pd.DataFrame([close, volume]).transpose()
-    df['OBV'] = 0
-    c1 = close < close.shift(1)
-    c2 = close > close.shift(1)
-    if c1.any():
-        df.loc[c1, 'OBV'] = - volume
-    if c2.any():
-        df.loc[c2, 'OBV'] = volume
-    obv = df['OBV'].rolling(n, min_periods=0).mean()
-    if fillna:
-        obv = obv.replace([np.inf, -np.inf], np.nan).fillna(0)
-    return pd.Series(obv, name='obv')
-
-
 def chaikin_money_flow(high, low, close, volume, n=20, fillna=False):
     """Chaikin Money Flow (CMF)
 
