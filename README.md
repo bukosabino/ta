@@ -4,13 +4,12 @@ It is a Technical Analysis library to financial time series datasets (open, clos
 
 ![alt text](https://raw.githubusercontent.com/bukosabino/ta/master/doc/figure.png)
 
-The library has implemented 32 indicators:
+The library has implemented 31 indicators:
 
 #### Volume
 
 * Accumulation/Distribution Index (ADI)
 * On-Balance Volume (OBV)
-* On-Balance Volume mean (OBV mean)
 * Chaikin Money Flow (CMF)
 * Force Index (FI)
 * Ease of Movement (EoM, EMV)
@@ -145,4 +144,4 @@ Developed by Darío López Padial (aka Bukosabino) and other contributors: https
 
 Please, let me know about any comment or feedback.
 
-Also, I am a software freelance focused on Data Science using Python tools such as Pandas, Scikit-Learn, Zipline or Catalyst. Don't hesitate to contact me if you need something related to this library, Technical Analysis, Algo Trading, Machine Learning, etc.
+Also, I am a software freelance focused on Data Science using Python tools such as Pandas, Scikit-Learn, Backtrader, Zipline or Catalyst. Don't hesitate to contact me if you need something related with this library, Python, Technical Analysis, AlgoTrading, Machine Learning, etc.
