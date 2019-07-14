@@ -68,33 +68,37 @@ def money_flow_index(high, low, close, volume, n=14, fillna=False):
         pandas.Series: New feature generated.
 
     """
+
     # 0 Prepare dataframe to work
     df = pd.DataFrame([high, low, close, volume]).T
     df.columns = ['High', 'Low', 'Close', 'Volume']
-    df['Up_or_Down'] = 0
-    df.loc[(df['Close'] > df['Close'].shift(1, fill_value=df['Close'].mean())), 'Up_or_Down'] = 1
-    df.loc[(df['Close'] < df['Close'].shift(1, fill_value=df['Close'].mean())), 'Up_or_Down'] = 2
 
     # 1 typical price
     tp = (df['High'] + df['Low'] + df['Close']) / 3.0
 
-    # 2 money flow
-    mf = tp * df['Volume']
+    # 2 up or down column
+    df['Up_or_Down'] = 0
+    df.loc[(tp > tp.shift(1)), 'Up_or_Down'] = 1
+    df.loc[(tp < tp.shift(1)), 'Up_or_Down'] = -1
 
-    # 3 positive and negative money flow with n periods
-    df['1p_Positive_Money_Flow'] = 0.0
-    df.loc[df['Up_or_Down'] == 1, '1p_Positive_Money_Flow'] = mf
-    n_positive_mf = df['1p_Positive_Money_Flow'].rolling(n, min_periods=0).sum()
+    # 3 money flow
+    mf = tp * df['Volume'] * df['Up_or_Down']
 
-    df['1p_Negative_Money_Flow'] = 0.0
-    df.loc[df['Up_or_Down'] == 2, '1p_Negative_Money_Flow'] = mf
-    n_negative_mf = df['1p_Negative_Money_Flow'].rolling(n, min_periods=0).sum()
+    # 4 positive and negative money flow with n periods
+    n_positive_mf = mf.rolling(n).apply(
+        lambda x: np.sum(np.where(x >= 0.0, x, 0.0)),
+        raw=True)
+    n_negative_mf = abs(mf.rolling(n).apply(
+        lambda x: np.sum(np.where(x < 0.0, x, 0.0)),
+        raw=True))
 
-    # 4 money flow index
+    # 5 money flow index
     mr = n_positive_mf / n_negative_mf
     mr = (100 - (100 / (1 + mr)))
+
     if fillna:
         mr = mr.replace([np.inf, -np.inf], np.nan).fillna(50)
+
     return pd.Series(mr, name='mfi_'+str(n))
 
 
