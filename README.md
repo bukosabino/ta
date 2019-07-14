@@ -134,8 +134,10 @@ $ python bollinger_band_features_example.py
 # TODO:
 
 * add [more technical analysis features](https://en.wikipedia.org/wiki/Technical_analysis).
-* use Dask library to parallelize
+* use Dask library to parallelize the implementation
 * use Dash library to visualize features
+* automated tests for indicators.
+* class based style code
 
 
 # Credits:
