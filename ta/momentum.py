@@ -358,7 +358,6 @@ def kama(close, n=10, pow1=2, pow2=30):
 
     sc = ( ER*(2.0/(pow1+1)-2.0/(pow2+1.0))+2/(pow2+1.0) ) ** 2.0
 
-
     kama = np.zeros(sc.size)
     N = len(kama)
     first_value = True
