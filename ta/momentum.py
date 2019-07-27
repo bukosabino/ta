@@ -353,7 +353,7 @@ def kama(close, n=10, pow1=2, pow2=30):
     absDiffx = abs(close - close.shift(1) )  
 
     ER_num = abs(close - close.shift(n) )
-    ER_den = pandas.stats.moments.rolling_sum(absDiffx,n)
+    ER_den = pd.Series.rolling(absDiffx,n).sum
     ER = ER_num / ER_den
 
     sc = ( ER*(2.0/(pow1+1)-2.0/(pow2+1.0))+2/(pow2+1.0) ) ** 2.0
@@ -368,8 +368,8 @@ def kama(close, n=10, pow1=2, pow2=30):
             kama[i] = np.nan
         else:
             if first_value:
-                kama[i] = price[i]
+                kama[i] = close[i]
                 first_value = False
             else:
                 kama[i] = kama[i-1] + sc[i] * (close[i] - kama[i-1])
-    return pd.series(kama, name='kama')
+    return pd.Series(kama, name='kama')

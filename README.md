@@ -44,6 +44,7 @@ The library has implemented 31 indicators:
 * Stochastic Oscillator (SR)
 * Williams %R (WR)
 * Awesome Oscillator (AO)
+* Kaufman's Adaptive Moving Average (KAMA)
 
 #### Others
 
