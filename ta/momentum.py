@@ -327,3 +327,49 @@ def ao(high, low, s=5, len=34, fillna=False):
     if fillna:
         ao = ao.replace([np.inf, -np.inf], np.nan).fillna(0)
     return pd.Series(ao, name='ao')
+
+
+def kama(close, n=10, pow1=2, pow2=30):
+    """Kaufman's Adaptive Moving Average (KAMA)
+
+    Moving average designed to account for market noise or volatility. KAMA
+    will closely follow prices when the price swings are relatively small and
+    the noise is low. KAMA will adjust when the price swings widen and follow
+    prices from a greater distance. This trend-following indicator can be
+    used to identify the overall trend, time turning points and filter price 
+    movements.
+
+    https://www.tradingview.com/ideas/kama/
+
+    Args:
+        close(pandas.Series): dataset 'Close' column
+        n(int): n number of periods for the efficiency ratio
+        pow1(int): number of periods for the fastest EMA constant
+        pow2(int): number of periods for the slowest EMA constant 
+
+    Returns:
+        pandas.Series: New feature generated.
+    """
+    absDiffx = abs(close - close.shift(1) )  
+
+    ER_num = abs(close - close.shift(n) )
+    ER_den = pandas.stats.moments.rolling_sum(absDiffx,n)
+    ER = ER_num / ER_den
+
+    sc = ( ER*(2.0/(pow1+1)-2.0/(pow2+1.0))+2/(pow2+1.0) ) ** 2.0
+
+
+    kama = np.zeros(sc.size)
+    N = len(kama)
+    first_value = True
+
+    for i in range(N):
+        if sc[i] != sc[i]:
+            kama[i] = np.nan
+        else:
+            if first_value:
+                kama[i] = price[i]
+                first_value = False
+            else:
+                kama[i] = kama[i-1] + sc[i] * (close[i] - kama[i-1])
+    return pd.series(kama, name='kama')
