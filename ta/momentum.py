@@ -350,11 +350,10 @@ def kama(close, n=10, pow1=2, pow2=30):
     Returns:
         pandas.Series: New feature generated.
     """
-    absDiffx = abs(close - np.roll(close, 1) )  
-    absDiffx = pd.Series(absDiffx)
+    vol = pd.Series(abs(close - np.roll(close, 1)))  
 
     ER_num = abs(close - np.roll(close, n) )
-    ER_den = absDiffx.rolling(n).sum()
+    ER_den = vol.rolling(n).sum()
     ER = ER_num / ER_den
 
     sc = ( ER*(2.0/(pow1+1)-2.0/(pow2+1.0))+2/(pow2+1.0) ) ** 2.0
