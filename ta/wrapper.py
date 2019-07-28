@@ -299,7 +299,7 @@ def add_momentum_ta(df, high, low, close, volume, fillna=False, colprefix=""):
                                                fillna=fillna)
     df['{}momentum_ao'.format(colprefix)] = ao(
         df[high], df[low], fillna=fillna)
-    df['{}momentum_ao'.format(colprefix)] = kama(df[close], fillna=fillna)
+    df['{}momentum_kama'.format(colprefix)] = kama(df[close], fillna=fillna)
     return df
 
 

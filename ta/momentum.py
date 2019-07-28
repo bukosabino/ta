@@ -329,14 +329,14 @@ def ao(high, low, s=5, len=34, fillna=False):
     return pd.Series(ao, name='ao')
 
 
-def kama(close, n=10, pow1=2, pow2=30):
+def kama(close, n=10, pow1=2, pow2=30, fillna=False):
     """Kaufman's Adaptive Moving Average (KAMA)
 
     Moving average designed to account for market noise or volatility. KAMA
     will closely follow prices when the price swings are relatively small and
     the noise is low. KAMA will adjust when the price swings widen and follow
     prices from a greater distance. This trend-following indicator can be
-    used to identify the overall trend, time turning points and filter price 
+    used to identify the overall trend, time turning points and filter price
     movements.
 
     https://www.tradingview.com/ideas/kama/
@@ -345,30 +345,37 @@ def kama(close, n=10, pow1=2, pow2=30):
         close(pandas.Series): dataset 'Close' column
         n(int): n number of periods for the efficiency ratio
         pow1(int): number of periods for the fastest EMA constant
-        pow2(int): number of periods for the slowest EMA constant 
+        pow2(int): number of periods for the slowest EMA constant
 
     Returns:
         pandas.Series: New feature generated.
     """
-    vol = pd.Series(abs(close - np.roll(close, 1)))  
+    close_values = close.values
+    vol = pd.Series(abs(close - np.roll(close, 1)))
 
-    ER_num = abs(close - np.roll(close, n) )
+    ER_num = abs(close_values - np.roll(close_values, n) )
     ER_den = vol.rolling(n).sum()
     ER = ER_num / ER_den
 
-    sc = ( ER*(2.0/(pow1+1)-2.0/(pow2+1.0))+2/(pow2+1.0) ) ** 2.0
+    sc = (( ER*(2.0/(pow1+1)-2.0/(pow2+1.0))+2/(pow2+1.0) ) ** 2.0).values
 
     kama = np.zeros(sc.size)
     N = len(kama)
     first_value = True
 
     for i in range(N):
-        if sc[i] != sc[i]:
+        if np.isnan(sc[i]):
             kama[i] = np.nan
         else:
             if first_value:
-                kama[i] = close[i]
+                kama[i] = close_values[i]
                 first_value = False
             else:
-                kama[i] = kama[i-1] + sc[i] * (close[i] - kama[i-1])
-    return pd.Series(kama, name='kama')
+                kama[i] = kama[i-1] + sc[i] * (close_values[i] - kama[i-1])
+
+    kama = pd.Series(kama, name='kama', index=close.index)
+
+    if fillna:
+        kama = kama.replace([np.inf, -np.inf], np.nan).fillna(close)
+
+    return kama
