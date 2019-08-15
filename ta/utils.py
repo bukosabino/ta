@@ -23,9 +23,9 @@ def ema(series, periods, fillna=False):
 def get_min_max(x1, x2, f='min'):
     if not np.isnan(x1) and not np.isnan(x2):
         if f == 'max':
-            max(x1, x2)
+            return max(x1, x2)
         elif f == 'min':
-            min(x1, x2)
+            return min(x1, x2)
         else:
             raise ValueError('"f" variable value should be "min" or "max"')
     else:
