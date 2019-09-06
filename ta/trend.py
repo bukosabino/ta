@@ -135,8 +135,8 @@ def adx(high, low, close, n=14, fillna=False):
         pandas.Series: New feature generated.
     """
     cs = close.shift(1)
-    pdm = high.combine(cs, lambda x1, x2: get_min_max(x1, x2, 'max'))
-    pdn = low.combine(cs, lambda x1, x2: get_min_max(x1, x2, 'min'))
+    pdm = get_min_max(high, cs, 'max')
+    pdn = get_min_max(low, cs, 'min')
     tr = pdm - pdn
 
     trs_initial = np.zeros(n-1)
@@ -217,8 +217,8 @@ def adx_pos(high, low, close, n=14, fillna=False):
         pandas.Series: New feature generated.
     """
     cs = close.shift(1)
-    pdm = high.combine(cs, lambda x1, x2: get_min_max(x1, x2, 'max'))
-    pdn = low.combine(cs, lambda x1, x2: get_min_max(x1, x2, 'min'))
+    pdm = get_min_max(high, cs, 'max')
+    pdn = get_min_max(low, cs, 'min')
     tr = pdm - pdn
 
     trs_initial = np.zeros(n-1)
@@ -279,8 +279,8 @@ def adx_neg(high, low, close, n=14, fillna=False):
         pandas.Series: New feature generated.
     """
     cs = close.shift(1)
-    pdm = high.combine(cs, lambda x1, x2: get_min_max(x1, x2, 'max'))
-    pdn = low.combine(cs, lambda x1, x2: get_min_max(x1, x2, 'min'))
+    pdm = get_min_max(high, cs, 'max')
+    pdn = get_min_max(low, cs, 'min')
     tr = pdm - pdn
 
     trs_initial = np.zeros(n-1)
