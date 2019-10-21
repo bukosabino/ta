@@ -447,7 +447,7 @@ def cci(high, low, close, n=20, c=0.015, fillna=False):
         high(pandas.Series): dataset 'High' column.
         low(pandas.Series): dataset 'Low' column.
         close(pandas.Series): dataset 'Close' column.
-        n(int): n period.
+        n(int): n periods.
         c(int): constant.
         fillna(bool): if True, fill nan values.
 
@@ -456,7 +456,9 @@ def cci(high, low, close, n=20, c=0.015, fillna=False):
 
     """
     pp = (high + low + close) / 3.0
-    cci = (pp - pp.rolling(n, min_periods=0).mean()) / (c * pp.rolling(n, min_periods=0).std())
+    mad = lambda x : np.mean(np.abs(x-np.mean(x)))
+    cci = ((pp - pp.rolling(n, min_periods=0).mean())
+           / (c * pp.rolling(n, min_periods=0).apply(mad, True)))
     if fillna:
         cci = cci.replace([np.inf, -np.inf], np.nan).fillna(0)
     return pd.Series(cci, name='cci')
