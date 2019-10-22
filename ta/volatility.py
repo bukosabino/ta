@@ -84,7 +84,7 @@ def bollinger_hband(close, n=20, ndev=2, fillna=False):
         pandas.Series: New feature generated.
     """
     mavg = close.rolling(n, min_periods=0).mean()
-    mstd = close.rolling(n, min_periods=0).std()
+    mstd = close.rolling(n, min_periods=0).std(ddof=0)
     hband = mavg + ndev*mstd
     if fillna:
         hband = hband.replace(
@@ -109,7 +109,7 @@ def bollinger_lband(close, n=20, ndev=2, fillna=False):
         pandas.Series: New feature generated.
     """
     mavg = close.rolling(n, min_periods=0).mean()
-    mstd = close.rolling(n, min_periods=0).std()
+    mstd = close.rolling(n, min_periods=0).std(ddof=0)
     lband = mavg - ndev * mstd
     if fillna:
         lband = lband.replace(
@@ -134,7 +134,7 @@ def bollinger_hband_indicator(close, n=20, ndev=2, fillna=False):
     """
     df = pd.DataFrame([close]).transpose()
     mavg = close.rolling(n).mean()
-    mstd = close.rolling(n).std()
+    mstd = close.rolling(n).std(ddof=0)
     hband = mavg + ndev * mstd
     df['hband'] = 0.0
     df.loc[close > hband, 'hband'] = 1.0
@@ -161,7 +161,7 @@ def bollinger_lband_indicator(close, n=20, ndev=2, fillna=False):
     """
     df = pd.DataFrame([close]).transpose()
     mavg = close.rolling(n).mean()
-    mstd = close.rolling(n).std()
+    mstd = close.rolling(n).std(ddof=0)
     lband = mavg - ndev * mstd
     df['lband'] = 0.0
     df.loc[close < lband, 'lband'] = 1.0
