@@ -36,10 +36,10 @@ def rsi(close, n=14, fillna=False):
     up, dn = diff, diff*0
     up[which_dn], dn[which_dn] = 0, -up[which_dn]
 
-    emaup = ema(up, n, fillna)
-    emadn = ema(dn, n, fillna)
-
+    emaup = up.ewm(com=n-1, min_periods=0).mean()
+    emadn = dn.ewm(com=n-1, min_periods=0).mean()
     rsi = 100 * emaup / (emaup + emadn)
+
     if fillna:
         rsi = rsi.replace([np.inf, -np.inf], np.nan).fillna(50)
     return pd.Series(rsi, name='rsi')
