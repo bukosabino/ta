@@ -45,6 +45,7 @@ The library has implemented 31 indicators:
 * Williams %R (WR)
 * Awesome Oscillator (AO)
 * Kaufman's Adaptive Moving Average (KAMA)
+* Rate of Change (ROC)
 
 #### Others
 
