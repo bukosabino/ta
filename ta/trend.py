@@ -134,6 +134,8 @@ def adx(high, low, close, n=14, fillna=False):
     Returns:
         pandas.Series: New feature generated.
     """
+    assert n is not 0 , "N may not be 0 and is %r" % n
+
     cs = close.shift(1)
     pdm = high.combine(cs, lambda x1, x2: get_min_max(x1, x2, 'max'))
     pdn = low.combine(cs, lambda x1, x2: get_min_max(x1, x2, 'min'))
@@ -143,8 +145,8 @@ def adx(high, low, close, n=14, fillna=False):
     trs = np.zeros(len(close) - (n - 1))
     trs[0] = tr.dropna()[0:n].sum()
     tr = tr.reset_index(drop=True)
-    for i in range(1, len(trs)-1):
-        trs[i] = trs[i-1] - (trs[i-1]/float(n)) + tr[n+i]
+    for i in range(0, len(trs)-1):
+        trs[i+1] = trs[i] - (trs[i]/float(n)) + tr[n+i]
 
     up = high - high.shift(1)
     dn = low.shift(1) - low
@@ -155,15 +157,15 @@ def adx(high, low, close, n=14, fillna=False):
     dip_mio[0] = pos.dropna()[0:n].sum()
 
     pos = pos.reset_index(drop=True)
-    for i in range(1, len(dip_mio)-1):
-        dip_mio[i] = dip_mio[i-1] - (dip_mio[i-1]/float(n)) + pos[n+i]
+    for i in range(0, len(dip_mio)-1):
+        dip_mio[i+1] = dip_mio[i] - (dip_mio[i]/float(n)) + pos[n+i]
 
     din_mio = np.zeros(len(close) - (n - 1))
     din_mio[0] = neg.dropna()[0:n].sum()
 
     neg = neg.reset_index(drop=True)
-    for i in range(1, len(din_mio)-1):
-        din_mio[i] = din_mio[i-1] - (din_mio[i-1]/float(n)) + neg[n+i]
+    for i in range(0, len(din_mio)-1):
+        din_mio[i+1] = din_mio[i] - (din_mio[i]/float(n)) + neg[n+i]
 
     dip = np.zeros(len(trs))
     for i in range(len(trs)):
@@ -216,6 +218,7 @@ def adx_pos(high, low, close, n=14, fillna=False):
     Returns:
         pandas.Series: New feature generated.
     """
+    assert n is not 0 , "N may not be 0 and is %r" % n
     cs = close.shift(1)
     pdm = high.combine(cs, lambda x1, x2: get_min_max(x1, x2, 'max'))
     pdn = low.combine(cs, lambda x1, x2: get_min_max(x1, x2, 'min'))
@@ -278,6 +281,8 @@ def adx_neg(high, low, close, n=14, fillna=False):
     Returns:
         pandas.Series: New feature generated.
     """
+    assert n is not 0 , "N may not be 0 and is %r" % n
+
     cs = close.shift(1)
     pdm = high.combine(cs, lambda x1, x2: get_min_max(x1, x2, 'max'))
     pdn = low.combine(cs, lambda x1, x2: get_min_max(x1, x2, 'min'))
@@ -287,6 +292,7 @@ def adx_neg(high, low, close, n=14, fillna=False):
     trs = np.zeros(len(close) - (n - 1))
     trs[0] = tr.dropna()[0:n].sum()
     tr = tr.reset_index(drop=True)
+
     for i in range(1, len(trs)-1):
         trs[i] = trs[i-1] - (trs[i-1]/float(n)) + tr[n+i]
 
@@ -447,7 +453,7 @@ def cci(high, low, close, n=20, c=0.015, fillna=False):
         high(pandas.Series): dataset 'High' column.
         low(pandas.Series): dataset 'Low' column.
         close(pandas.Series): dataset 'Close' column.
-        n(int): n period.
+        n(int): n periods.
         c(int): constant.
         fillna(bool): if True, fill nan values.
 
@@ -456,7 +462,9 @@ def cci(high, low, close, n=20, c=0.015, fillna=False):
 
     """
     pp = (high + low + close) / 3.0
-    cci = (pp - pp.rolling(n, min_periods=0).mean()) / (c * pp.rolling(n, min_periods=0).std())
+    mad = lambda x : np.mean(np.abs(x-np.mean(x)))
+    cci = ((pp - pp.rolling(n, min_periods=0).mean())
+           / (c * pp.rolling(n, min_periods=0).apply(mad, True)))
     if fillna:
         cci = cci.replace([np.inf, -np.inf], np.nan).fillna(0)
     return pd.Series(cci, name='cci')
