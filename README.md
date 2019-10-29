@@ -4,7 +4,7 @@ It is a Technical Analysis library to financial time series datasets (open, clos
 
 ![alt text](https://raw.githubusercontent.com/bukosabino/ta/master/doc/figure.png)
 
-The library has implemented 31 indicators:
+The library has implemented 32 indicators:
 
 #### Volume
 
@@ -81,16 +81,16 @@ You can visualize the features in [this notebook](https://github.com/bukosabino/
 
 ```python
 import pandas as pd
-from ta import *
+import ta
 
 # Load datas
 df = pd.read_csv('your-file.csv', sep=',')
 
 # Clean NaN values
-df = utils.dropna(df)
+df = ta.utils.dropna(df)
 
 # Add ta features filling NaN values
-df = add_all_ta_features(df, "Open", "High", "Low", "Close", "Volume_BTC", fillna=True)
+df = ta.add_all_ta_features(df, "Open", "High", "Low", "Close", "Volume_BTC", fillna=True)
 ```
 
 
@@ -98,19 +98,19 @@ df = add_all_ta_features(df, "Open", "High", "Low", "Close", "Volume_BTC", filln
 
 ```python
 import pandas as pd
-from ta import *
+import ta
 
 # Load datas
 df = pd.read_csv('your-file.csv', sep=',')
 
 # Clean NaN values
-df = utils.dropna(df)
+df = ta.utils.dropna(df)
 
 # Add bollinger band high indicator filling NaN values
-df['bb_high_indicator'] = bollinger_hband_indicator(df["Close"], n=20, ndev=2, fillna=True)
+df['bb_high_indicator'] = ta.bollinger_hband_indicator(df["Close"], n=20, ndev=2, fillna=True)
 
 # Add bollinger band low indicator filling NaN values
-df['bb_low_indicator'] = bollinger_lband_indicator(df["Close"], n=20, ndev=2, fillna=True)
+df['bb_low_indicator'] = ta.bollinger_lband_indicator(df["Close"], n=20, ndev=2, fillna=True)
 ```
 
 
