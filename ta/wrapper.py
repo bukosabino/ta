@@ -74,27 +74,14 @@ def add_volatility_ta(df, high, low, close, fillna=False, colprefix=""):
                                                                 df[close],
                                                                 n=14,
                                                                 fillna=fillna)
-    df['{}volatility_bbh'.format(colprefix)] = bollinger_hband(df[close],
-                                                               n=20,
-                                                               ndev=2,
-                                                               fillna=fillna)
-    df['{}volatility_bbl'.format(colprefix)] = bollinger_lband(df[close],
-                                                               n=20,
-                                                               ndev=2,
-                                                               fillna=fillna)
-    df['{}volatility_bbm'.format(colprefix)] = bollinger_mavg(df[close],
-                                                              n=20,
-                                                              fillna=fillna)
-    df['{}volatility_bbhi'.format(colprefix)] = bollinger_hband_indicator(
-                                                                df[close],
-                                                                n=20,
-                                                                ndev=2,
-                                                                fillna=fillna)
-    df['{}volatility_bbli'.format(colprefix)] = bollinger_lband_indicator(
-                                                                df[close],
-                                                                n=20,
-                                                                ndev=2,
-                                                                fillna=fillna)
+    # Bollinger Bands
+    indicator_bb = BollingerBands(close=df[close], n=20, ndev=2, fillna=fillna)
+    df['{}volatility_bbh'.format(colprefix)] = indicator_bb.bollinger_hband()
+    df['{}volatility_bbl'.format(colprefix)] = indicator_bb.bollinger_lband()
+    df['{}volatility_bbm'.format(colprefix)] = indicator_bb.bollinger_mavg()
+    df['{}volatility_bbhi'.format(colprefix)] = indicator_bb.bollinger_hband_indicator()
+    df['{}volatility_bbli'.format(colprefix)] = indicator_bb.bollinger_lband_indicator()
+
     df['{}volatility_kcc'.format(colprefix)] = keltner_channel_central(
                                                                 df[high],
                                                                 df[low],

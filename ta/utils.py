@@ -5,6 +5,18 @@ import numpy as np
 import pandas as pd
 
 
+class IndicatorMixin():
+
+    def check_fillna(self, serie: pd.Series, method: str = '', value: int = 0):
+        """
+        """
+        if self.fillna:
+            serie = serie.copy(deep=False)
+            serie = serie.replace([np.inf, -np.inf], np.nan)
+            serie = serie.fillna(method='backfill') if method else serie.fillna(value)
+        return serie
+
+
 def dropna(df):
     """Drop rows with "Nans" values
     """
