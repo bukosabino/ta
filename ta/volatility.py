@@ -35,15 +35,6 @@ class BollingerBands(IndicatorMixin):
         self.fillna = fillna
         self._bollinger_calc()
 
-    def run(self):
-        return [
-            self.bollinger_mavg(),
-            self.bollinger_hband(),
-            self.bollinger_lband(),
-            self.bollinger_hband_indicator(),
-            self.bollinger_lband_indicator()
-        ]
-
     def _bollinger_calc(self):
         self.mavg = self.close.rolling(self.n, min_periods=0).mean()
         self.mstd = self.close.rolling(self.n, min_periods=0).std(ddof=0)
