@@ -73,14 +73,6 @@ def add_volatility_ta(df, high, low, close, fillna=False, colprefix=""):
     indicator_atr = AverageTrueRange(close=df[close], high=df[high], low=df[low], n=10, fillna=fillna)
     df['{}volatility_atr'.format(colprefix)] = indicator_atr.average_true_range()
 
-    """
-    df['{}volatility_atr'.format(colprefix)] = average_true_range(
-                                                                df[high],
-                                                                df[low],
-                                                                df[close],
-                                                                n=14,
-                                                                fillna=fillna)
-    """
     # Bollinger Bands
     indicator_bb = BollingerBands(close=df[close], n=20, ndev=2, fillna=fillna)
     df['{}volatility_bbh'.format(colprefix)] = indicator_bb.bollinger_hband()
@@ -96,54 +88,14 @@ def add_volatility_ta(df, high, low, close, fillna=False, colprefix=""):
     df['{}volatility_kcl'.format(colprefix)] = indicator_kc.keltner_channel_lband()
     df['{}volatility_kchi'.format(colprefix)] = indicator_kc.keltner_channel_hband_indicator()
     df['{}volatility_kcli'.format(colprefix)] = indicator_kc.keltner_channel_lband_indicator()
-    """
-    df['{}volatility_kcc'.format(colprefix)] = keltner_channel_central(
-                                                                df[high],
-                                                                df[low],
-                                                                df[close],
-                                                                n=10,
-                                                                fillna=fillna)
-    df['{}volatility_kch'.format(colprefix)] = keltner_channel_hband(
-                                                                df[high],
-                                                                df[low],
-                                                                df[close],
-                                                                n=10,
-                                                                fillna=fillna)
-    df['{}volatility_kcl'.format(colprefix)] = keltner_channel_lband(
-                                                                df[high],
-                                                                df[low],
-                                                                df[close],
-                                                                n=10,
-                                                                fillna=fillna)
-    df['{}volatility_kchi'.format(colprefix)] = \
-        keltner_channel_hband_indicator(df[high],
-                                        df[low],
-                                        df[close],
-                                        n=10,
-                                        fillna=fillna)
-    df['{}volatility_kcli'.format(colprefix)] = \
-        keltner_channel_lband_indicator(df[high],
-                                        df[low],
-                                        df[close],
-                                        n=10,
-                                        fillna=fillna)
-    """
-    df['{}volatility_dch'.format(colprefix)] = donchian_channel_hband(
-                                                                df[close],
-                                                                n=20,
-                                                                fillna=fillna)
-    df['{}volatility_dcl'.format(colprefix)] = donchian_channel_lband(
-                                                                df[close],
-                                                                n=20,
-                                                                fillna=fillna)
-    df['{}volatility_dchi'.format(colprefix)] = \
-        donchian_channel_hband_indicator(df[close],
-                                         n=20,
-                                         fillna=fillna)
-    df['{}volatility_dcli'.format(colprefix)] = \
-        donchian_channel_lband_indicator(df[close],
-                                         n=20,
-                                         fillna=fillna)
+
+    # Donchian Channel
+    indicator_dc = DonchianChannel(close=df[close], n=20, fillna=fillna)
+    df['{}volatility_dcl'.format(colprefix)] = indicator_dc.donchian_channel_lband()
+    df['{}volatility_dch'.format(colprefix)] = indicator_dc.donchian_channel_hband()
+    df['{}volatility_dchi'.format(colprefix)] = indicator_dc.donchian_channel_hband_indicator()
+    df['{}volatility_dcli'.format(colprefix)] = indicator_dc.donchian_channel_lband_indicator()
+
     return df
 
 

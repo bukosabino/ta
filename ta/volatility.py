@@ -91,13 +91,13 @@ class BollingerBands(IndicatorMixin):
         return pd.Series(lband, name='lband')
 
     def bollinger_hband_indicator(self) -> pd.Series:
-        hband = np.where(self.close > self.hband, 1.0, 0.0)
-        hband = self.check_fillna(self.hband, value=0)
+        hband = pd.Series(np.where(self.close > self.hband, 1.0, 0.0))
+        hband = self.check_fillna(hband, value=0)
         return pd.Series(hband, name='bbihband')
 
     def bollinger_lband_indicator(self) -> pd.Series:
-        lband = np.where(self.close < self.lband, 1.0, 0.0)
-        lband = self.check_fillna(self.lband, value=0)
+        lband = pd.Series(np.where(self.close < self.lband, 1.0, 0.0))
+        lband = self.check_fillna(lband, value=0)
         return pd.Series(lband, name='bbilband')
 
 
@@ -145,6 +145,49 @@ class KeltnerChannel(IndicatorMixin):
 
     def keltner_channel_lband_indicator(self) -> pd.Series:
         lband = pd.Series(np.where(self.close < self.tp_low, 1.0, 0.0))
+        lband = self.check_fillna(lband, value=0)
+        return pd.Series(lband, name='dcilband')
+
+
+class DonchianChannel(IndicatorMixin):
+    """Donchian Channel
+
+    https://www.investopedia.com/terms/d/donchianchannels.asp
+
+    """
+
+    def __init__(self, close : pd.Series, n : int = 20, fillna : bool = False):
+        """
+        Args:
+            close(pandas.Series): dataset 'Close' column.
+            n(int): n period.
+            ndev(int): n factor standard deviation
+            fillna(bool): if True, fill nan values.
+        """
+        self.close = close
+        self.n = n
+        self.fillna = fillna
+        self._run()
+
+    def _run(self):
+        self.hband = self.close.rolling(self.n, min_periods=0).max()
+        self.lband = self.close.rolling(self.n, min_periods=0).min()
+
+    def donchian_channel_hband(self) -> pd.Series:
+        hband = self.check_fillna(self.hband, method='backfill')
+        return pd.Series(hband, name='dchband')
+
+    def donchian_channel_lband(self) -> pd.Series:
+        lband = self.check_fillna(self.lband, method='backfill')
+        return pd.Series(lband, name='dclband')
+
+    def donchian_channel_hband_indicator(self) -> pd.Series:
+        hband = pd.Series(np.where(self.close >= self.hband, 1.0, 0.0))
+        hband = self.check_fillna(hband, value=0)
+        return pd.Series(hband, name='dcihband')
+
+    def donchian_channel_lband_indicator(self) -> pd.Series:
+        lband = pd.Series(np.where(self.close <= self.lband, 1.0, 0.0))
         lband = self.check_fillna(lband, value=0)
         return pd.Series(lband, name='dcilband')
 
@@ -394,11 +437,8 @@ def donchian_channel_hband(close, n=20, fillna=False):
     Returns:
         pandas.Series: New feature generated.
     """
-    hband = close.rolling(n, min_periods=0).max()
-    if fillna:
-        hband = hband.replace(
-            [np.inf, -np.inf], np.nan).fillna(method='backfill')
-    return pd.Series(hband, name='dchband')
+    indicator = DonchianChannel(close=close, n=n, fillna=fillna)
+    return indicator.donchian_channel_hband()
 
 
 def donchian_channel_lband(close, n=20, fillna=False):
@@ -416,11 +456,8 @@ def donchian_channel_lband(close, n=20, fillna=False):
     Returns:
         pandas.Series: New feature generated.
     """
-    lband = close.rolling(n, min_periods=0).min()
-    if fillna:
-        lband = lband.replace(
-            [np.inf, -np.inf], np.nan).fillna(method='backfill')
-    return pd.Series(lband, name='dclband')
+    indicator = DonchianChannel(close=close, n=n, fillna=fillna)
+    return indicator.donchian_channel_lband()
 
 
 def donchian_channel_hband_indicator(close, n=20, fillna=False):
@@ -439,14 +476,8 @@ def donchian_channel_hband_indicator(close, n=20, fillna=False):
     Returns:
         pandas.Series: New feature generated.
     """
-    df = pd.DataFrame([close]).transpose()
-    df['hband'] = 0.0
-    hband = close.rolling(n).max()
-    df.loc[close >= hband, 'hband'] = 1.0
-    hband = df['hband']
-    if fillna:
-        hband = hband.replace([np.inf, -np.inf], np.nan).fillna(0)
-    return pd.Series(hband, name='dcihband')
+    indicator = DonchianChannel(close=close, n=n, fillna=fillna)
+    return indicator.donchian_channel_hband_indicator()
 
 
 def donchian_channel_lband_indicator(close, n=20, fillna=False):
@@ -465,11 +496,5 @@ def donchian_channel_lband_indicator(close, n=20, fillna=False):
     Returns:
         pandas.Series: New feature generated.
     """
-    df = pd.DataFrame([close]).transpose()
-    df['lband'] = 0.0
-    lband = close.rolling(n).min()
-    df.loc[close <= lband, 'lband'] = 1.0
-    lband = df['lband']
-    if fillna:
-        lband = lband.replace([np.inf, -np.inf], np.nan).fillna(0)
-    return pd.Series(lband, name='dcilband')
+    indicator = DonchianChannel(close=close, n=n, fillna=fillna)
+    return indicator.donchian_channel_lband_indicator()
