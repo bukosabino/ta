@@ -12,30 +12,67 @@ import pandas as pd
 from ta.utils import IndicatorMixin
 
 
-class BollingerBands(IndicatorMixin):
+class AverageTrueRange(IndicatorMixin):
+    """Average True Range (ATR)
 
+    The indicator provide an indication of the degree of price volatility.
+    Strong moves, in either direction, are often accompanied by large ranges,
+    or large True Ranges.
+
+    http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:average_true_range_atr
     """
 
-        https://en.wikipedia.org/wiki/Bollinger_Bands
+    def __init__(self, high : pd.Series, low : pd.Series, close : pd.Series, n : int = 14, fillna : bool = False):
+        """
+        Args:
+            high(pandas.Series): dataset 'High' column.
+            low(pandas.Series): dataset 'Low' column.
+            close(pandas.Series): dataset 'Close' column.
+            n(int): n period.
+            fillna(bool): if True, fill nan values.
+        """
+        self.high = high
+        self.low = low
+        self.close = close
+        self.n = n
+        self.fillna = fillna
+        self._run()
 
+    def _run(self):
+        cs = self.close.shift(1)
+        tr = self.high.combine(cs, max) - self.low.combine(cs, min)
+        atr = np.zeros(len(self.close))
+        atr[0] = tr[1::].mean()
+        for i in range(1, len(atr)):
+            atr[i] = (atr[i-1] * (self.n-1) + tr.iloc[i]) / float(self.n)
+        self.atr = pd.Series(data=atr, index=tr.index)
+
+    def average_true_range(self) -> pd.Series:
+        atr = self.check_fillna(self.atr, value=0)
+        return pd.Series(atr, name='atr')
+
+
+class BollingerBands(IndicatorMixin):
+    """ Bollinger Bands
+
+        https://en.wikipedia.org/wiki/Bollinger_Bands
+    """
+
+    def __init__(self, close : pd.Series, n : int = 20, ndev : int = 2, fillna : bool = False):
+        """
         Args:
             close(pandas.Series): dataset 'Close' column.
             n(int): n period.
             ndev(int): n factor standard deviation
             fillna(bool): if True, fill nan values.
-
-        Returns:
-            list: new features generated.
-    """
-
-    def __init__(self, close : pd.Series, n : int = 20, ndev : int = 2, fillna : bool = False):
+        """
         self.close = close
         self.n = n
         self.ndev = ndev
         self.fillna = fillna
-        self._bollinger_calc()
+        self._run()
 
-    def _bollinger_calc(self):
+    def _run(self):
         self.mavg = self.close.rolling(self.n, min_periods=0).mean()
         self.mstd = self.close.rolling(self.n, min_periods=0).std(ddof=0)
         self.hband = self.mavg + self.ndev * self.mstd
@@ -83,20 +120,8 @@ def average_true_range(high, low, close, n=14, fillna=False):
     Returns:
         pandas.Series: New feature generated.
     """
-    cs = close.shift(1)
-    tr = high.combine(cs, max) - low.combine(cs, min)
-
-    atr = np.zeros(len(close))
-    atr[0] = tr[1::].mean()
-    for i in range(1, len(atr)):
-        atr[i] = (atr[i-1] * (n-1) + tr.iloc[i]) / float(n)
-
-    atr = pd.Series(data=atr, index=tr.index)
-
-    if fillna:
-        atr = atr.replace([np.inf, -np.inf], np.nan).fillna(0)
-
-    return pd.Series(atr, name='atr')
+    indicator = AverageTrueRange(high=high, low=low, close=close, n=n, fillna=fillna)
+    return indicator.average_true_range()
 
 
 def bollinger_mavg(close, n=20, fillna=False):
