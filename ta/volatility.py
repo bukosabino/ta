@@ -101,6 +101,54 @@ class BollingerBands(IndicatorMixin):
         return pd.Series(lband, name='bbilband')
 
 
+class KeltnerChannel(IndicatorMixin):
+    """
+    """
+
+    def __init__(self, high : pd.Series, low : pd.Series, close : pd.Series, n : int = 14, fillna : bool = False):
+        """
+        Args:
+            high(pandas.Series): dataset 'High' column.
+            low(pandas.Series): dataset 'Low' column.
+            close(pandas.Series): dataset 'Close' column.
+            n(int): n period.
+            fillna(bool): if True, fill nan values.
+        """
+        self.high = high
+        self.low = low
+        self.close = close
+        self.n = n
+        self.fillna = fillna
+        self._run()
+
+    def _run(self):
+        self.tp = ((self.high + self.low + self.close) / 3.0).rolling(self.n, min_periods=0).mean()
+        self.tp_high = (((4 * self.high) - (2 * self.low) + self.close) / 3.0).rolling(self.n, min_periods=0).mean()
+        self.tp_low = (((-2 * self.high) + (4 * self.low) + self.close) / 3.0).rolling(self.n, min_periods=0).mean()
+
+    def keltner_channel_central(self) -> pd.Series:
+        tp = self.check_fillna(self.tp, method='backfill')
+        return pd.Series(tp, name='mavg')
+
+    def keltner_channel_hband(self) -> pd.Series:
+        tp = self.check_fillna(self.tp, method='backfill')
+        return pd.Series(tp, name='kc_hband')
+
+    def keltner_channel_lband(self) -> pd.Series:
+        tp_low = self.check_fillna(self.tp_low, method='backfill')
+        return pd.Series(tp_low, name='kc_lband')
+
+    def keltner_channel_hband_indicator(self) -> pd.Series:
+        hband = pd.Series(np.where(self.close > self.tp_high, 1.0, 0.0))
+        hband = self.check_fillna(hband, value=0)
+        return pd.Series(hband, name='dcihband')
+
+    def keltner_channel_lband_indicator(self) -> pd.Series:
+        lband = pd.Series(np.where(self.close < self.tp_low, 1.0, 0.0))
+        lband = self.check_fillna(lband, value=0)
+        return pd.Series(lband, name='dcilband')
+
+
 def average_true_range(high, low, close, n=14, fillna=False):
     """Average True Range (ATR)
 
@@ -160,7 +208,6 @@ def bollinger_hband(close, n=20, ndev=2, fillna=False):
     Returns:
         pandas.Series: New feature generated.
     """
-    import pdb; pdb.set_trace()
     indicator = BollingerBands(close=close, n=n, ndev=ndev, fillna=fillna)
     return indicator.bollinger_hband()
 
@@ -243,11 +290,8 @@ def keltner_channel_central(high, low, close, n=10, fillna=False):
     Returns:
         pandas.Series: New feature generated.
     """
-    tp = (high + low + close) / 3.0
-    tp = tp.rolling(n, min_periods=0).mean()
-    if fillna:
-        tp = tp.replace([np.inf, -np.inf], np.nan).fillna(method='backfill')
-    return pd.Series(tp, name='kc_central')
+    indicator = KeltnerChannel(high=high, low=low, close=close, n=10, fillna=False)
+    return indicator.keltner_channel_central()
 
 
 def keltner_channel_hband(high, low, close, n=10, fillna=False):
@@ -267,11 +311,8 @@ def keltner_channel_hband(high, low, close, n=10, fillna=False):
     Returns:
         pandas.Series: New feature generated.
     """
-    tp = ((4 * high) - (2 * low) + close) / 3.0
-    tp = tp.rolling(n, min_periods=0).mean()
-    if fillna:
-        tp = tp.replace([np.inf, -np.inf], np.nan).fillna(method='backfill')
-    return pd.Series(tp, name='kc_hband')
+    indicator = KeltnerChannel(high=high, low=low, close=close, n=10, fillna=False)
+    return indicator.keltner_channel_hband()
 
 
 def keltner_channel_lband(high, low, close, n=10, fillna=False):
@@ -291,11 +332,8 @@ def keltner_channel_lband(high, low, close, n=10, fillna=False):
     Returns:
         pandas.Series: New feature generated.
     """
-    tp = ((-2 * high) + (4 * low) + close) / 3.0
-    tp = tp.rolling(n, min_periods=0).mean()
-    if fillna:
-        tp = tp.replace([np.inf, -np.inf], np.nan).fillna(method='backfill')
-    return pd.Series(tp, name='kc_lband')
+    indicator = KeltnerChannel(high=high, low=low, close=close, n=10, fillna=False)
+    return indicator.keltner_channel_lband()
 
 
 def keltner_channel_hband_indicator(high, low, close, n=10, fillna=False):
@@ -316,14 +354,8 @@ def keltner_channel_hband_indicator(high, low, close, n=10, fillna=False):
     Returns:
         pandas.Series: New feature generated.
     """
-    df = pd.DataFrame([close]).transpose()
-    df['hband'] = 0.0
-    hband = ((4 * high) - (2 * low) + close) / 3.0
-    df.loc[close > hband, 'hband'] = 1.0
-    hband = df['hband']
-    if fillna:
-        hband = hband.replace([np.inf, -np.inf], np.nan).fillna(0)
-    return pd.Series(hband, name='kci_hband')
+    indicator = KeltnerChannel(high=high, low=low, close=close, n=10, fillna=False)
+    return indicator.keltner_channel_hband_indicator()
 
 
 def keltner_channel_lband_indicator(high, low, close, n=10, fillna=False):
@@ -343,14 +375,8 @@ def keltner_channel_lband_indicator(high, low, close, n=10, fillna=False):
     Returns:
         pandas.Series: New feature generated.
     """
-    df = pd.DataFrame([close]).transpose()
-    df['lband'] = 0.0
-    lband = ((-2 * high) + (4 * low) + close) / 3.0
-    df.loc[close < lband, 'lband'] = 1.0
-    lband = df['lband']
-    if fillna:
-        lband = lband.replace([np.inf, -np.inf], np.nan).fillna(0)
-    return pd.Series(lband, name='kci_lband')
+    indicator = KeltnerChannel(high=high, low=low, close=close, n=10, fillna=False)
+    return indicator.keltner_channel_lband_indicator()
 
 
 def donchian_channel_hband(close, n=20, fillna=False):
