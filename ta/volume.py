@@ -232,10 +232,8 @@ def negative_volume_index(close, volume, fillna=False):
 
 # TODO
 def put_call_ratio():
-    # will need options volumes for this put/call ratio
-
     """Put/Call ratio (PCR)
     https://en.wikipedia.org/wiki/Put/call_ratio
     """
     # TODO
-    return
+    pass
