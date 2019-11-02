@@ -56,28 +56,38 @@ class AroonIndicator(IndicatorMixin):
 class MACD(IndicatorMixin):
     """
     """
-
-    def __init__(self, high : pd.Series, low : pd.Series, close : pd.Series, n : int = 14, fillna : bool = False):
+    def __init__(self, close : pd.Series, n_slow : int = 12, n_fast : int = 26, n_sign : int = 9, fillna : bool = False):
         """
         Args:
-            high(pandas.Series): dataset 'High' column.
-            low(pandas.Series): dataset 'Low' column.
             close(pandas.Series): dataset 'Close' column.
-            n(int): n period.
+            n_fast(int): n period short-term.
+            n_slow(int): n period long-term.
+            n_sign(int): n period to signal.
             fillna(bool): if True, fill nan values.
         """
-        self.high = high
-        self.low = low
         self.close = close
-        self.n = n
+        self.n_slow = n_slow
+        self.n_fast = n_fast
+        self.n_sign = n_sign
         self.fillna = fillna
-        self._run()
 
-    def _run(self):
-        pass
+        self.emafast = ema(self.close, self.n_fast, self.fillna)
+        self.emaslow = ema(self.close, self.n_slow, self.fillna)
+        self.macd_ = self.emafast - self.emaslow
+        self.macd_signal_ = ema(self.macd_, self.n_sign, self.fillna)
+        self.macd_diff_ = self.macd_ - self.macd_signal_
 
-    def indicator(self) -> pd.Series:
-        pass
+    def macd(self) -> pd.Series:
+        macd = self.check_fillna(self.macd_, value=0)
+        return pd.Series(macd, name=f'MACD_{self.n_fast}_{self.n_slow}')
+
+    def macd_signal(self) -> pd.Series:
+        macd_diff = self.check_fillna(self.macd_signal_, value=0)
+        return pd.Series(macd_diff, name=f'MACD_sign_{self.n_fast}_{self.n_slow}')
+
+    def macd_diff(self) -> pd.Series:
+        macd_diff = self.check_fillna(self.macd_diff_, value=0)
+        return pd.Series(macd_diff, name=f'MACD_diff_{self.n_fast}_{self.n_slow}')
 
 
 def macd(close, n_fast=12, n_slow=26, fillna=False):
@@ -97,12 +107,8 @@ def macd(close, n_fast=12, n_slow=26, fillna=False):
     Returns:
         pandas.Series: New feature generated.
     """
-    emafast = ema(close, n_fast, fillna)
-    emaslow = ema(close, n_slow, fillna)
-    macd = emafast - emaslow
-    if fillna:
-        macd = macd.replace([np.inf, -np.inf], np.nan).fillna(0)
-    return pd.Series(macd, name='MACD_%d_%d' % (n_fast, n_slow))
+    indicator = MACD(close=close, n_slow=n_slow, n_fast=n_fast, n_sign=9, fillna=fillna)
+    return indicator.macd()
 
 
 def macd_signal(close, n_fast=12, n_slow=26, n_sign=9, fillna=False):
@@ -122,13 +128,8 @@ def macd_signal(close, n_fast=12, n_slow=26, n_sign=9, fillna=False):
     Returns:
         pandas.Series: New feature generated.
     """
-    emafast = ema(close, n_fast, fillna)
-    emaslow = ema(close, n_slow, fillna)
-    macd = emafast - emaslow
-    macd_signal = ema(macd, n_sign, fillna)
-    if fillna:
-        macd_signal = macd_signal.replace([np.inf, -np.inf], np.nan).fillna(0)
-    return pd.Series(macd_signal, name='MACD_sign')
+    indicator = MACD(close=close, n_slow=n_slow, n_fast=n_fast, n_sign=n_sign, fillna=fillna)
+    return indicator.macd_signal()
 
 
 def macd_diff(close, n_fast=12, n_slow=26, n_sign=9, fillna=False):
@@ -148,14 +149,8 @@ def macd_diff(close, n_fast=12, n_slow=26, n_sign=9, fillna=False):
     Returns:
         pandas.Series: New feature generated.
     """
-    emafast = ema(close, n_fast, fillna)
-    emaslow = ema(close, n_slow, fillna)
-    macd = emafast - emaslow
-    macdsign = ema(macd, n_sign, fillna)
-    macd_diff = macd - macdsign
-    if fillna:
-        macd_diff = macd_diff.replace([np.inf, -np.inf], np.nan).fillna(0)
-    return pd.Series(macd_diff, name='MACD_diff')
+    indicator = MACD(close=close, n_slow=n_slow, n_fast=n_fast, n_sign=n_sign, fillna=fillna)
+    return indicator.macd_diff()
 
 
 def ema_indicator(close, n=12, fillna=False):

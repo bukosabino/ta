@@ -112,20 +112,12 @@ def add_trend_ta(df, high, low, close, fillna=False, colprefix=""):
     Returns:
         pandas.core.frame.DataFrame: Dataframe with new features.
     """
-    df['{}trend_macd'.format(colprefix)] = macd(df[close],
-                                                n_fast=12,
-                                                n_slow=26,
-                                                fillna=fillna)
-    df['{}trend_macd_signal'.format(colprefix)] = macd_signal(df[close],
-                                                              n_fast=12,
-                                                              n_slow=26,
-                                                              n_sign=9,
-                                                              fillna=fillna)
-    df['{}trend_macd_diff'.format(colprefix)] = macd_diff(df[close],
-                                                          n_fast=12,
-                                                          n_slow=26,
-                                                          n_sign=9,
-                                                          fillna=fillna)
+    # MACD
+    indicator_macd = MACD(df[close], n_fast=12, n_slow=26, n_sign=9, fillna=fillna)
+    df[f'{colprefix}trend_macd'] = indicator_macd.macd()
+    df[f'{colprefix}trend_macd_signal'] = indicator_macd.macd_signal()
+    df[f'{colprefix}trend_macd_diff'] = indicator_macd.macd_diff()
+
     df['{}trend_ema_fast'.format(colprefix)] = ema_indicator(df[close],
                                                              n=12,
                                                              fillna=fillna)
