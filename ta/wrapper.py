@@ -2,7 +2,7 @@ import pandas as pd
 
 from .momentum import *
 from .others import *
-from .trend import *
+from .trend import * # AroonIndicator, MACD, EMAIndicator
 from ta.volatility import AverageTrueRange, BollingerBands, KeltnerChannel, DonchianChannel
 from .volume import *
 
@@ -118,12 +118,12 @@ def add_trend_ta(df, high, low, close, fillna=False, colprefix=""):
     df[f'{colprefix}trend_macd_signal'] = indicator_macd.macd_signal()
     df[f'{colprefix}trend_macd_diff'] = indicator_macd.macd_diff()
 
-    df['{}trend_ema_fast'.format(colprefix)] = ema_indicator(df[close],
-                                                             n=12,
-                                                             fillna=fillna)
-    df['{}trend_ema_slow'.format(colprefix)] = ema_indicator(df[close],
-                                                             n=26,
-                                                             fillna=fillna)
+    # EMAs
+    df['{}trend_ema_fast'.format(colprefix)] = EMAIndicator(
+        df[close], n=12, fillna=fillna).ema_indicator()
+    df['{}trend_ema_slow'.format(colprefix)] = EMAIndicator(
+        df[close], n=26, fillna=fillna).ema_indicator()
+
     df['{}trend_adx'.format(colprefix)] = adx(df[high],
                                               df[low],
                                               df[close],

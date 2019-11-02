@@ -90,6 +90,51 @@ class MACD(IndicatorMixin):
         return pd.Series(macd_diff, name=f'MACD_diff_{self.n_fast}_{self.n_slow}')
 
 
+class EMAIndicator(IndicatorMixin):
+    """EMA
+
+    Exponential Moving Average
+    """
+
+    def __init__(self, close : pd.Series, n : int = 14, fillna : bool = False):
+        """
+        Args:
+            close(pandas.Series): dataset 'Close' column.
+            n(int): n period.
+            fillna(bool): if True, fill nan values.
+        """
+        self.close = close
+        self.n = n
+        self.fillna = fillna
+
+    def ema_indicator(self) -> pd.Series:
+        """EMA
+
+        Exponential Moving Average
+
+        Returns:
+            pandas.Series: New feature generated.
+        """
+        ema_ = ema(self.close, self.n, self.fillna)
+        return pd.Series(ema_, name=f'ema_{self.n}')
+
+
+def ema_indicator(close, n=12, fillna=False):
+    """EMA
+
+    Exponential Moving Average
+
+    Returns:
+        pandas.Series: New feature generated.
+    """
+    indicator = EMAIndicator(close=close, n=n, fillna=fillna)
+    return indicator.ema_indicator()
+    """
+    ema_ = ema(close, n, fillna)
+    return pd.Series(ema_, name='ema')
+    """
+
+
 def macd(close, n_fast=12, n_slow=26, fillna=False):
     """Moving Average Convergence Divergence (MACD)
 
