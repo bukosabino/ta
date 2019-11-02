@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 .. module:: momentum
    :synopsis: Momentum Indicators.
@@ -8,8 +7,6 @@
 """
 import numpy as np
 import pandas as pd
-
-from .utils import *
 
 
 def rsi(close, n=14, fillna=False):
