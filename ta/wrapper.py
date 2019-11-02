@@ -1,10 +1,9 @@
-# -*- coding: utf-8 -*-
 import pandas as pd
 
 from .momentum import *
 from .others import *
 from .trend import *
-from .volatility import *
+from ta.volatility import AverageTrueRange, BollingerBands, KeltnerChannel, DonchianChannel
 from .volume import *
 
 
@@ -206,14 +205,12 @@ def add_trend_ta(df, high, low, close, fillna=False, colprefix=""):
                                                                 n3=52,
                                                                 visual=True,
                                                                 fillna=fillna)
-    df['{}trend_aroon_up'.format(colprefix)] = aroon_up(df[close], n=25,
-                                                        fillna=fillna)
-    df['{}trend_aroon_down'.format(colprefix)] = aroon_down(df[close], n=25,
-                                                            fillna=fillna)
-    df['{}trend_aroon_ind'.format(colprefix)] = (
-        df['{}trend_aroon_up'.format(colprefix)] -
-        df['{}trend_aroon_down'.format(colprefix)]
-    )
+
+    # Aroon Indicator
+    indicator = AroonIndicator(df[close], n=25, fillna=fillna)
+    df[f'{colprefix}trend_aroon_up'] = indicator.aroon_up()
+    df[f'{colprefix}trend_aroon_down'] = indicator.aroon_down()
+    df[f'{colprefix}trend_aroon_ind'] = indicator.aroon_indicator()
     return df
 
 

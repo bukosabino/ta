@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 .. module:: trend
    :synopsis: Trend Indicators.
@@ -9,7 +8,76 @@
 import numpy as np
 import pandas as pd
 
-from .utils import *
+from .utils import IndicatorMixin, ema, get_min_max
+
+
+class AroonIndicator(IndicatorMixin):
+    """Aroon Indicator
+
+    Identify when trends are likely to change direction.
+
+    Aroon Up - ((N - Days Since N-day High) / N) x 100
+    Aroon Down - ((N - Days Since N-day Low) / N) x 100
+
+    https://www.investopedia.com/terms/a/aroon.asp
+    """
+
+    def __init__(self, close : pd.Series, n : int = 25, fillna : bool = False):
+        """
+        Args:
+            close(pandas.Series): dataset 'Close' column.
+            n(int): n period.
+            fillna(bool): if True, fill nan values.
+        """
+        self.close = close
+        self.n = n
+        self.fillna = fillna
+
+        rolling_close = self.close.rolling(self.n, min_periods=0)
+        self.aroon_up_ = rolling_close.apply(
+            lambda x: float(np.argmax(x) + 1) / self.n * 100, raw=True)
+        self.aroon_down_ = rolling_close.apply(
+            lambda x: float(np.argmin(x) + 1) / self.n * 100, raw=True)
+
+    def aroon_up(self) -> pd.Series:
+        aroon_up = self.check_fillna(self.aroon_up_, value=0)
+        return pd.Series(aroon_up, name=f'aroon_up_{self.n}')
+
+    def aroon_down(self) -> pd.Series:
+        aroon_down = self.check_fillna(self.aroon_down_, value=0)
+        return pd.Series(aroon_down, name=f'aroon_down_{self.n}')
+
+    def aroon_indicator(self) -> pd.Series:
+        aroon_diff = self.aroon_up_ - self.aroon_down_
+        aroon_diff = self.check_fillna(aroon_diff, value=0)
+        return pd.Series(aroon_diff, name=f'aroon_ind_{self.n}')
+
+
+class MACD(IndicatorMixin):
+    """
+    """
+
+    def __init__(self, high : pd.Series, low : pd.Series, close : pd.Series, n : int = 14, fillna : bool = False):
+        """
+        Args:
+            high(pandas.Series): dataset 'High' column.
+            low(pandas.Series): dataset 'Low' column.
+            close(pandas.Series): dataset 'Close' column.
+            n(int): n period.
+            fillna(bool): if True, fill nan values.
+        """
+        self.high = high
+        self.low = low
+        self.close = close
+        self.n = n
+        self.fillna = fillna
+        self._run()
+
+    def _run(self):
+        pass
+
+    def indicator(self) -> pd.Series:
+        pass
 
 
 def macd(close, n_fast=12, n_slow=26, fillna=False):
@@ -642,10 +710,8 @@ def aroon_up(close, n=25, fillna=False):
         pandas.Series: New feature generated.
 
     """
-    aroon_up = close.rolling(n, min_periods=0).apply(lambda x: float(np.argmax(x) + 1) / n * 100, raw=True)
-    if fillna:
-        aroon_up = aroon_up.replace([np.inf, -np.inf], np.nan).fillna(0)
-    return pd.Series(aroon_up, name='aroon_up'+str(n))
+    indicator = AroonIndicator(close=close, n=n, fillna=fillna)
+    return indicator.aroon_up()
 
 
 def aroon_down(close, n=25, fillna=False):
@@ -664,7 +730,5 @@ def aroon_down(close, n=25, fillna=False):
     Returns:
         pandas.Series: New feature generated.
     """
-    aroon_down = close.rolling(n, min_periods=0).apply(lambda x: float(np.argmin(x) + 1) / n * 100, raw=True)
-    if fillna:
-        aroon_down = aroon_down.replace([np.inf, -np.inf], np.nan).fillna(0)
-    return pd.Series(aroon_down, name='aroon_down'+str(n))
+    indicator = AroonIndicator(close=close, n=n, fillna=fillna)
+    return indicator.aroon_down()
