@@ -2,7 +2,7 @@ import pandas as pd
 
 from .momentum import *
 from .others import *
-from .trend import * # AroonIndicator, MACD, EMAIndicator, TRIXIndicator, MassIndex
+from .trend import * # AroonIndicator, MACD, EMAIndicator, TRIXIndicator, MassIndex, IchimokuIndicator
 from ta.volatility import AverageTrueRange, BollingerBands, KeltnerChannel, DonchianChannel
 from .volume import *
 
@@ -181,6 +181,15 @@ def add_trend_ta(df, high, low, close, fillna=False, colprefix=""):
     df['{}trend_kst_diff'.format(colprefix)] = (
         df['{}trend_kst'.format(colprefix)] -
         df['{}trend_kst_sig'.format(colprefix)])
+
+    indicator = IchimokuIndicator(high=df[high], low=df[low], n1=9, n2=26, n3=52, visual=False, fillna=fillna)
+    df[f'{colprefix}trend_ichimoku_a'] = indicator.ichimoku_a()
+    df[f'{colprefix}trend_ichimoku_b'] = indicator.ichimoku_b()
+    indicator = IchimokuIndicator(high=df[high], low=df[low], n1=9, n2=26, n3=52, visual=True, fillna=fillna)
+    df[f'{colprefix}trend_visual_ichimoku_a'] = indicator.ichimoku_a()
+    df[f'{colprefix}trend_visual_ichimoku_b'] = indicator.ichimoku_b()
+
+    """
     df['{}trend_ichimoku_a'.format(colprefix)] = ichimoku_a(df[high], df[low],
                                                             n1=9, n2=26,
                                                             fillna=fillna)
@@ -201,6 +210,7 @@ def add_trend_ta(df, high, low, close, fillna=False, colprefix=""):
                                                                 n3=52,
                                                                 visual=True,
                                                                 fillna=fillna)
+    """
 
     # Aroon Indicator
     indicator = AroonIndicator(df[close], n=25, fillna=fillna)
@@ -290,12 +300,16 @@ def add_all_ta_features(df, open, high, low, close, volume, fillna=False,
     Returns:
         pandas.core.frame.DataFrame: Dataframe with new features.
     """
+    """
     df = add_volume_ta(df, high, low, close, volume, fillna=fillna,
                        colprefix=colprefix)
     df = add_volatility_ta(df, high, low, close, fillna=fillna,
                            colprefix=colprefix)
+    """
     df = add_trend_ta(df, high, low, close, fillna=fillna, colprefix=colprefix)
+    """
     df = add_momentum_ta(df, high, low, close, volume, fillna=fillna,
                          colprefix=colprefix)
     df = add_others_ta(df, close, fillna=fillna, colprefix=colprefix)
+    """
     return df

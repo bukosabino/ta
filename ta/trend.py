@@ -119,6 +119,115 @@ class EMAIndicator(IndicatorMixin):
         return pd.Series(ema_, name=f'ema_{self.n}')
 
 
+class TRIXIndicator(IndicatorMixin):
+    """Trix (TRIX)
+
+    Shows the percent rate of change of a triple exponentially smoothed moving
+    average.
+
+    http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:trix
+    """
+
+    def __init__(self, close : pd.Series, n : int = 15, fillna : bool = False):
+        """
+        Args:
+            close(pandas.Series): dataset 'Close' column.
+            n(int): n period.
+            fillna(bool): if True, fill nan values.
+        """
+        self.close = close
+        self.n = n
+        self.fillna = fillna
+
+        ema1 = ema(self.close, self.n, self.fillna)
+        ema2 = ema(ema1, self.n, self.fillna)
+        ema3 = ema(ema2, self.n, self.fillna)
+        self.trix_ = (ema3 - ema3.shift(1, fill_value=ema3.mean())) / ema3.shift(1, fill_value=ema3.mean())
+        self.trix_ *= 100
+
+    def trix(self) -> pd.Series:
+        trix = self.check_fillna(self.trix_, value=0)
+        return pd.Series(trix, name=f'trix_{self.n}')
+
+
+class MassIndex(IndicatorMixin):
+    """Mass Index (MI)
+
+    It uses the high-low range to identify trend reversals based on range
+    expansions. It identifies range bulges that can foreshadow a reversal of
+    the current trend.
+
+    http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:mass_index
+
+    """
+
+    def __init__(self, high : pd.Series, low : pd.Series, n : int = 9, n2 : int = 25, fillna : bool = False):
+        """
+        Args:
+            high(pandas.Series): dataset 'High' column.
+            low(pandas.Series): dataset 'Low' column.
+            n(int): n low period.
+            n2(int): n high period.
+            fillna(bool): if True, fill nan values.
+        """
+        self.high = high
+        self.low = low
+        self.n = n
+        self.n2 = n2
+        self.fillna = fillna
+
+        amplitude = self.high - self.low
+        ema1 = ema(amplitude, self.n, self.fillna)
+        ema2 = ema(ema1, self.n, self.fillna)
+        mass = ema1 / ema2
+        self.mass = mass.rolling(self.n2, min_periods=0).sum()
+
+    def mass_index(self) -> pd.Series:
+        mass = self.check_fillna(self.mass, value=0)
+        return pd.Series(mass, name=f'mass_index_{self.n}_{self.n2}')
+
+
+class IchimokuIndicator(IndicatorMixin):
+    """Ichimoku Kinkō Hyō (Ichimoku)
+
+    http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:ichimoku_cloud
+
+    """
+
+    def __init__(self, high : pd.Series, low : pd.Series, n1 : int = 9, n2 : int = 26, n3 : int = 52, visual : bool = False, fillna : bool = False):
+        """
+        Args:
+            high(pandas.Series): dataset 'High' column.
+            low(pandas.Series): dataset 'Low' column.
+            n1(int): n1 low period.
+            n2(int): n2 medium period.
+            n3(int): n3 high period.
+            visual(bool): if True, shift n2 values.
+            fillna(bool): if True, fill nan values.
+        """
+        self.high = high
+        self.low = low
+        self.n1 = n1
+        self.n2 = n2
+        self.n3 = n3
+        self.visual = visual
+        self.fillna = fillna
+
+    def ichimoku_a(self) -> pd.Series:
+        conv = 0.5 * (self.high.rolling(self.n1, min_periods=0).max() + self.low.rolling(self.n1, min_periods=0).min())
+        base = 0.5 * (self.high.rolling(self.n2, min_periods=0).max() + self.low.rolling(self.n2, min_periods=0).min())
+        spana = 0.5 * (conv + base)
+        spana = spana.shift(self.n2, fill_value=spana.mean()) if self.visual else spana
+        spana = self.check_fillna(spana, method='backfill')
+        return pd.Series(spana, name=f'ichimoku_a_{self.n1}_{self.n2}')
+
+    def ichimoku_b(self) -> pd.Series:
+        spanb = 0.5 * (self.high.rolling(self.n3, min_periods=0).max() + self.low.rolling(self.n3, min_periods=0).min())
+        spanb = spanb.shift(self.n2, fill_value=spanb.mean()) if self.visual else spanb
+        spanb = self.check_fillna(spanb, method='backfill')
+        return pd.Series(spanb, name=f'ichimoku_b_{self.n1}_{self.n2}')
+
+
 def ema_indicator(close, n=12, fillna=False):
     """EMA
 
@@ -129,10 +238,6 @@ def ema_indicator(close, n=12, fillna=False):
     """
     indicator = EMAIndicator(close=close, n=n, fillna=fillna)
     return indicator.ema_indicator()
-    """
-    ema_ = ema(close, n, fillna)
-    return pd.Series(ema_, name='ema')
-    """
 
 
 def macd(close, n_fast=12, n_slow=26, fillna=False):
@@ -513,37 +618,6 @@ def vortex_indicator_neg(high, low, close, n=14, fillna=False):
     return pd.Series(vin, name='vin')
 
 
-class TRIXIndicator(IndicatorMixin):
-    """Trix (TRIX)
-
-    Shows the percent rate of change of a triple exponentially smoothed moving
-    average.
-
-    http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:trix
-    """
-
-    def __init__(self, close : pd.Series, n : int = 15, fillna : bool = False):
-        """
-        Args:
-            close(pandas.Series): dataset 'Close' column.
-            n(int): n period.
-            fillna(bool): if True, fill nan values.
-        """
-        self.close = close
-        self.n = n
-        self.fillna = fillna
-
-        ema1 = ema(self.close, self.n, self.fillna)
-        ema2 = ema(ema1, self.n, self.fillna)
-        ema3 = ema(ema2, self.n, self.fillna)
-        self.trix_ = (ema3 - ema3.shift(1, fill_value=ema3.mean())) / ema3.shift(1, fill_value=ema3.mean())
-        self.trix_ *= 100
-
-    def trix(self) -> pd.Series:
-        trix = self.check_fillna(self.trix_, value=0)
-        return pd.Series(trix, name=f'trix_{self.n}')
-
-
 def trix(close, n=15, fillna=False):
     """Trix (TRIX)
 
@@ -562,46 +636,6 @@ def trix(close, n=15, fillna=False):
     """
     indicator = TRIXIndicator(close=close, n=n, fillna=fillna)
     return indicator.trix()
-    """
-    ema1 = ema(close, n, fillna)
-    ema2 = ema(ema1, n, fillna)
-    ema3 = ema(ema2, n, fillna)
-    trix = (ema3 - ema3.shift(1, fill_value=ema3.mean())) / ema3.shift(1, fill_value=ema3.mean())
-    trix *= 100
-    if fillna:
-        trix = trix.replace([np.inf, -np.inf], np.nan).fillna(0)
-    return pd.Series(trix, name='trix_'+str(n))
-    """
-
-
-class MassIndex(IndicatorMixin):
-    """
-    """
-
-    def __init__(self, high : pd.Series, low : pd.Series, n : int = 9, n2 : int = 25, fillna : bool = False):
-        """
-        Args:
-            high(pandas.Series): dataset 'High' column.
-            low(pandas.Series): dataset 'Low' column.
-            n(int): n low period.
-            n2(int): n high period.
-            fillna(bool): if True, fill nan values.
-        """
-        self.high = high
-        self.low = low
-        self.n = n
-        self.n2 = n2
-        self.fillna = fillna
-
-        amplitude = self.high - self.low
-        ema1 = ema(amplitude, self.n, self.fillna)
-        ema2 = ema(ema1, self.n, self.fillna)
-        mass = ema1 / ema2
-        self.mass = mass.rolling(self.n2, min_periods=0).sum()
-
-    def mass_index(self) -> pd.Series:
-        mass = self.check_fillna(self.mass, value=0)
-        return pd.Series(mass, name=f'mass_index_{self.n}_{self.n2}')
 
 
 def mass_index(high, low, n=9, n2=25, fillna=False):
@@ -774,10 +808,15 @@ def ichimoku_a(high, low, n1=9, n2=26, visual=False, fillna=False):
         low(pandas.Series): dataset 'Low' column.
         n1(int): n1 low period.
         n2(int): n2 medium period.
+        visual(bool): if True, shift n2 values.
         fillna(bool): if True, fill nan values.
 
     Returns:
         pandas.Series: New feature generated.
+    """
+    indicator = IchimokuIndicator(high=high, low=low, n1=n1, n2=n2, n3=52, visual=visual, fillna=fillna)
+    return indicator.ichimoku_a()
+
     """
     conv = 0.5 * (high.rolling(n1, min_periods=0).max() + low.rolling(n1, min_periods=0).min())
     base = 0.5 * (high.rolling(n2, min_periods=0).max() + low.rolling(n2, min_periods=0).min())
@@ -791,6 +830,7 @@ def ichimoku_a(high, low, n1=9, n2=26, visual=False, fillna=False):
         spana = spana.replace([np.inf, -np.inf], np.nan).fillna(method='backfill')
 
     return pd.Series(spana, name='ichimoku_a_'+str(n2))
+    """
 
 
 def ichimoku_b(high, low, n2=26, n3=52, visual=False, fillna=False):
@@ -805,10 +845,15 @@ def ichimoku_b(high, low, n2=26, n3=52, visual=False, fillna=False):
         low(pandas.Series): dataset 'Low' column.
         n2(int): n2 medium period.
         n3(int): n3 high period.
+        visual(bool): if True, shift n2 values.
         fillna(bool): if True, fill nan values.
 
     Returns:
         pandas.Series: New feature generated.
+    """
+    indicator = IchimokuIndicator(high=high, low=low, n1=9, n2=n2, n3=n3, visual=visual, fillna=fillna)
+    return indicator.ichimoku_b()
+
     """
     spanb = 0.5 * (high.rolling(n3, min_periods=0).max() + low.rolling(n3, min_periods=0).min())
 
@@ -819,6 +864,7 @@ def ichimoku_b(high, low, n2=26, n3=52, visual=False, fillna=False):
         spanb = spanb.replace([np.inf, -np.inf], np.nan).fillna(method='backfill')
 
     return pd.Series(spanb, name='ichimoku_b_'+str(n2))
+    """
 
 
 def aroon_up(close, n=25, fillna=False):
