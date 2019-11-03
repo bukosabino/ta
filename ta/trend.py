@@ -817,21 +817,6 @@ def ichimoku_a(high, low, n1=9, n2=26, visual=False, fillna=False):
     indicator = IchimokuIndicator(high=high, low=low, n1=n1, n2=n2, n3=52, visual=visual, fillna=fillna)
     return indicator.ichimoku_a()
 
-    """
-    conv = 0.5 * (high.rolling(n1, min_periods=0).max() + low.rolling(n1, min_periods=0).min())
-    base = 0.5 * (high.rolling(n2, min_periods=0).max() + low.rolling(n2, min_periods=0).min())
-
-    spana = 0.5 * (conv + base)
-
-    if visual:
-        spana = spana.shift(n2, fill_value=spana.mean())
-
-    if fillna:
-        spana = spana.replace([np.inf, -np.inf], np.nan).fillna(method='backfill')
-
-    return pd.Series(spana, name='ichimoku_a_'+str(n2))
-    """
-
 
 def ichimoku_b(high, low, n2=26, n3=52, visual=False, fillna=False):
     """Ichimoku Kinkō Hyō (Ichimoku)
@@ -853,18 +838,6 @@ def ichimoku_b(high, low, n2=26, n3=52, visual=False, fillna=False):
     """
     indicator = IchimokuIndicator(high=high, low=low, n1=9, n2=n2, n3=n3, visual=visual, fillna=fillna)
     return indicator.ichimoku_b()
-
-    """
-    spanb = 0.5 * (high.rolling(n3, min_periods=0).max() + low.rolling(n3, min_periods=0).min())
-
-    if visual:
-        spanb = spanb.shift(n2, fill_value=spanb.mean())
-
-    if fillna:
-        spanb = spanb.replace([np.inf, -np.inf], np.nan).fillna(method='backfill')
-
-    return pd.Series(spanb, name='ichimoku_b_'+str(n2))
-    """
 
 
 def aroon_up(close, n=25, fillna=False):
