@@ -421,6 +421,35 @@ def adx_neg(high, low, close, n=14, fillna=False):
     return pd.Series(din, name='adx_neg')
 
 
+class VortexIndicator(IndicatorMixin):
+    """Vortex Indicator (VI)
+
+    http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:vortex_indicator
+
+    """
+
+    def __init__(self, high : pd.Series, low : pd.Series, close : pd.Series, n : int = 14, fillna : bool = False):
+        """
+        Args:
+            high(pandas.Series): dataset 'High' column.
+            low(pandas.Series): dataset 'Low' column.
+            close(pandas.Series): dataset 'Close' column.
+            n(int): n period.
+            fillna(bool): if True, fill nan values.
+        """
+        self.high = high
+        self.low = low
+        self.close = close
+        self.n = n
+        self.fillna = fillna
+
+    def vortex_indicator_pos(high, low, close, n=14, fillna=False):
+        pass
+
+    def vortex_indicator_neg(high, low, close, n=14, fillna=False):
+        pass
+
+
 def vortex_indicator_pos(high, low, close, n=14, fillna=False):
     """Vortex Indicator (VI)
 
@@ -484,6 +513,37 @@ def vortex_indicator_neg(high, low, close, n=14, fillna=False):
     return pd.Series(vin, name='vin')
 
 
+class TRIXIndicator(IndicatorMixin):
+    """Trix (TRIX)
+
+    Shows the percent rate of change of a triple exponentially smoothed moving
+    average.
+
+    http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:trix
+    """
+
+    def __init__(self, close : pd.Series, n : int = 15, fillna : bool = False):
+        """
+        Args:
+            close(pandas.Series): dataset 'Close' column.
+            n(int): n period.
+            fillna(bool): if True, fill nan values.
+        """
+        self.close = close
+        self.n = n
+        self.fillna = fillna
+
+        ema1 = ema(self.close, self.n, self.fillna)
+        ema2 = ema(ema1, self.n, self.fillna)
+        ema3 = ema(ema2, self.n, self.fillna)
+        self.trix_ = (ema3 - ema3.shift(1, fill_value=ema3.mean())) / ema3.shift(1, fill_value=ema3.mean())
+        self.trix_ *= 100
+
+    def trix(self) -> pd.Series:
+        trix = self.check_fillna(self.trix_, value=0)
+        return pd.Series(trix, name=f'trix_{self.n}')
+
+
 def trix(close, n=15, fillna=False):
     """Trix (TRIX)
 
@@ -500,6 +560,9 @@ def trix(close, n=15, fillna=False):
     Returns:
         pandas.Series: New feature generated.
     """
+    indicator = TRIXIndicator(close=close, n=n, fillna=fillna)
+    return indicator.trix()
+    """
     ema1 = ema(close, n, fillna)
     ema2 = ema(ema1, n, fillna)
     ema3 = ema(ema2, n, fillna)
@@ -508,6 +571,37 @@ def trix(close, n=15, fillna=False):
     if fillna:
         trix = trix.replace([np.inf, -np.inf], np.nan).fillna(0)
     return pd.Series(trix, name='trix_'+str(n))
+    """
+
+
+class MassIndex(IndicatorMixin):
+    """
+    """
+
+    def __init__(self, high : pd.Series, low : pd.Series, n : int = 9, n2 : int = 25, fillna : bool = False):
+        """
+        Args:
+            high(pandas.Series): dataset 'High' column.
+            low(pandas.Series): dataset 'Low' column.
+            n(int): n low period.
+            n2(int): n high period.
+            fillna(bool): if True, fill nan values.
+        """
+        self.high = high
+        self.low = low
+        self.n = n
+        self.n2 = n2
+        self.fillna = fillna
+
+        amplitude = self.high - self.low
+        ema1 = ema(amplitude, self.n, self.fillna)
+        ema2 = ema(ema1, self.n, self.fillna)
+        mass = ema1 / ema2
+        self.mass = mass.rolling(self.n2, min_periods=0).sum()
+
+    def mass_index(self) -> pd.Series:
+        mass = self.check_fillna(self.mass, value=0)
+        return pd.Series(mass, name=f'mass_index_{self.n}_{self.n2}')
 
 
 def mass_index(high, low, n=9, n2=25, fillna=False):
@@ -530,14 +624,8 @@ def mass_index(high, low, n=9, n2=25, fillna=False):
         pandas.Series: New feature generated.
 
     """
-    amplitude = high - low
-    ema1 = ema(amplitude, n, fillna)
-    ema2 = ema(ema1, n, fillna)
-    mass = ema1 / ema2
-    mass = mass.rolling(n2, min_periods=0).sum()
-    if fillna:
-        mass = mass.replace([np.inf, -np.inf], np.nan).fillna(n2)
-    return pd.Series(mass, name='mass_index_'+str(n))
+    indicator = MassIndex(high=high, low=low, n=n, n2=n2, fillna=fillna)
+    return indicator.mass_index()
 
 
 def cci(high, low, close, n=20, c=0.015, fillna=False):

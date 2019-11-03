@@ -2,7 +2,7 @@ import pandas as pd
 
 from .momentum import *
 from .others import *
-from .trend import * # AroonIndicator, MACD, EMAIndicator
+from .trend import * # AroonIndicator, MACD, EMAIndicator, TRIXIndicator, MassIndex
 from ta.volatility import AverageTrueRange, BollingerBands, KeltnerChannel, DonchianChannel
 from .volume import *
 
@@ -70,30 +70,30 @@ def add_volatility_ta(df, high, low, close, fillna=False, colprefix=""):
 
     # Average True Range
     indicator_atr = AverageTrueRange(close=df[close], high=df[high], low=df[low], n=10, fillna=fillna)
-    df['{}volatility_atr'.format(colprefix)] = indicator_atr.average_true_range()
+    df[f'{colprefix}volatility_atr'] = indicator_atr.average_true_range()
 
     # Bollinger Bands
     indicator_bb = BollingerBands(close=df[close], n=20, ndev=2, fillna=fillna)
-    df['{}volatility_bbh'.format(colprefix)] = indicator_bb.bollinger_hband()
-    df['{}volatility_bbl'.format(colprefix)] = indicator_bb.bollinger_lband()
-    df['{}volatility_bbm'.format(colprefix)] = indicator_bb.bollinger_mavg()
-    df['{}volatility_bbhi'.format(colprefix)] = indicator_bb.bollinger_hband_indicator()
-    df['{}volatility_bbli'.format(colprefix)] = indicator_bb.bollinger_lband_indicator()
+    df[f'{colprefix}volatility_bbh'] = indicator_bb.bollinger_hband()
+    df[f'{colprefix}volatility_bbl'] = indicator_bb.bollinger_lband()
+    df[f'{colprefix}volatility_bbm'] = indicator_bb.bollinger_mavg()
+    df[f'{colprefix}volatility_bbhi'] = indicator_bb.bollinger_hband_indicator()
+    df[f'{colprefix}volatility_bbli'] = indicator_bb.bollinger_lband_indicator()
 
     # Keltner Channel
     indicator_kc = KeltnerChannel(close=df[close], high=df[high], low=df[low], n=10, fillna=fillna)
-    df['{}volatility_kcc'.format(colprefix)] = indicator_kc.keltner_channel_central()
-    df['{}volatility_kch'.format(colprefix)] = indicator_kc.keltner_channel_hband()
-    df['{}volatility_kcl'.format(colprefix)] = indicator_kc.keltner_channel_lband()
-    df['{}volatility_kchi'.format(colprefix)] = indicator_kc.keltner_channel_hband_indicator()
-    df['{}volatility_kcli'.format(colprefix)] = indicator_kc.keltner_channel_lband_indicator()
+    df[f'{colprefix}volatility_kcc'] = indicator_kc.keltner_channel_central()
+    df[f'{colprefix}volatility_kch'] = indicator_kc.keltner_channel_hband()
+    df[f'{colprefix}volatility_kcl'] = indicator_kc.keltner_channel_lband()
+    df[f'{colprefix}volatility_kchi'] = indicator_kc.keltner_channel_hband_indicator()
+    df[f'{colprefix}volatility_kcli'] = indicator_kc.keltner_channel_lband_indicator()
 
     # Donchian Channel
     indicator_dc = DonchianChannel(close=df[close], n=20, fillna=fillna)
-    df['{}volatility_dcl'.format(colprefix)] = indicator_dc.donchian_channel_lband()
-    df['{}volatility_dch'.format(colprefix)] = indicator_dc.donchian_channel_hband()
-    df['{}volatility_dchi'.format(colprefix)] = indicator_dc.donchian_channel_hband_indicator()
-    df['{}volatility_dcli'.format(colprefix)] = indicator_dc.donchian_channel_lband_indicator()
+    df[f'{colprefix}volatility_dcl'] = indicator_dc.donchian_channel_lband()
+    df[f'{colprefix}volatility_dch'] = indicator_dc.donchian_channel_hband()
+    df[f'{colprefix}volatility_dchi'] = indicator_dc.donchian_channel_hband_indicator()
+    df[f'{colprefix}volatility_dcli'] = indicator_dc.donchian_channel_lband_indicator()
 
     return df
 
@@ -112,17 +112,18 @@ def add_trend_ta(df, high, low, close, fillna=False, colprefix=""):
     Returns:
         pandas.core.frame.DataFrame: Dataframe with new features.
     """
+
     # MACD
-    indicator_macd = MACD(df[close], n_fast=12, n_slow=26, n_sign=9, fillna=fillna)
+    indicator_macd = MACD(close=df[close], n_fast=12, n_slow=26, n_sign=9, fillna=fillna)
     df[f'{colprefix}trend_macd'] = indicator_macd.macd()
     df[f'{colprefix}trend_macd_signal'] = indicator_macd.macd_signal()
     df[f'{colprefix}trend_macd_diff'] = indicator_macd.macd_diff()
 
     # EMAs
-    df['{}trend_ema_fast'.format(colprefix)] = EMAIndicator(
-        df[close], n=12, fillna=fillna).ema_indicator()
-    df['{}trend_ema_slow'.format(colprefix)] = EMAIndicator(
-        df[close], n=26, fillna=fillna).ema_indicator()
+    df[f'{colprefix}trend_ema_fast'] = EMAIndicator(
+        close=df[close], n=12, fillna=fillna).ema_indicator()
+    df[f'{colprefix}trend_ema_slow'] = EMAIndicator(
+        close=df[close], n=26, fillna=fillna).ema_indicator()
 
     df['{}trend_adx'.format(colprefix)] = adx(df[high],
                                               df[low],
@@ -154,12 +155,15 @@ def add_trend_ta(df, high, low, close, fillna=False, colprefix=""):
     df['{}trend_vortex_diff'.format(colprefix)] = abs(
         df['{}trend_vortex_ind_pos'.format(colprefix)] -
         df['{}trend_vortex_ind_neg'.format(colprefix)])
-    df['{}trend_trix'.format(colprefix)] = trix(df[close], n=15, fillna=fillna)
-    df['{}trend_mass_index'.format(colprefix)] = mass_index(df[high],
-                                                            df[low],
-                                                            n=9,
-                                                            n2=25,
-                                                            fillna=fillna)
+
+    # TRIX Indicator
+    indicator = TRIXIndicator(close=df[close], n=15, fillna=fillna)
+    df[f'{colprefix}trend_trix'] = indicator.trix()
+
+    # Mass Index
+    indicator = MassIndex(high=df[high], low=df[low], n=9, n2=25, fillna=fillna)
+    df[f'{colprefix}trend_mass_index'] = indicator.mass_index()
+
     df['{}trend_cci'.format(colprefix)] = cci(df[high],
                                               df[low],
                                               df[close],
@@ -203,6 +207,7 @@ def add_trend_ta(df, high, low, close, fillna=False, colprefix=""):
     df[f'{colprefix}trend_aroon_up'] = indicator.aroon_up()
     df[f'{colprefix}trend_aroon_down'] = indicator.aroon_down()
     df[f'{colprefix}trend_aroon_ind'] = indicator.aroon_indicator()
+
     return df
 
 
