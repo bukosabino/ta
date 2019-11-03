@@ -32,7 +32,9 @@ class AroonIndicator(IndicatorMixin):
         self._close = close
         self._n = n
         self._fillna = fillna
+        self._run()
 
+    def _run(self):
         rolling_close = self._close.rolling(self._n, min_periods=0)
         self._aroon_up = rolling_close.apply(
             lambda x: float(np.argmax(x) + 1) / self._n * 100, raw=True)
@@ -70,7 +72,9 @@ class MACD(IndicatorMixin):
         self._n_fast = n_fast
         self._n_sign = n_sign
         self._fillna = fillna
+        self._run()
 
+    def _run(self):
         self._emafast = ema(self._close, self._n_fast, self._fillna)
         self._emaslow = ema(self._close, self._n_slow, self._fillna)
         self._macd = self._emafast - self._emaslow
@@ -138,7 +142,9 @@ class TRIXIndicator(IndicatorMixin):
         self._close = close
         self._n = n
         self._fillna = fillna
+        self._run()
 
+    def _run(self):
         ema1 = ema(self._close, self._n, self._fillna)
         ema2 = ema(ema1, self._n, self._fillna)
         ema3 = ema(ema2, self._n, self._fillna)
@@ -267,7 +273,9 @@ class KSTIndicator(IndicatorMixin):
         self._n4 = n4
         self._nsig = nsig
         self._fillna = fillna
+        self._run()
 
+    def _run(self):
         rocma1 = ((self._close - self._close.shift(self._r1, fill_value=self._close.mean()))
                   / self._close.shift(self._r1, fill_value=self._close.mean())).rolling(self._n1, min_periods=0).mean()
         rocma2 = ((self._close - self._close.shift(self._r2, fill_value=self._close.mean()))
@@ -291,6 +299,74 @@ class KSTIndicator(IndicatorMixin):
         kst_diff = self._kst - self._kst_sig
         kst_diff = self.check_fillna(kst_diff, value=0)
         return pd.Series(kst_diff, name='kst_diff')
+
+
+class DPOIndicator(IndicatorMixin):
+    """Detrended Price Oscillator (DPO)
+
+    Is an indicator designed to remove trend from price and make it easier to
+    identify cycles.
+
+    http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:detrended_price_osci
+    """
+    def __init__(self, close : pd.Series, n : int = 20, fillna : bool = False):
+        """
+        Args:
+            close(pandas.Series): dataset 'Close' column.
+            n(int): n period.
+            fillna(bool): if True, fill nan values.
+        """
+        self._close = close
+        self._n = n
+        self._fillna = fillna
+        self._run()
+
+    def _run(self):
+        self._dpo = self._close.shift(int((0.5 * self._n) + 1), fill_value=self._close.mean()) - self._close.rolling(self._n, min_periods=0).mean()
+
+    def dpo(self) -> pd.Series:
+        dpo = self.check_fillna(self._dpo, value=0)
+        return pd.Series(dpo, name='dpo_'+str(self._n))
+
+
+class CCIIndicator(IndicatorMixin):
+    """Commodity Channel Index (CCI)
+
+    CCI measures the difference between a security's price change and its
+    average price change. High positive readings indicate that prices are well
+    above their average, which is a show of strength. Low negative readings
+    indicate that prices are well below their average, which is a show of
+    weakness.
+
+    http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:commodity_channel_index_cci
+    """
+
+    def __init__(self, high : pd.Series, low : pd.Series, close : pd.Series, n : int = 20, c : float = 0.015, fillna : bool = False):
+        """
+        Args:
+            high(pandas.Series): dataset 'High' column.
+            low(pandas.Series): dataset 'Low' column.
+            close(pandas.Series): dataset 'Close' column.
+            n(int): n period.
+            c(int): constant.
+            fillna(bool): if True, fill nan values.
+        """
+        self._high = high
+        self._low = low
+        self._close = close
+        self._n = n
+        self._c = c
+        self._fillna = fillna
+        self._run()
+
+    def _run(self):
+        pp = (self._high + self._low + self._close) / 3.0
+        mad = lambda x : np.mean(np.abs(x-np.mean(x)))
+        self._cci = ((pp - pp.rolling(self._n, min_periods=0).mean()) / (self._c * pp.rolling(self._n, min_periods=0).apply(mad, True)))
+
+    def cci(self) -> pd.Series:
+        cci = self.check_fillna(self._cci, value=0)
+        return pd.Series(cci, name='cci')
 
 
 def ema_indicator(close, n=12, fillna=False):
@@ -366,23 +442,6 @@ def macd_diff(close, n_fast=12, n_slow=26, n_sign=9, fillna=False):
     """
     indicator = MACD(close=close, n_slow=n_slow, n_fast=n_fast, n_sign=n_sign, fillna=fillna)
     return indicator.macd_diff()
-
-
-def ema_indicator(close, n=12, fillna=False):
-    """EMA
-
-    Exponential Moving Average via Pandas
-
-    Args:
-        close(pandas.Series): dataset 'Close' column.
-        n_fast(int): n period short-term.
-        fillna(bool): if True, fill nan values.
-
-    Returns:
-        pandas.Series: New feature generated.
-    """
-    ema_ = ema(close, n, fillna)
-    return pd.Series(ema_, name='ema')
 
 
 def adx(high, low, close, n=14, fillna=False):
@@ -750,6 +809,9 @@ def cci(high, low, close, n=20, c=0.015, fillna=False):
         pandas.Series: New feature generated.
 
     """
+    indicator = CCIIndicator(high=high, low=low, close=close, n=n, c=c, fillna=fillna)
+    return indicator.cci()
+    """
     pp = (high + low + close) / 3.0
     mad = lambda x : np.mean(np.abs(x-np.mean(x)))
     cci = ((pp - pp.rolling(n, min_periods=0).mean())
@@ -757,6 +819,7 @@ def cci(high, low, close, n=20, c=0.015, fillna=False):
     if fillna:
         cci = cci.replace([np.inf, -np.inf], np.nan).fillna(0)
     return pd.Series(cci, name='cci')
+    """
 
 
 def dpo(close, n=20, fillna=False):
@@ -775,10 +838,14 @@ def dpo(close, n=20, fillna=False):
     Returns:
         pandas.Series: New feature generated.
     """
+    indicator = DPOIndicator(close=close, n=n, fillna=fillna)
+    return indicator.dpo()
+    """
     dpo = close.shift(int((0.5 * n) + 1), fill_value=close.mean()) - close.rolling(n, min_periods=0).mean()
     if fillna:
         dpo = dpo.replace([np.inf, -np.inf], np.nan).fillna(0)
     return pd.Series(dpo, name='dpo_'+str(n))
+    """
 
 
 def kst(close, r1=10, r2=15, r3=20, r4=30, n1=10, n2=10, n3=10, n4=15, fillna=False):
