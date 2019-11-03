@@ -171,6 +171,9 @@ def add_trend_ta(df, high, low, close, fillna=False, colprefix=""):
                                               c=0.015,
                                               fillna=fillna)
     df['{}trend_dpo'.format(colprefix)] = dpo(df[close], n=20, fillna=fillna)
+
+    # KST Indicator
+    """
     df['{}trend_kst'.format(colprefix)] = kst(df[close], r1=10, r2=15, r3=20,
                                               r4=30, n1=10, n2=10, n3=10,
                                               n4=15, fillna=fillna)
@@ -181,36 +184,21 @@ def add_trend_ta(df, high, low, close, fillna=False, colprefix=""):
     df['{}trend_kst_diff'.format(colprefix)] = (
         df['{}trend_kst'.format(colprefix)] -
         df['{}trend_kst_sig'.format(colprefix)])
+    """
+    indicator = KSTIndicator(close=df[close], r1=10, r2=15, r3=20,
+                                              r4=30, n1=10, n2=10, n3=10,
+                                              n4=15, nsig=9, fillna=fillna)
+    df[f'{colprefix}trend_kst'] = indicator.kst()
+    df[f'{colprefix}trend_kst_sig'] = indicator.kst_sig()
+    df[f'{colprefix}trend_kst_diff'] = indicator.kst_diff()
 
+    # Ichimoku Indicator
     indicator = IchimokuIndicator(high=df[high], low=df[low], n1=9, n2=26, n3=52, visual=False, fillna=fillna)
     df[f'{colprefix}trend_ichimoku_a'] = indicator.ichimoku_a()
     df[f'{colprefix}trend_ichimoku_b'] = indicator.ichimoku_b()
     indicator = IchimokuIndicator(high=df[high], low=df[low], n1=9, n2=26, n3=52, visual=True, fillna=fillna)
     df[f'{colprefix}trend_visual_ichimoku_a'] = indicator.ichimoku_a()
     df[f'{colprefix}trend_visual_ichimoku_b'] = indicator.ichimoku_b()
-
-    """
-    df['{}trend_ichimoku_a'.format(colprefix)] = ichimoku_a(df[high], df[low],
-                                                            n1=9, n2=26,
-                                                            fillna=fillna)
-    df['{}trend_ichimoku_b'.format(colprefix)] = ichimoku_b(df[high], df[low],
-                                                            n2=26, n3=52,
-                                                            fillna=fillna)
-    df['{}trend_visual_ichimoku_a'.format(colprefix)] = ichimoku_a(
-                                                            df[high],
-                                                            df[low],
-                                                            n1=9,
-                                                            n2=26,
-                                                            visual=True,
-                                                            fillna=fillna)
-    df['{}trend_visual_ichimoku_b'.format(colprefix)] = ichimoku_b(
-                                                                df[high],
-                                                                df[low],
-                                                                n2=26,
-                                                                n3=52,
-                                                                visual=True,
-                                                                fillna=fillna)
-    """
 
     # Aroon Indicator
     indicator = AroonIndicator(df[close], n=25, fillna=fillna)

@@ -228,6 +228,69 @@ class IchimokuIndicator(IndicatorMixin):
         return pd.Series(spanb, name=f'ichimoku_b_{self.n1}_{self.n2}')
 
 
+class KSTIndicator(IndicatorMixin):
+    """KST Oscillator (KST Signal)
+
+    It is useful to identify major stock market cycle junctures because its
+    formula is weighed to be more greatly influenced by the longer and more
+    dominant time spans, in order to better reflect the primary swings of stock
+    market cycle.
+
+    http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:know_sure_thing_kst
+    """
+
+    def __init__(self, close : pd.Series, r1 : int = 10, r2 : int = 15, r3 : int = 20, r4 : int = 30, n1 : int = 10, n2 : int = 10, n3 : int = 10, n4 : int = 15, nsig : int = 9, fillna : bool = False):
+        """
+        Args:
+            close(pandas.Series): dataset 'Close' column.
+            r1(int): r1 period.
+            r2(int): r2 period.
+            r3(int): r3 period.
+            r4(int): r4 period.
+            n1(int): n1 smoothed period.
+            n2(int): n2 smoothed period.
+            n3(int): n3 smoothed period.
+            n4(int): n4 smoothed period.
+            nsig(int): n period to signal.
+            fillna(bool): if True, fill nan values.
+        """
+        self.close = close
+        self.r1 = r1
+        self.r2 = r2
+        self.r3 = r3
+        self.r4 = r4
+        self.n1 = n1
+        self.n2 = n2
+        self.n3 = n3
+        self.n4 = n4
+        self.nsig = nsig
+        self.fillna = fillna
+
+        rocma1 = ((self.close - self.close.shift(self.r1, fill_value=self.close.mean()))
+                  / self.close.shift(self.r1, fill_value=self.close.mean())).rolling(self.n1, min_periods=0).mean()
+        rocma2 = ((self.close - self.close.shift(self.r2, fill_value=self.close.mean()))
+                  / self.close.shift(self.r2, fill_value=self.close.mean())).rolling(self.n2, min_periods=0).mean()
+        rocma3 = ((self.close - self.close.shift(self.r3, fill_value=self.close.mean()))
+                  / self.close.shift(self.r3, fill_value=self.close.mean())).rolling(self.n3, min_periods=0).mean()
+        rocma4 = ((self.close - self.close.shift(self.r4, fill_value=self.close.mean()))
+                  / self.close.shift(self.r4, fill_value=self.close.mean())).rolling(self.n4, min_periods=0).mean()
+        self.kst_ = 100 * (rocma1 + 2 * rocma2 + 3 * rocma3 + 4 * rocma4)
+        self.kst_sig_ = self.kst_.rolling(self.nsig, min_periods=0).mean()
+
+    def kst(self) -> pd.Series:
+        kst = self.check_fillna(self.kst_, value=0)
+        return pd.Series(kst, name='kst')
+
+    def kst_sig(self) -> pd.Series:
+        kst_sig = self.check_fillna(self.kst_sig_, value=0)
+        return pd.Series(kst_sig, name='kst_sig')
+
+    def kst_diff(self) -> pd.Series:
+        kst_diff = self.kst_ - self.kst_sig_
+        kst_diff = self.check_fillna(kst_diff, value=0)
+        return pd.Series(kst_diff, name='kst_diff')
+
+
 def ema_indicator(close, n=12, fillna=False):
     """EMA
 
@@ -741,18 +804,8 @@ def kst(close, r1=10, r2=15, r3=20, r4=30, n1=10, n2=10, n3=10, n4=15, fillna=Fa
     Returns:
         pandas.Series: New feature generated.
     """
-    rocma1 = ((close - close.shift(r1, fill_value=close.mean()))
-              / close.shift(r1, fill_value=close.mean())).rolling(n1, min_periods=0).mean()
-    rocma2 = ((close - close.shift(r2, fill_value=close.mean()))
-              / close.shift(r2, fill_value=close.mean())).rolling(n2, min_periods=0).mean()
-    rocma3 = ((close - close.shift(r3, fill_value=close.mean()))
-              / close.shift(r3, fill_value=close.mean())).rolling(n3, min_periods=0).mean()
-    rocma4 = ((close - close.shift(r4, fill_value=close.mean()))
-              / close.shift(r4, fill_value=close.mean())).rolling(n4, min_periods=0).mean()
-    kst = 100 * (rocma1 + 2 * rocma2 + 3 * rocma3 + 4 * rocma4)
-    if fillna:
-        kst = kst.replace([np.inf, -np.inf], np.nan).fillna(0)
-    return pd.Series(kst, name='kst')
+    indicator = KSTIndicator(close=close, r1=r1, r2=r2, r3=r3, r4=r4, n1=n1, n2=n2, n3=n3, n4=n4, nsig=9, fillna=fillna)
+    return indicator.kst()
 
 
 def kst_sig(close, r1=10, r2=15, r3=20, r4=30, n1=10, n2=10, n3=10, n4=15, nsig=9, fillna=False):
@@ -781,19 +834,8 @@ def kst_sig(close, r1=10, r2=15, r3=20, r4=30, n1=10, n2=10, n3=10, n4=15, nsig=
     Returns:
         pandas.Series: New feature generated.
     """
-    rocma1 = ((close - close.shift(r1, fill_value=close.mean()))
-              / close.shift(r1, fill_value=close.mean())).rolling(n1, min_periods=0).mean()
-    rocma2 = ((close - close.shift(r2, fill_value=close.mean()))
-              / close.shift(r2, fill_value=close.mean())).rolling(n2, min_periods=0).mean()
-    rocma3 = ((close - close.shift(r3, fill_value=close.mean()))
-              / close.shift(r3, fill_value=close.mean())).rolling(n3, min_periods=0).mean()
-    rocma4 = ((close - close.shift(r4, fill_value=close.mean()))
-              / close.shift(r4, fill_value=close.mean())).rolling(n4, min_periods=0).mean()
-    kst = 100 * (rocma1 + 2 * rocma2 + 3 * rocma3 + 4 * rocma4)
-    kst_sig = kst.rolling(nsig, min_periods=0).mean()
-    if fillna:
-        kst_sig = kst_sig.replace([np.inf, -np.inf], np.nan).fillna(0)
-    return pd.Series(kst_sig, name='kst_sig')
+    indicator = KSTIndicator(close=close, r1=r1, r2=r2, r3=r3, r4=r4, n1=n1, n2=n2, n3=n3, n4=n4, nsig=nsig, fillna=fillna)
+    return indicator.kst_sig()
 
 
 def ichimoku_a(high, low, n1=9, n2=26, visual=False, fillna=False):
