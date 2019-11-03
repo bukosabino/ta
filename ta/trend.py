@@ -29,28 +29,28 @@ class AroonIndicator(IndicatorMixin):
             n(int): n period.
             fillna(bool): if True, fill nan values.
         """
-        self.close = close
-        self.n = n
-        self.fillna = fillna
+        self._close = close
+        self._n = n
+        self._fillna = fillna
 
-        rolling_close = self.close.rolling(self.n, min_periods=0)
-        self.aroon_up_ = rolling_close.apply(
-            lambda x: float(np.argmax(x) + 1) / self.n * 100, raw=True)
-        self.aroon_down_ = rolling_close.apply(
-            lambda x: float(np.argmin(x) + 1) / self.n * 100, raw=True)
+        rolling_close = self._close.rolling(self._n, min_periods=0)
+        self._aroon_up = rolling_close.apply(
+            lambda x: float(np.argmax(x) + 1) / self._n * 100, raw=True)
+        self._aroon_down = rolling_close.apply(
+            lambda x: float(np.argmin(x) + 1) / self._n * 100, raw=True)
 
     def aroon_up(self) -> pd.Series:
-        aroon_up = self.check_fillna(self.aroon_up_, value=0)
-        return pd.Series(aroon_up, name=f'aroon_up_{self.n}')
+        aroon_up = self.check_fillna(self._aroon_up, value=0)
+        return pd.Series(aroon_up, name=f'aroon_up_{self._n}')
 
     def aroon_down(self) -> pd.Series:
-        aroon_down = self.check_fillna(self.aroon_down_, value=0)
-        return pd.Series(aroon_down, name=f'aroon_down_{self.n}')
+        aroon_down = self.check_fillna(self._aroon_down, value=0)
+        return pd.Series(aroon_down, name=f'aroon_down_{self._n}')
 
     def aroon_indicator(self) -> pd.Series:
-        aroon_diff = self.aroon_up_ - self.aroon_down_
+        aroon_diff = self._aroon_up - self._aroon_down
         aroon_diff = self.check_fillna(aroon_diff, value=0)
-        return pd.Series(aroon_diff, name=f'aroon_ind_{self.n}')
+        return pd.Series(aroon_diff, name=f'aroon_ind_{self._n}')
 
 
 class MACD(IndicatorMixin):
@@ -65,29 +65,29 @@ class MACD(IndicatorMixin):
             n_sign(int): n period to signal.
             fillna(bool): if True, fill nan values.
         """
-        self.close = close
-        self.n_slow = n_slow
-        self.n_fast = n_fast
-        self.n_sign = n_sign
-        self.fillna = fillna
+        self._close = close
+        self._n_slow = n_slow
+        self._n_fast = n_fast
+        self._n_sign = n_sign
+        self._fillna = fillna
 
-        self.emafast = ema(self.close, self.n_fast, self.fillna)
-        self.emaslow = ema(self.close, self.n_slow, self.fillna)
-        self.macd_ = self.emafast - self.emaslow
-        self.macd_signal_ = ema(self.macd_, self.n_sign, self.fillna)
-        self.macd_diff_ = self.macd_ - self.macd_signal_
+        self._emafast = ema(self._close, self._n_fast, self._fillna)
+        self._emaslow = ema(self._close, self._n_slow, self._fillna)
+        self._macd = self._emafast - self._emaslow
+        self._macd_signal = ema(self._macd, self._n_sign, self._fillna)
+        self._macd_diff = self._macd - self._macd_signal
 
     def macd(self) -> pd.Series:
-        macd = self.check_fillna(self.macd_, value=0)
-        return pd.Series(macd, name=f'MACD_{self.n_fast}_{self.n_slow}')
+        macd = self.check_fillna(self._macd, value=0)
+        return pd.Series(macd, name=f'MACD_{self._n_fast}_{self._n_slow}')
 
     def macd_signal(self) -> pd.Series:
-        macd_diff = self.check_fillna(self.macd_signal_, value=0)
-        return pd.Series(macd_diff, name=f'MACD_sign_{self.n_fast}_{self.n_slow}')
+        macd_diff = self.check_fillna(self._macd_signal, value=0)
+        return pd.Series(macd_diff, name=f'MACD_sign_{self._n_fast}_{self._n_slow}')
 
     def macd_diff(self) -> pd.Series:
-        macd_diff = self.check_fillna(self.macd_diff_, value=0)
-        return pd.Series(macd_diff, name=f'MACD_diff_{self.n_fast}_{self.n_slow}')
+        macd_diff = self.check_fillna(self._macd_diff, value=0)
+        return pd.Series(macd_diff, name=f'MACD_diff_{self._n_fast}_{self._n_slow}')
 
 
 class EMAIndicator(IndicatorMixin):
@@ -103,9 +103,9 @@ class EMAIndicator(IndicatorMixin):
             n(int): n period.
             fillna(bool): if True, fill nan values.
         """
-        self.close = close
-        self.n = n
-        self.fillna = fillna
+        self._close = close
+        self._n = n
+        self._fillna = fillna
 
     def ema_indicator(self) -> pd.Series:
         """EMA
@@ -115,8 +115,8 @@ class EMAIndicator(IndicatorMixin):
         Returns:
             pandas.Series: New feature generated.
         """
-        ema_ = ema(self.close, self.n, self.fillna)
-        return pd.Series(ema_, name=f'ema_{self.n}')
+        ema_ = ema(self._close, self._n, self._fillna)
+        return pd.Series(ema_, name=f'ema_{self._n}')
 
 
 class TRIXIndicator(IndicatorMixin):
@@ -135,19 +135,19 @@ class TRIXIndicator(IndicatorMixin):
             n(int): n period.
             fillna(bool): if True, fill nan values.
         """
-        self.close = close
-        self.n = n
-        self.fillna = fillna
+        self._close = close
+        self._n = n
+        self._fillna = fillna
 
-        ema1 = ema(self.close, self.n, self.fillna)
-        ema2 = ema(ema1, self.n, self.fillna)
-        ema3 = ema(ema2, self.n, self.fillna)
-        self.trix_ = (ema3 - ema3.shift(1, fill_value=ema3.mean())) / ema3.shift(1, fill_value=ema3.mean())
-        self.trix_ *= 100
+        ema1 = ema(self._close, self._n, self._fillna)
+        ema2 = ema(ema1, self._n, self._fillna)
+        ema3 = ema(ema2, self._n, self._fillna)
+        self._trix = (ema3 - ema3.shift(1, fill_value=ema3.mean())) / ema3.shift(1, fill_value=ema3.mean())
+        self._trix *= 100
 
     def trix(self) -> pd.Series:
-        trix = self.check_fillna(self.trix_, value=0)
-        return pd.Series(trix, name=f'trix_{self.n}')
+        trix = self.check_fillna(self._trix, value=0)
+        return pd.Series(trix, name=f'trix_{self._n}')
 
 
 class MassIndex(IndicatorMixin):
@@ -170,21 +170,23 @@ class MassIndex(IndicatorMixin):
             n2(int): n high period.
             fillna(bool): if True, fill nan values.
         """
-        self.high = high
-        self.low = low
-        self.n = n
-        self.n2 = n2
-        self.fillna = fillna
+        self._high = high
+        self._low = low
+        self._n = n
+        self._n2 = n2
+        self._fillna = fillna
+        self._run()
 
-        amplitude = self.high - self.low
-        ema1 = ema(amplitude, self.n, self.fillna)
-        ema2 = ema(ema1, self.n, self.fillna)
+    def _run(self):
+        amplitude = self._high - self._low
+        ema1 = ema(amplitude, self._n, self._fillna)
+        ema2 = ema(ema1, self._n, self._fillna)
         mass = ema1 / ema2
-        self.mass = mass.rolling(self.n2, min_periods=0).sum()
+        self._mass = mass.rolling(self._n2, min_periods=0).sum()
 
     def mass_index(self) -> pd.Series:
-        mass = self.check_fillna(self.mass, value=0)
-        return pd.Series(mass, name=f'mass_index_{self.n}_{self.n2}')
+        mass = self.check_fillna(self._mass, value=0)
+        return pd.Series(mass, name=f'mass_index_{self._n}_{self._n2}')
 
 
 class IchimokuIndicator(IndicatorMixin):
@@ -205,27 +207,27 @@ class IchimokuIndicator(IndicatorMixin):
             visual(bool): if True, shift n2 values.
             fillna(bool): if True, fill nan values.
         """
-        self.high = high
-        self.low = low
-        self.n1 = n1
-        self.n2 = n2
-        self.n3 = n3
-        self.visual = visual
-        self.fillna = fillna
+        self._high = high
+        self._low = low
+        self._n1 = n1
+        self._n2 = n2
+        self._n3 = n3
+        self._visual = visual
+        self._fillna = fillna
 
     def ichimoku_a(self) -> pd.Series:
-        conv = 0.5 * (self.high.rolling(self.n1, min_periods=0).max() + self.low.rolling(self.n1, min_periods=0).min())
-        base = 0.5 * (self.high.rolling(self.n2, min_periods=0).max() + self.low.rolling(self.n2, min_periods=0).min())
+        conv = 0.5 * (self._high.rolling(self._n1, min_periods=0).max() + self._low.rolling(self._n1, min_periods=0).min())
+        base = 0.5 * (self._high.rolling(self._n2, min_periods=0).max() + self._low.rolling(self._n2, min_periods=0).min())
         spana = 0.5 * (conv + base)
-        spana = spana.shift(self.n2, fill_value=spana.mean()) if self.visual else spana
+        spana = spana.shift(self._n2, fill_value=spana.mean()) if self._visual else spana
         spana = self.check_fillna(spana, method='backfill')
-        return pd.Series(spana, name=f'ichimoku_a_{self.n1}_{self.n2}')
+        return pd.Series(spana, name=f'ichimoku_a_{self._n1}_{self._n2}')
 
     def ichimoku_b(self) -> pd.Series:
-        spanb = 0.5 * (self.high.rolling(self.n3, min_periods=0).max() + self.low.rolling(self.n3, min_periods=0).min())
-        spanb = spanb.shift(self.n2, fill_value=spanb.mean()) if self.visual else spanb
+        spanb = 0.5 * (self._high.rolling(self._n3, min_periods=0).max() + self._low.rolling(self._n3, min_periods=0).min())
+        spanb = spanb.shift(self._n2, fill_value=spanb.mean()) if self._visual else spanb
         spanb = self.check_fillna(spanb, method='backfill')
-        return pd.Series(spanb, name=f'ichimoku_b_{self.n1}_{self.n2}')
+        return pd.Series(spanb, name=f'ichimoku_b_{self._n1}_{self._n2}')
 
 
 class KSTIndicator(IndicatorMixin):
@@ -254,39 +256,39 @@ class KSTIndicator(IndicatorMixin):
             nsig(int): n period to signal.
             fillna(bool): if True, fill nan values.
         """
-        self.close = close
-        self.r1 = r1
-        self.r2 = r2
-        self.r3 = r3
-        self.r4 = r4
-        self.n1 = n1
-        self.n2 = n2
-        self.n3 = n3
-        self.n4 = n4
-        self.nsig = nsig
-        self.fillna = fillna
+        self._close = close
+        self._r1 = r1
+        self._r2 = r2
+        self._r3 = r3
+        self._r4 = r4
+        self._n1 = n1
+        self._n2 = n2
+        self._n3 = n3
+        self._n4 = n4
+        self._nsig = nsig
+        self._fillna = fillna
 
-        rocma1 = ((self.close - self.close.shift(self.r1, fill_value=self.close.mean()))
-                  / self.close.shift(self.r1, fill_value=self.close.mean())).rolling(self.n1, min_periods=0).mean()
-        rocma2 = ((self.close - self.close.shift(self.r2, fill_value=self.close.mean()))
-                  / self.close.shift(self.r2, fill_value=self.close.mean())).rolling(self.n2, min_periods=0).mean()
-        rocma3 = ((self.close - self.close.shift(self.r3, fill_value=self.close.mean()))
-                  / self.close.shift(self.r3, fill_value=self.close.mean())).rolling(self.n3, min_periods=0).mean()
-        rocma4 = ((self.close - self.close.shift(self.r4, fill_value=self.close.mean()))
-                  / self.close.shift(self.r4, fill_value=self.close.mean())).rolling(self.n4, min_periods=0).mean()
-        self.kst_ = 100 * (rocma1 + 2 * rocma2 + 3 * rocma3 + 4 * rocma4)
-        self.kst_sig_ = self.kst_.rolling(self.nsig, min_periods=0).mean()
+        rocma1 = ((self._close - self._close.shift(self._r1, fill_value=self._close.mean()))
+                  / self._close.shift(self._r1, fill_value=self._close.mean())).rolling(self._n1, min_periods=0).mean()
+        rocma2 = ((self._close - self._close.shift(self._r2, fill_value=self._close.mean()))
+                  / self._close.shift(self._r2, fill_value=self._close.mean())).rolling(self._n2, min_periods=0).mean()
+        rocma3 = ((self._close - self._close.shift(self._r3, fill_value=self._close.mean()))
+                  / self._close.shift(self._r3, fill_value=self._close.mean())).rolling(self._n3, min_periods=0).mean()
+        rocma4 = ((self._close - self._close.shift(self._r4, fill_value=self._close.mean()))
+                  / self._close.shift(self._r4, fill_value=self._close.mean())).rolling(self._n4, min_periods=0).mean()
+        self._kst = 100 * (rocma1 + 2 * rocma2 + 3 * rocma3 + 4 * rocma4)
+        self._kst_sig = self._kst.rolling(self._nsig, min_periods=0).mean()
 
     def kst(self) -> pd.Series:
-        kst = self.check_fillna(self.kst_, value=0)
+        kst = self.check_fillna(self._kst, value=0)
         return pd.Series(kst, name='kst')
 
     def kst_sig(self) -> pd.Series:
-        kst_sig = self.check_fillna(self.kst_sig_, value=0)
+        kst_sig = self.check_fillna(self._kst_sig, value=0)
         return pd.Series(kst_sig, name='kst_sig')
 
     def kst_diff(self) -> pd.Series:
-        kst_diff = self.kst_ - self.kst_sig_
+        kst_diff = self._kst - self._kst_sig
         kst_diff = self.check_fillna(kst_diff, value=0)
         return pd.Series(kst_diff, name='kst_diff')
 
@@ -605,11 +607,11 @@ class VortexIndicator(IndicatorMixin):
             n(int): n period.
             fillna(bool): if True, fill nan values.
         """
-        self.high = high
-        self.low = low
-        self.close = close
-        self.n = n
-        self.fillna = fillna
+        self._high = high
+        self._low = low
+        self._close = close
+        self._n = n
+        self._fillna = fillna
 
     def vortex_indicator_pos(high, low, close, n=14, fillna=False):
         pass

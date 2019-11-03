@@ -30,24 +30,24 @@ class AverageTrueRange(IndicatorMixin):
             n(int): n period.
             fillna(bool): if True, fill nan values.
         """
-        self.high = high
-        self.low = low
-        self.close = close
-        self.n = n
-        self.fillna = fillna
+        self._high = high
+        self._low = low
+        self._close = close
+        self._n = n
+        self._fillna = fillna
         self._run()
 
     def _run(self):
-        cs = self.close.shift(1)
-        tr = self.high.combine(cs, max) - self.low.combine(cs, min)
-        atr = np.zeros(len(self.close))
+        cs = self._close.shift(1)
+        tr = self._high.combine(cs, max) - self._low.combine(cs, min)
+        atr = np.zeros(len(self._close))
         atr[0] = tr[1::].mean()
         for i in range(1, len(atr)):
-            atr[i] = (atr[i-1] * (self.n-1) + tr.iloc[i]) / float(self.n)
-        self.atr = pd.Series(data=atr, index=tr.index)
+            atr[i] = (atr[i-1] * (self._n-1) + tr.iloc[i]) / float(self._n)
+        self._atr = pd.Series(data=atr, index=tr.index)
 
     def average_true_range(self) -> pd.Series:
-        atr = self.check_fillna(self.atr, value=0)
+        atr = self.check_fillna(self._atr, value=0)
         return pd.Series(atr, name='atr')
 
 
@@ -65,37 +65,37 @@ class BollingerBands(IndicatorMixin):
             ndev(int): n factor standard deviation
             fillna(bool): if True, fill nan values.
         """
-        self.close = close
-        self.n = n
-        self.ndev = ndev
-        self.fillna = fillna
+        self._close = close
+        self._n = n
+        self._ndev = ndev
+        self._fillna = fillna
         self._run()
 
     def _run(self):
-        self.mavg = self.close.rolling(self.n, min_periods=0).mean()
-        self.mstd = self.close.rolling(self.n, min_periods=0).std(ddof=0)
-        self.hband = self.mavg + self.ndev * self.mstd
-        self.lband = self.mavg - self.ndev * self.mstd
+        self._mavg = self._close.rolling(self._n, min_periods=0).mean()
+        self._mstd = self._close.rolling(self._n, min_periods=0).std(ddof=0)
+        self._hband = self._mavg + self._ndev * self._mstd
+        self._lband = self._mavg - self._ndev * self._mstd
 
     def bollinger_mavg(self) -> pd.Series:
-        mavg = self.check_fillna(self.mavg, method='backfill')
+        mavg = self.check_fillna(self._mavg, method='backfill')
         return pd.Series(mavg, name='mavg')
 
     def bollinger_hband(self) -> pd.Series:
-        hband = self.check_fillna(self.hband, method='backfill')
+        hband = self.check_fillna(self._hband, method='backfill')
         return pd.Series(hband, name='hband')
 
     def bollinger_lband(self) -> pd.Series:
-        lband = self.check_fillna(self.lband, method='backfill')
+        lband = self.check_fillna(self._lband, method='backfill')
         return pd.Series(lband, name='lband')
 
     def bollinger_hband_indicator(self) -> pd.Series:
-        hband = pd.Series(np.where(self.close > self.hband, 1.0, 0.0))
+        hband = pd.Series(np.where(self._close > self._hband, 1.0, 0.0))
         hband = self.check_fillna(hband, value=0)
         return pd.Series(hband, name='bbihband')
 
     def bollinger_lband_indicator(self) -> pd.Series:
-        lband = pd.Series(np.where(self.close < self.lband, 1.0, 0.0))
+        lband = pd.Series(np.where(self._close < self._lband, 1.0, 0.0))
         lband = self.check_fillna(lband, value=0)
         return pd.Series(lband, name='bbilband')
 
@@ -113,37 +113,37 @@ class KeltnerChannel(IndicatorMixin):
             n(int): n period.
             fillna(bool): if True, fill nan values.
         """
-        self.high = high
-        self.low = low
-        self.close = close
-        self.n = n
-        self.fillna = fillna
+        self._high = high
+        self._low = low
+        self._close = close
+        self._n = n
+        self._fillna = fillna
         self._run()
 
     def _run(self):
-        self.tp = ((self.high + self.low + self.close) / 3.0).rolling(self.n, min_periods=0).mean()
-        self.tp_high = (((4 * self.high) - (2 * self.low) + self.close) / 3.0).rolling(self.n, min_periods=0).mean()
-        self.tp_low = (((-2 * self.high) + (4 * self.low) + self.close) / 3.0).rolling(self.n, min_periods=0).mean()
+        self._tp = ((self._high + self._low + self._close) / 3.0).rolling(self._n, min_periods=0).mean()
+        self._tp_high = (((4 * self._high) - (2 * self._low) + self._close) / 3.0).rolling(self._n, min_periods=0).mean()
+        self._tp_low = (((-2 * self._high) + (4 * self._low) + self._close) / 3.0).rolling(self._n, min_periods=0).mean()
 
     def keltner_channel_central(self) -> pd.Series:
-        tp = self.check_fillna(self.tp, method='backfill')
+        tp = self.check_fillna(self._tp, method='backfill')
         return pd.Series(tp, name='mavg')
 
     def keltner_channel_hband(self) -> pd.Series:
-        tp = self.check_fillna(self.tp, method='backfill')
+        tp = self.check_fillna(self._tp, method='backfill')
         return pd.Series(tp, name='kc_hband')
 
     def keltner_channel_lband(self) -> pd.Series:
-        tp_low = self.check_fillna(self.tp_low, method='backfill')
+        tp_low = self.check_fillna(self._tp_low, method='backfill')
         return pd.Series(tp_low, name='kc_lband')
 
     def keltner_channel_hband_indicator(self) -> pd.Series:
-        hband = pd.Series(np.where(self.close > self.tp_high, 1.0, 0.0))
+        hband = pd.Series(np.where(self._close > self._tp_high, 1.0, 0.0))
         hband = self.check_fillna(hband, value=0)
         return pd.Series(hband, name='dcihband')
 
     def keltner_channel_lband_indicator(self) -> pd.Series:
-        lband = pd.Series(np.where(self.close < self.tp_low, 1.0, 0.0))
+        lband = pd.Series(np.where(self._close < self._tp_low, 1.0, 0.0))
         lband = self.check_fillna(lband, value=0)
         return pd.Series(lband, name='dcilband')
 
@@ -163,30 +163,30 @@ class DonchianChannel(IndicatorMixin):
             ndev(int): n factor standard deviation
             fillna(bool): if True, fill nan values.
         """
-        self.close = close
-        self.n = n
-        self.fillna = fillna
+        self._close = close
+        self._n = n
+        self._fillna = fillna
         self._run()
 
     def _run(self):
-        self.hband = self.close.rolling(self.n, min_periods=0).max()
-        self.lband = self.close.rolling(self.n, min_periods=0).min()
+        self._hband = self._close.rolling(self._n, min_periods=0).max()
+        self._lband = self._close.rolling(self._n, min_periods=0).min()
 
     def donchian_channel_hband(self) -> pd.Series:
-        hband = self.check_fillna(self.hband, method='backfill')
+        hband = self.check_fillna(self._hband, method='backfill')
         return pd.Series(hband, name='dchband')
 
     def donchian_channel_lband(self) -> pd.Series:
-        lband = self.check_fillna(self.lband, method='backfill')
+        lband = self.check_fillna(self._lband, method='backfill')
         return pd.Series(lband, name='dclband')
 
     def donchian_channel_hband_indicator(self) -> pd.Series:
-        hband = pd.Series(np.where(self.close >= self.hband, 1.0, 0.0))
+        hband = pd.Series(np.where(self._close >= self._hband, 1.0, 0.0))
         hband = self.check_fillna(hband, value=0)
         return pd.Series(hband, name='dcihband')
 
     def donchian_channel_lband_indicator(self) -> pd.Series:
-        lband = pd.Series(np.where(self.close <= self.lband, 1.0, 0.0))
+        lband = pd.Series(np.where(self._close <= self._lband, 1.0, 0.0))
         lband = self.check_fillna(lband, value=0)
         return pd.Series(lband, name='dcilband')
 
