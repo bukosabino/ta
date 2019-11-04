@@ -1,6 +1,6 @@
 import pandas as pd
 
-from .momentum import *
+from .momentum import * # MFIIndicator
 from .others import *
 from .trend import * # AroonIndicator, MACD, EMAIndicator, TRIXIndicator, MassIndex, IchimokuIndicator, DPOIndicator
 from ta.volatility import AverageTrueRange, BollingerBands, KeltnerChannel, DonchianChannel
@@ -211,14 +211,12 @@ def add_momentum_ta(df, high, low, close, volume, fillna=False, colprefix=""):
     Returns:
         pandas.core.frame.DataFrame: Dataframe with new features.
     """
-    df[f'{colprefix}momentum_rsi'] = rsi(df[close], n=14,
-                                                 fillna=fillna)
-    df[f'{colprefix}momentum_mfi'] = money_flow_index(df[high],
-                                                              df[low],
-                                                              df[close],
-                                                              df[volume],
-                                                              n=14,
-                                                              fillna=fillna)
+    df[f'{colprefix}momentum_rsi'] = rsi(df[close], n=14, fillna=fillna)
+
+    # Money Flow Indicator
+    indicator = MFIIndicator(high=df[high], low=df[low], close=df[close], volume=df[volume], n=14, fillna=fillna)
+    df[f'{colprefix}momentum_mfi'] = indicator.money_flow_index()
+
     df[f'{colprefix}momentum_tsi'] = tsi(df[close], r=25, s=13,
                                                  fillna=fillna)
     df[f'{colprefix}momentum_uo'] = uo(df[high], df[low], df[close],
@@ -277,15 +275,12 @@ def add_all_ta_features(df, open, high, low, close, volume, fillna=False,
         pandas.core.frame.DataFrame: Dataframe with new features.
     """
     """
-    df = add_volume_ta(df, high, low, close, volume, fillna=fillna,
-                       colprefix=colprefix)
-    df = add_volatility_ta(df, high, low, close, fillna=fillna,
-                           colprefix=colprefix)
-    """
+    df = add_volume_ta(df, high, low, close, volume, fillna=fillna, colprefix=colprefix)
+    df = add_volatility_ta(df, high, low, close, fillna=fillna, colprefix=colprefix)
     df = add_trend_ta(df, high, low, close, fillna=fillna, colprefix=colprefix)
     """
-    df = add_momentum_ta(df, high, low, close, volume, fillna=fillna,
-                         colprefix=colprefix)
+    df = add_momentum_ta(df, high, low, close, volume, fillna=fillna, colprefix=colprefix)
+    """
     df = add_others_ta(df, close, fillna=fillna, colprefix=colprefix)
     """
     return df

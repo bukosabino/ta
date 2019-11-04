@@ -8,6 +8,8 @@
 import numpy as np
 import pandas as pd
 
+from ta.utils import IndicatorMixin
+
 
 def rsi(close, n=14, fillna=False):
     """Relative Strength Index (RSI)
@@ -42,6 +44,52 @@ def rsi(close, n=14, fillna=False):
     return pd.Series(rsi, name='rsi')
 
 
+class MFIIndicator(IndicatorMixin):
+    """
+    """
+
+    def __init__(self, high : pd.Series, low : pd.Series, close : pd.Series, volume : pd.Series, n : int = 14, fillna : bool = False):
+        """
+        Args:
+            high(pandas.Series): dataset 'High' column.
+            low(pandas.Series): dataset 'Low' column.
+            close(pandas.Series): dataset 'Close' column.
+            volume(pandas.Series): dataset 'Volume' column.
+            n(int): n period.
+            fillna(bool): if True, fill nan values.
+        """
+        self._high = high
+        self._low = low
+        self._close = close
+        self._volume = volume
+        self._n = n
+        self._fillna = fillna
+        self._run()
+
+    def _run(self):
+
+        # 1 typical price
+        tp = (self._high + self._low + self._close) / 3.0
+
+        # 2 up or down column
+        up_down = np.where(tp > tp.shift(1), 1, np.where(tp < tp.shift(1), -1, 0))
+
+        # 3 money flow
+        mf = tp * self._volume * up_down
+
+        # 4 positive and negative money flow with n periods
+        n_positive_mf = mf.rolling(self._n).apply(lambda x: np.sum(np.where(x >= 0.0, x, 0.0)), raw=True)
+        n_negative_mf = abs(mf.rolling(self._n).apply(lambda x: np.sum(np.where(x < 0.0, x, 0.0)), raw=True))
+
+        # 5 money flow index
+        mr = n_positive_mf / n_negative_mf
+        self._mr = (100 - (100 / (1 + mr)))
+
+    def money_flow_index(self) -> pd.Series:
+        mr = self.check_fillna(self._mr, value=50)
+        return pd.Series(mr, name=f'mfi_{self._n}')
+
+
 def money_flow_index(high, low, close, volume, n=14, fillna=False):
     """Money Flow Index (MFI)
 
@@ -65,7 +113,9 @@ def money_flow_index(high, low, close, volume, n=14, fillna=False):
         pandas.Series: New feature generated.
 
     """
-
+    indicator = MFIIndicator(high=high, low=low, close=close, volume=volume, n=n, fillna=fillna)
+    return indicator.money_flow_index()
+    """
     # 0 Prepare dataframe to work
     df = pd.DataFrame([high, low, close, volume]).T
     df.columns = ['High', 'Low', 'Close', 'Volume']
@@ -97,6 +147,7 @@ def money_flow_index(high, low, close, volume, n=14, fillna=False):
         mr = mr.replace([np.inf, -np.inf], np.nan).fillna(50)
 
     return pd.Series(mr, name='mfi_'+str(n))
+    """
 
 
 def tsi(close, r=25, s=13, fillna=False):

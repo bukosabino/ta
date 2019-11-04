@@ -8,7 +8,7 @@
 import numpy as np
 import pandas as pd
 
-from .utils import IndicatorMixin, ema, get_min_max
+from ta.utils import IndicatorMixin, ema, get_min_max
 
 
 class AroonIndicator(IndicatorMixin):
