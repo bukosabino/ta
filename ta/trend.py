@@ -471,17 +471,19 @@ def adx(high, low, close, n=14, fillna=False):
     Returns:
         pandas.Series: New feature generated.
     """
+    assert n is not 0 , "N may not be 0 and is %r" % n
+
     cs = close.shift(1)
-    pdm = high.combine(cs, lambda x1, x2: get_min_max(x1, x2, 'max'))
-    pdn = low.combine(cs, lambda x1, x2: get_min_max(x1, x2, 'min'))
+    pdm = get_min_max(high, cs, 'max')
+    pdn = get_min_max(low, cs, 'min')
     tr = pdm - pdn
 
     trs_initial = np.zeros(n-1)
     trs = np.zeros(len(close) - (n - 1))
     trs[0] = tr.dropna()[0:n].sum()
     tr = tr.reset_index(drop=True)
-    for i in range(1, len(trs)-1):
-        trs[i] = trs[i-1] - (trs[i-1]/float(n)) + tr[n+i]
+    for i in range(0, len(trs)-1):
+        trs[i+1] = trs[i] - (trs[i]/float(n)) + tr[n+i]
 
     up = high - high.shift(1)
     dn = low.shift(1) - low
@@ -492,15 +494,15 @@ def adx(high, low, close, n=14, fillna=False):
     dip_mio[0] = pos.dropna()[0:n].sum()
 
     pos = pos.reset_index(drop=True)
-    for i in range(1, len(dip_mio)-1):
-        dip_mio[i] = dip_mio[i-1] - (dip_mio[i-1]/float(n)) + pos[n+i]
+    for i in range(0, len(dip_mio)-1):
+        dip_mio[i+1] = dip_mio[i] - (dip_mio[i]/float(n)) + pos[n+i]
 
     din_mio = np.zeros(len(close) - (n - 1))
     din_mio[0] = neg.dropna()[0:n].sum()
 
     neg = neg.reset_index(drop=True)
-    for i in range(1, len(din_mio)-1):
-        din_mio[i] = din_mio[i-1] - (din_mio[i-1]/float(n)) + neg[n+i]
+    for i in range(0, len(din_mio)-1):
+        din_mio[i+1] = din_mio[i] - (din_mio[i]/float(n)) + neg[n+i]
 
     dip = np.zeros(len(trs))
     for i in range(len(trs)):
@@ -553,9 +555,10 @@ def adx_pos(high, low, close, n=14, fillna=False):
     Returns:
         pandas.Series: New feature generated.
     """
+    assert n is not 0 , "N may not be 0 and is %r" % n
     cs = close.shift(1)
-    pdm = high.combine(cs, lambda x1, x2: get_min_max(x1, x2, 'max'))
-    pdn = low.combine(cs, lambda x1, x2: get_min_max(x1, x2, 'min'))
+    pdm = get_min_max(high, cs, 'max')
+    pdn = get_min_max(low, cs, 'min')
     tr = pdm - pdn
 
     trs_initial = np.zeros(n-1)
@@ -615,15 +618,18 @@ def adx_neg(high, low, close, n=14, fillna=False):
     Returns:
         pandas.Series: New feature generated.
     """
+    assert n is not 0 , "N may not be 0 and is %r" % n
+
     cs = close.shift(1)
-    pdm = high.combine(cs, lambda x1, x2: get_min_max(x1, x2, 'max'))
-    pdn = low.combine(cs, lambda x1, x2: get_min_max(x1, x2, 'min'))
+    pdm = get_min_max(high, cs, 'max')
+    pdn = get_min_max(low, cs, 'min')
     tr = pdm - pdn
 
     trs_initial = np.zeros(n-1)
     trs = np.zeros(len(close) - (n - 1))
     trs[0] = tr.dropna()[0:n].sum()
     tr = tr.reset_index(drop=True)
+
     for i in range(1, len(trs)-1):
         trs[i] = trs[i-1] - (trs[i-1]/float(n)) + tr[n+i]
 

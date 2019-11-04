@@ -32,12 +32,16 @@ def ema(series, periods, fillna=False):
 
 
 def get_min_max(x1, x2, f='min'):
-    if not np.isnan(x1) and not np.isnan(x2):
-        if f == 'max':
-            return max(x1, x2)
-        elif f == 'min':
-            return min(x1, x2)
+    """ Find min or max value between two lists for each index
+    """
+    x1 = np.array(x1)
+    x2 = np.array(x2)
+    try:
+        if f == 'min':
+            return pd.Series(np.amin([x1, x2], axis=0))
+        elif f == 'max':
+            return pd.Series(np.amax([x1, x2], axis=0))
         else:
             raise ValueError('"f" variable value should be "min" or "max"')
-    else:
-        return np.nan
+    except Exception as e:
+        return e
