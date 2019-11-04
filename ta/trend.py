@@ -811,15 +811,6 @@ def cci(high, low, close, n=20, c=0.015, fillna=False):
     """
     indicator = CCIIndicator(high=high, low=low, close=close, n=n, c=c, fillna=fillna)
     return indicator.cci()
-    """
-    pp = (high + low + close) / 3.0
-    mad = lambda x : np.mean(np.abs(x-np.mean(x)))
-    cci = ((pp - pp.rolling(n, min_periods=0).mean())
-           / (c * pp.rolling(n, min_periods=0).apply(mad, True)))
-    if fillna:
-        cci = cci.replace([np.inf, -np.inf], np.nan).fillna(0)
-    return pd.Series(cci, name='cci')
-    """
 
 
 def dpo(close, n=20, fillna=False):
