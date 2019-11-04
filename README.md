@@ -133,13 +133,19 @@ $ python bollinger_band_features_example.py
 * https://github.com/femtotrader/pandas_talib
 
 
+# In Progress:
+
+* class based style code
+* automated tests for indicators.
+* coverage
+* CI repo
+
+
 # TODO:
 
 * add [more technical analysis features](https://en.wikipedia.org/wiki/Technical_analysis).
 * use Dask library to parallelize the implementation
-* use Dash library to visualize features
-* automated tests for indicators.
-* class based style code
+* use Dash/Streamlit to visualize features
 
 
 # Credits:
