@@ -22,32 +22,32 @@ def add_volume_ta(df, high, low, close, volume, fillna=False, colprefix=""):
     Returns:
         pandas.core.frame.DataFrame: Dataframe with new features.
     """
-    df['{}volume_adi'.format(colprefix)] = acc_dist_index(df[high],
+    df[f'{colprefix}volume_adi'] = acc_dist_index(df[high],
                                                           df[low],
                                                           df[close],
                                                           df[volume],
                                                           fillna=fillna)
-    df['{}volume_obv'.format(colprefix)] = on_balance_volume(df[close],
+    df[f'{colprefix}volume_obv'] = on_balance_volume(df[close],
                                                              df[volume],
                                                              fillna=fillna)
-    df['{}volume_cmf'.format(colprefix)] = chaikin_money_flow(df[high],
+    df[f'{colprefix}volume_cmf'] = chaikin_money_flow(df[high],
                                                               df[low],
                                                               df[close],
                                                               df[volume],
                                                               fillna=fillna)
-    df['{}volume_fi'.format(colprefix)] = force_index(df[close],
+    df[f'{colprefix}volume_fi'] = force_index(df[close],
                                                       df[volume],
                                                       fillna=fillna)
-    df['{}volume_em'.format(colprefix)] = ease_of_movement(df[high],
+    df[f'{colprefix}volume_em'] = ease_of_movement(df[high],
                                                            df[low],
                                                            df[close],
                                                            df[volume],
                                                            n=14,
                                                            fillna=fillna)
-    df['{}volume_vpt'.format(colprefix)] = volume_price_trend(df[close],
+    df[f'{colprefix}volume_vpt'] = volume_price_trend(df[close],
                                                               df[volume],
                                                               fillna=fillna)
-    df['{}volume_nvi'.format(colprefix)] = negative_volume_index(df[close],
+    df[f'{colprefix}volume_nvi'] = negative_volume_index(df[close],
                                                                  df[volume],
                                                                  fillna=fillna)
     return df
@@ -167,12 +167,6 @@ def add_trend_ta(df, high, low, close, fillna=False, colprefix=""):
     # CCI Indicator
     indicator = CCIIndicator(high=df[high], low=df[low], close=df[close], n=20, c=0.015, fillna=fillna)
     df[f'{colprefix}trend_cci'] = indicator.cci()
-    df['{}trend_cci'.format(colprefix)] = cci(df[high],
-                                              df[low],
-                                              df[close],
-                                              n=20,
-                                              c=0.015,
-                                              fillna=fillna)
 
     # DPO Indicator
     indicator = DPOIndicator(close=df[close], n=20, fillna=fillna)
@@ -217,30 +211,30 @@ def add_momentum_ta(df, high, low, close, volume, fillna=False, colprefix=""):
     Returns:
         pandas.core.frame.DataFrame: Dataframe with new features.
     """
-    df['{}momentum_rsi'.format(colprefix)] = rsi(df[close], n=14,
+    df[f'{colprefix}momentum_rsi'] = rsi(df[close], n=14,
                                                  fillna=fillna)
-    df['{}momentum_mfi'.format(colprefix)] = money_flow_index(df[high],
+    df[f'{colprefix}momentum_mfi'] = money_flow_index(df[high],
                                                               df[low],
                                                               df[close],
                                                               df[volume],
                                                               n=14,
                                                               fillna=fillna)
-    df['{}momentum_tsi'.format(colprefix)] = tsi(df[close], r=25, s=13,
+    df[f'{colprefix}momentum_tsi'] = tsi(df[close], r=25, s=13,
                                                  fillna=fillna)
-    df['{}momentum_uo'.format(colprefix)] = uo(df[high], df[low], df[close],
+    df[f'{colprefix}momentum_uo'] = uo(df[high], df[low], df[close],
                                                fillna=fillna)
-    df['{}momentum_stoch'.format(colprefix)] = stoch(df[high], df[low],
+    df[f'{colprefix}momentum_stoch'] = stoch(df[high], df[low],
                                                      df[close], fillna=fillna)
-    df['{}momentum_stoch_signal'.format(colprefix)] = stoch_signal(
+    df[f'{colprefix}momentum_stoch_signal'] = stoch_signal(
                                                                 df[high],
                                                                 df[low],
                                                                 df[close],
                                                                 fillna=fillna)
-    df['{}momentum_wr'.format(colprefix)] = wr(df[high], df[low], df[close],
+    df[f'{colprefix}momentum_wr'] = wr(df[high], df[low], df[close],
                                                fillna=fillna)
-    df['{}momentum_ao'.format(colprefix)] = ao(
+    df[f'{colprefix}momentum_ao'] = ao(
         df[high], df[low], fillna=fillna)
-    df['{}momentum_kama'.format(colprefix)] = kama(df[close], fillna=fillna)
+    df[f'{colprefix}momentum_kama'] = kama(df[close], fillna=fillna)
     return df
 
 
@@ -256,11 +250,11 @@ def add_others_ta(df, close, fillna=False, colprefix=""):
     Returns:
         pandas.core.frame.DataFrame: Dataframe with new features.
     """
-    df['{}others_dr'.format(colprefix)] = daily_return(df[close],
+    df[f'{colprefix}others_dr'] = daily_return(df[close],
                                                        fillna=fillna)
-    df['{}others_dlr'.format(colprefix)] = daily_log_return(df[close],
+    df[f'{colprefix}others_dlr'] = daily_log_return(df[close],
                                                             fillna=fillna)
-    df['{}others_cr'.format(colprefix)] = cumulative_return(df[close],
+    df[f'{colprefix}others_cr'] = cumulative_return(df[close],
                                                             fillna=fillna)
     return df
 
