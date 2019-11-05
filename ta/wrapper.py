@@ -195,8 +195,11 @@ def add_momentum_ta(df, high, low, close, volume, fillna=False, colprefix=""):
     indicator = TSIIndicator(close=df[close], r=25, s=13, fillna=fillna)
     df[f'{colprefix}momentum_tsi'] = indicator.tsi()
 
-    df[f'{colprefix}momentum_uo'] = uo(
-        df[high], df[low], df[close], fillna=fillna)
+    # Ultimate Oscillator
+    df[f'{colprefix}momentum_uo'] = UltimateOscillatorIndicator(
+        high=df[high], low=df[low], close=df[close], s=7, m=14, len=28, ws=4.0, wm=2.0, wl=1.0,
+        fillna=fillna).uo()
+
     df[f'{colprefix}momentum_stoch'] = stoch(
         df[high], df[low], df[close], fillna=fillna)
     df[f'{colprefix}momentum_stoch_signal'] = stoch_signal(
@@ -247,9 +250,8 @@ def add_all_ta_features(df, open, high, low, close, volume, fillna=False,
     """
     df = add_volume_ta(df, high, low, close, volume, fillna=fillna, colprefix=colprefix)
     df = add_volatility_ta(df, high, low, close, fillna=fillna, colprefix=colprefix)
-    """
     df = add_trend_ta(df, high, low, close, fillna=fillna, colprefix=colprefix)
-
+    """
     df = add_momentum_ta(df, high, low, close, volume, fillna=fillna, colprefix=colprefix)
     """
     df = add_others_ta(df, close, fillna=fillna, colprefix=colprefix)

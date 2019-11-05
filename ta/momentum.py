@@ -143,6 +143,52 @@ class TSIIndicator(IndicatorMixin):
         return pd.Series(tsi, name='tsi')
 
 
+class UltimateOscillatorIndicator(IndicatorMixin):
+    """
+    """
+
+    def __init__(self, high: pd.Series, low: pd.Series, close: pd.Series, s: int = 7, m: int = 14, len: int = 28, ws: float = 4.0, wm: float = 2.0, wl: float =1.0, fillna: bool = False):
+        """
+        Args:
+            high(pandas.Series): dataset 'High' column.
+            low(pandas.Series): dataset 'Low' column.
+            close(pandas.Series): dataset 'Close' column.
+            s(int): short period
+            m(int): medium period
+            len(int): long period
+            ws(float): weight of short BP average for UO
+            wm(float): weight of medium BP average for UO
+            wl(float): weight of long BP average for UO
+            fillna(bool): if True, fill nan values with 50.
+        """
+        self._high = high
+        self._low = low
+        self._close = close
+        self._s = s
+        self._m = m
+        self._len = len
+        self._ws = ws
+        self._wm = wm
+        self._wl = wl
+        self._fillna = fillna
+        self._run()
+
+    def _run(self):
+        min_l_or_pc = self._close.shift(1, fill_value=self._close.mean()).combine(self._low, min)
+        max_h_or_pc = self._close.shift(1, fill_value=self._close.mean()).combine(self._high, max)
+        bp = self._close - min_l_or_pc
+        tr = max_h_or_pc - min_l_or_pc
+        avg_s = bp.rolling(self._s, min_periods=0).sum() / tr.rolling(self._s, min_periods=0).sum()
+        avg_m = bp.rolling(self._m, min_periods=0).sum() / tr.rolling(self._m, min_periods=0).sum()
+        avg_l = bp.rolling(self._len, min_periods=0).sum() / tr.rolling(self._len, min_periods=0).sum()
+        self._uo = (100.0 * ((self._ws * avg_s) + (self._wm * avg_m) + (self._wl * avg_l))
+                    / (self._ws + self._wm + self._wl))
+
+    def uo(self) -> pd.Series:
+        uo = self.check_fillna(self._uo, value=50)
+        return pd.Series(uo, name='uo')
+
+
 def rsi(close, n=14, fillna=False):
     """Relative Strength Index (RSI)
 
@@ -210,8 +256,7 @@ def tsi(close, r=25, s=13, fillna=False):
     return TSIIndicator(close=close, r=r, s=s, fillna=fillna).tsi()
 
 
-def uo(high, low, close, s=7, m=14, len=28, ws=4.0, wm=2.0, wl=1.0,
-       fillna=False):
+def uo(high, low, close, s=7, m=14, len=28, ws=4.0, wm=2.0, wl=1.0, fillna=False):
     """Ultimate Oscillator
 
     Larry Williams' (1976) signal, a momentum oscillator designed to capture
@@ -243,20 +288,7 @@ def uo(high, low, close, s=7, m=14, len=28, ws=4.0, wm=2.0, wl=1.0,
         pandas.Series: New feature generated.
 
     """
-    min_l_or_pc = close.shift(1, fill_value=close.mean()).combine(low, min)
-    max_h_or_pc = close.shift(1, fill_value=close.mean()).combine(high, max)
-
-    bp = close - min_l_or_pc
-    tr = max_h_or_pc - min_l_or_pc
-
-    avg_s = bp.rolling(s, min_periods=0).sum() / tr.rolling(s, min_periods=0).sum()
-    avg_m = bp.rolling(m, min_periods=0).sum() / tr.rolling(m, min_periods=0).sum()
-    avg_l = bp.rolling(len, min_periods=0).sum() / tr.rolling(len, min_periods=0).sum()
-
-    uo = 100.0 * ((ws * avg_s) + (wm * avg_m) + (wl * avg_l)) / (ws + wm + wl)
-    if fillna:
-        uo = uo.replace([np.inf, -np.inf], np.nan).fillna(50)
-    return pd.Series(uo, name='uo')
+    return UltimateOscillatorIndicator(high=high, low=low, close=close, s=7, m=14, len=28, ws=4.0, wm=2.0, wl=1.0, fillna=fillna).uo()
 
 
 def stoch(high, low, close, n=14, fillna=False):
