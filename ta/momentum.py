@@ -11,7 +11,7 @@ import pandas as pd
 from ta.utils import IndicatorMixin
 
 
-def rsi(close, n=14, fillna=False):
+class RSIIndicator(IndicatorMixin):
     """Relative Strength Index (RSI)
 
     Compares the magnitude of recent gains and losses over a specified time
@@ -20,32 +20,46 @@ def rsi(close, n=14, fillna=False):
     the trading of an asset.
 
     https://www.investopedia.com/terms/r/rsi.asp
-
-    Args:
-        close(pandas.Series): dataset 'Close' column.
-        n(int): n period.
-        fillna(bool): if True, fill nan values.
-
-    Returns:
-        pandas.Series: New feature generated.
     """
-    diff = close.diff(1)
-    which_dn = diff < 0
 
-    up, dn = diff, diff*0
-    up[which_dn], dn[which_dn] = 0, -up[which_dn]
+    def __init__(self, close: pd.Series, n: int = 14, fillna: bool = False):
+        """
+        Args:
+            close(pandas.Series): dataset 'Close' column.
+            n(int): n period.
+            fillna(bool): if True, fill nan values.
+        """
+        self._close = close
+        self._n = n
+        self._fillna = fillna
+        self._run()
 
-    emaup = up.ewm(com=n-1, min_periods=0).mean()
-    emadn = dn.ewm(com=n-1, min_periods=0).mean()
-    rsi = 100 * emaup / (emaup + emadn)
+    def _run(self):
+        diff = self._close.diff(1)
+        which_dn = diff < 0
 
-    if fillna:
-        rsi = rsi.replace([np.inf, -np.inf], np.nan).fillna(50)
-    return pd.Series(rsi, name='rsi')
+        up, dn = diff, diff*0
+        up[which_dn], dn[which_dn] = 0, -up[which_dn]
+
+        emaup = up.ewm(com=self._n-1, min_periods=0).mean()
+        emadn = dn.ewm(com=self._n-1, min_periods=0).mean()
+        self._rsi = 100 * emaup / (emaup + emadn)
+
+    def rsi(self) -> pd.Series:
+        rsi = self.check_fillna(self._rsi, value=50)
+        return pd.Series(rsi, name='rsi')
 
 
 class MFIIndicator(IndicatorMixin):
-    """
+    """Money Flow Index (MFI)
+
+    Uses both price and volume to measure buying and selling pressure. It is
+    positive when the typical price rises (buying pressure) and negative when
+    the typical price declines (selling pressure). A ratio of positive and
+    negative money flow is then plugged into an RSI formula to create an
+    oscillator that moves between zero and one hundred.
+
+    http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:money_flow_index_mfi
     """
 
     def __init__(self,
@@ -73,7 +87,6 @@ class MFIIndicator(IndicatorMixin):
         self._run()
 
     def _run(self):
-
         # 1 typical price
         tp = (self._high + self._low + self._close) / 3.0
 
@@ -94,6 +107,27 @@ class MFIIndicator(IndicatorMixin):
     def money_flow_index(self) -> pd.Series:
         mr = self.check_fillna(self._mr, value=50)
         return pd.Series(mr, name=f'mfi_{self._n}')
+
+
+def rsi(close, n=14, fillna=False):
+    """Relative Strength Index (RSI)
+
+    Compares the magnitude of recent gains and losses over a specified time
+    period to measure speed and change of price movements of a security. It is
+    primarily used to attempt to identify overbought or oversold conditions in
+    the trading of an asset.
+
+    https://www.investopedia.com/terms/r/rsi.asp
+
+    Args:
+        close(pandas.Series): dataset 'Close' column.
+        n(int): n period.
+        fillna(bool): if True, fill nan values.
+
+    Returns:
+        pandas.Series: New feature generated.
+    """
+    return RSIIndicator(close=close, n=n, fillna=fillna).rsi()
 
 
 def money_flow_index(high, low, close, volume, n=14, fillna=False):

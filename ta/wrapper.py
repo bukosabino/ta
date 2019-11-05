@@ -183,7 +183,10 @@ def add_momentum_ta(df, high, low, close, volume, fillna=False, colprefix=""):
     Returns:
         pandas.core.frame.DataFrame: Dataframe with new features.
     """
-    df[f'{colprefix}momentum_rsi'] = rsi(df[close], n=14, fillna=fillna)
+
+    # Relative Strength Index (RSI)
+    indicator = RSIIndicator(close=df[close], n=14, fillna=fillna)
+    df[f'{colprefix}momentum_rsi'] = indicator.rsi()
 
     # Money Flow Indicator
     indicator = MFIIndicator(high=df[high], low=df[low], close=df[close], volume=df[volume], n=14, fillna=fillna)
