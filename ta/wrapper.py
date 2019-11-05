@@ -131,21 +131,11 @@ def add_trend_ta(df, high, low, close, fillna=False, colprefix=""):
     df[f'{colprefix}trend_adx_pos'] = indicator.adx_pos()
     df[f'{colprefix}trend_adx_neg'] = indicator.adx_neg()
 
-    df['{}trend_vortex_ind_pos'.format(colprefix)] = vortex_indicator_pos(
-                                                                df[high],
-                                                                df[low],
-                                                                df[close],
-                                                                n=14,
-                                                                fillna=fillna)
-    df['{}trend_vortex_ind_neg'.format(colprefix)] = vortex_indicator_neg(
-                                                                df[high],
-                                                                df[low],
-                                                                df[close],
-                                                                n=14,
-                                                                fillna=fillna)
-    df['{}trend_vortex_diff'.format(colprefix)] = abs(
-        df['{}trend_vortex_ind_pos'.format(colprefix)] -
-        df['{}trend_vortex_ind_neg'.format(colprefix)])
+    # Vortex Indicator
+    indicator = VortexIndicator(high=df[high], low=df[low], close=df[close], n=14, fillna=False)
+    df[f'{colprefix}trend_vortex_ind_pos'] = indicator.vortex_indicator_pos()
+    df[f'{colprefix}trend_vortex_ind_neg'] = indicator.vortex_indicator_neg()
+    df[f'{colprefix}trend_vortex_ind_diff'] = indicator.vortex_indicator_diff()
 
     # TRIX Indicator
     indicator = TRIXIndicator(close=df[close], n=15, fillna=fillna)
@@ -268,8 +258,8 @@ def add_all_ta_features(df, open, high, low, close, volume, fillna=False,
     """
     df = add_volume_ta(df, high, low, close, volume, fillna=fillna, colprefix=colprefix)
     df = add_volatility_ta(df, high, low, close, fillna=fillna, colprefix=colprefix)
-    """
     df = add_trend_ta(df, high, low, close, fillna=fillna, colprefix=colprefix)
+    """
     df = add_momentum_ta(df, high, low, close, volume, fillna=fillna, colprefix=colprefix)
     """
     df = add_others_ta(df, close, fillna=fillna, colprefix=colprefix)

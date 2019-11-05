@@ -464,7 +464,6 @@ class ADXIndicator(IndicatorMixin):
         return pd.Series(adx, name='adx')
 
     def adx_pos(self) -> pd.Series:
-
         dip = np.zeros(len(self._close))
         for i in range(1, len(self._trs)-1):
             dip[i+self._n] = 100 * (self._dip[i]/self._trs[i])
@@ -473,13 +472,61 @@ class ADXIndicator(IndicatorMixin):
         return pd.Series(adx_pos, name='adx_pos')
 
     def adx_neg(self) -> pd.Series:
-
         din = np.zeros(len(self._close))
         for i in range(1, len(self._trs)-1):
             din[i+self._n] = 100 * (self._din[i]/self._trs[i])
 
         adx_neg = self.check_fillna(pd.Series(din), value=20)
         return pd.Series(adx_neg, name='adx_neg')
+
+
+class VortexIndicator(IndicatorMixin):
+    """Vortex Indicator (VI)
+
+    It consists of two oscillators that capture positive and negative trend
+    movement. A bullish signal triggers when the positive trend indicator
+    crosses above the negative trend indicator or a key level.
+
+    http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:vortex_indicator
+    """
+
+    def __init__(self, high : pd.Series, low : pd.Series, close : pd.Series, n : int = 14, fillna : bool = False):
+        """
+        Args:
+            high(pandas.Series): dataset 'High' column.
+            low(pandas.Series): dataset 'Low' column.
+            close(pandas.Series): dataset 'Close' column.
+            n(int): n period.
+            fillna(bool): if True, fill nan values.
+        """
+        self._high = high
+        self._low = low
+        self._close = close
+        self._n = n
+        self._fillna = fillna
+        self._run()
+
+    def _run(self):
+        tr = (self._high.combine(self._close.shift(1, fill_value=self._close.mean()), max)
+              - self._low.combine(self._close.shift(1, fill_value=self._close.mean()), min))
+        trn = tr.rolling(self._n).sum()
+        vmp = np.abs(self._high - self._low.shift(1))
+        vmm = np.abs(self._low - self._high.shift(1))
+        self._vip = vmp.rolling(self._n, min_periods=0).sum() / trn
+        self._vin = vmm.rolling(self._n, min_periods=0).sum() / trn
+
+    def vortex_indicator_pos(self):
+        vip = self.check_fillna(self._vip, value=1)
+        return pd.Series(vip, name='vip')
+
+    def vortex_indicator_neg(self):
+        vin = self.check_fillna(self._vin, value=1)
+        return pd.Series(vin, name='vin')
+
+    def vortex_indicator_diff(self):
+        vid = self._vip - self._vin
+        vid = self.check_fillna(vid, value=0)
+        return pd.Series(vid, name='vid')
 
 
 def ema_indicator(close, n=12, fillna=False):
@@ -490,8 +537,7 @@ def ema_indicator(close, n=12, fillna=False):
     Returns:
         pandas.Series: New feature generated.
     """
-    indicator = EMAIndicator(close=close, n=n, fillna=fillna)
-    return indicator.ema_indicator()
+    return EMAIndicator(close=close, n=n, fillna=fillna).ema_indicator()
 
 
 def macd(close, n_fast=12, n_slow=26, fillna=False):
@@ -511,8 +557,7 @@ def macd(close, n_fast=12, n_slow=26, fillna=False):
     Returns:
         pandas.Series: New feature generated.
     """
-    indicator = MACD(close=close, n_slow=n_slow, n_fast=n_fast, n_sign=9, fillna=fillna)
-    return indicator.macd()
+    return MACD(close=close, n_slow=n_slow, n_fast=n_fast, n_sign=9, fillna=fillna).macd()
 
 
 def macd_signal(close, n_fast=12, n_slow=26, n_sign=9, fillna=False):
@@ -532,8 +577,7 @@ def macd_signal(close, n_fast=12, n_slow=26, n_sign=9, fillna=False):
     Returns:
         pandas.Series: New feature generated.
     """
-    indicator = MACD(close=close, n_slow=n_slow, n_fast=n_fast, n_sign=n_sign, fillna=fillna)
-    return indicator.macd_signal()
+    return MACD(close=close, n_slow=n_slow, n_fast=n_fast, n_sign=n_sign, fillna=fillna).macd_signal()
 
 
 def macd_diff(close, n_fast=12, n_slow=26, n_sign=9, fillna=False):
@@ -553,8 +597,7 @@ def macd_diff(close, n_fast=12, n_slow=26, n_sign=9, fillna=False):
     Returns:
         pandas.Series: New feature generated.
     """
-    indicator = MACD(close=close, n_slow=n_slow, n_fast=n_fast, n_sign=n_sign, fillna=fillna)
-    return indicator.macd_diff()
+    return MACD(close=close, n_slow=n_slow, n_fast=n_fast, n_sign=n_sign, fillna=fillna).macd_diff()
 
 
 def adx(high, low, close, n=14, fillna=False):
@@ -647,35 +690,6 @@ def adx_neg(high, low, close, n=14, fillna=False):
     return ADXIndicator(high=high, low=low, close=close, n=n, fillna=fillna).adx_neg()
 
 
-class VortexIndicator(IndicatorMixin):
-    """Vortex Indicator (VI)
-
-    http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:vortex_indicator
-
-    """
-
-    def __init__(self, high : pd.Series, low : pd.Series, close : pd.Series, n : int = 14, fillna : bool = False):
-        """
-        Args:
-            high(pandas.Series): dataset 'High' column.
-            low(pandas.Series): dataset 'Low' column.
-            close(pandas.Series): dataset 'Close' column.
-            n(int): n period.
-            fillna(bool): if True, fill nan values.
-        """
-        self._high = high
-        self._low = low
-        self._close = close
-        self._n = n
-        self._fillna = fillna
-
-    def vortex_indicator_pos(high, low, close, n=14, fillna=False):
-        pass
-
-    def vortex_indicator_neg(high, low, close, n=14, fillna=False):
-        pass
-
-
 def vortex_indicator_pos(high, low, close, n=14, fillna=False):
     """Vortex Indicator (VI)
 
@@ -695,17 +709,7 @@ def vortex_indicator_pos(high, low, close, n=14, fillna=False):
     Returns:
         pandas.Series: New feature generated.
     """
-    tr = (high.combine(close.shift(1, fill_value=close.mean()), max)
-          - low.combine(close.shift(1, fill_value=close.mean()), min))
-    trn = tr.rolling(n).sum()
-
-    vmp = np.abs(high - low.shift(1, fill_value=low.mean()))
-    vmm = np.abs(low - high.shift(1, fill_value=high.mean()))
-
-    vip = vmp.rolling(n, min_periods=0).sum() / trn
-    if fillna:
-        vip = vip.replace([np.inf, -np.inf], np.nan).fillna(1)
-    return pd.Series(vip, name='vip')
+    return VortexIndicator(high=high, low=low, close=close, n=n, fillna=fillna).vortex_indicator_pos()
 
 
 def vortex_indicator_neg(high, low, close, n=14, fillna=False):
@@ -727,16 +731,7 @@ def vortex_indicator_neg(high, low, close, n=14, fillna=False):
     Returns:
         pandas.Series: New feature generated.
     """
-    tr = high.combine(close.shift(1), max) - low.combine(close.shift(1), min)
-    trn = tr.rolling(n).sum()
-
-    vmp = np.abs(high - low.shift(1))
-    vmm = np.abs(low - high.shift(1))
-
-    vin = vmm.rolling(n).sum() / trn
-    if fillna:
-        vin = vin.replace([np.inf, -np.inf], np.nan).fillna(1)
-    return pd.Series(vin, name='vin')
+    return VortexIndicator(high=high, low=low, close=close, n=n, fillna=fillna).vortex_indicator_neg()
 
 
 def trix(close, n=15, fillna=False):
@@ -755,8 +750,7 @@ def trix(close, n=15, fillna=False):
     Returns:
         pandas.Series: New feature generated.
     """
-    indicator = TRIXIndicator(close=close, n=n, fillna=fillna)
-    return indicator.trix()
+    return TRIXIndicator(close=close, n=n, fillna=fillna).trix()
 
 
 def mass_index(high, low, n=9, n2=25, fillna=False):
@@ -779,8 +773,7 @@ def mass_index(high, low, n=9, n2=25, fillna=False):
         pandas.Series: New feature generated.
 
     """
-    indicator = MassIndex(high=high, low=low, n=n, n2=n2, fillna=fillna)
-    return indicator.mass_index()
+    return MassIndex(high=high, low=low, n=n, n2=n2, fillna=fillna).mass_index()
 
 
 def cci(high, low, close, n=20, c=0.015, fillna=False):
@@ -806,8 +799,7 @@ def cci(high, low, close, n=20, c=0.015, fillna=False):
         pandas.Series: New feature generated.
 
     """
-    indicator = CCIIndicator(high=high, low=low, close=close, n=n, c=c, fillna=fillna)
-    return indicator.cci()
+    return CCIIndicator(high=high, low=low, close=close, n=n, c=c, fillna=fillna).cci()
 
 
 def dpo(close, n=20, fillna=False):
@@ -826,14 +818,7 @@ def dpo(close, n=20, fillna=False):
     Returns:
         pandas.Series: New feature generated.
     """
-    indicator = DPOIndicator(close=close, n=n, fillna=fillna)
-    return indicator.dpo()
-    """
-    dpo = close.shift(int((0.5 * n) + 1), fill_value=close.mean()) - close.rolling(n, min_periods=0).mean()
-    if fillna:
-        dpo = dpo.replace([np.inf, -np.inf], np.nan).fillna(0)
-    return pd.Series(dpo, name='dpo_'+str(n))
-    """
+    return DPOIndicator(close=close, n=n, fillna=fillna).dpo()
 
 
 def kst(close, r1=10, r2=15, r3=20, r4=30, n1=10, n2=10, n3=10, n4=15, fillna=False):
@@ -861,8 +846,7 @@ def kst(close, r1=10, r2=15, r3=20, r4=30, n1=10, n2=10, n3=10, n4=15, fillna=Fa
     Returns:
         pandas.Series: New feature generated.
     """
-    indicator = KSTIndicator(close=close, r1=r1, r2=r2, r3=r3, r4=r4, n1=n1, n2=n2, n3=n3, n4=n4, nsig=9, fillna=fillna)
-    return indicator.kst()
+    return KSTIndicator(close=close, r1=r1, r2=r2, r3=r3, r4=r4, n1=n1, n2=n2, n3=n3, n4=n4, nsig=9, fillna=fillna).kst()
 
 
 def kst_sig(close, r1=10, r2=15, r3=20, r4=30, n1=10, n2=10, n3=10, n4=15, nsig=9, fillna=False):
@@ -891,8 +875,7 @@ def kst_sig(close, r1=10, r2=15, r3=20, r4=30, n1=10, n2=10, n3=10, n4=15, nsig=
     Returns:
         pandas.Series: New feature generated.
     """
-    indicator = KSTIndicator(close=close, r1=r1, r2=r2, r3=r3, r4=r4, n1=n1, n2=n2, n3=n3, n4=n4, nsig=nsig, fillna=fillna)
-    return indicator.kst_sig()
+    return KSTIndicator(close=close, r1=r1, r2=r2, r3=r3, r4=r4, n1=n1, n2=n2, n3=n3, n4=n4, nsig=nsig, fillna=fillna).kst_sig()
 
 
 def ichimoku_a(high, low, n1=9, n2=26, visual=False, fillna=False):
@@ -913,8 +896,7 @@ def ichimoku_a(high, low, n1=9, n2=26, visual=False, fillna=False):
     Returns:
         pandas.Series: New feature generated.
     """
-    indicator = IchimokuIndicator(high=high, low=low, n1=n1, n2=n2, n3=52, visual=visual, fillna=fillna)
-    return indicator.ichimoku_a()
+    return IchimokuIndicator(high=high, low=low, n1=n1, n2=n2, n3=52, visual=visual, fillna=fillna).ichimoku_a()
 
 
 def ichimoku_b(high, low, n2=26, n3=52, visual=False, fillna=False):
@@ -935,8 +917,7 @@ def ichimoku_b(high, low, n2=26, n3=52, visual=False, fillna=False):
     Returns:
         pandas.Series: New feature generated.
     """
-    indicator = IchimokuIndicator(high=high, low=low, n1=9, n2=n2, n3=n3, visual=visual, fillna=fillna)
-    return indicator.ichimoku_b()
+    return IchimokuIndicator(high=high, low=low, n1=9, n2=n2, n3=n3, visual=visual, fillna=fillna).ichimoku_b()
 
 
 def aroon_up(close, n=25, fillna=False):
@@ -956,8 +937,7 @@ def aroon_up(close, n=25, fillna=False):
         pandas.Series: New feature generated.
 
     """
-    indicator = AroonIndicator(close=close, n=n, fillna=fillna)
-    return indicator.aroon_up()
+    return AroonIndicator(close=close, n=n, fillna=fillna).aroon_up()
 
 
 def aroon_down(close, n=25, fillna=False):
@@ -976,5 +956,4 @@ def aroon_down(close, n=25, fillna=False):
     Returns:
         pandas.Series: New feature generated.
     """
-    indicator = AroonIndicator(close=close, n=n, fillna=fillna)
-    return indicator.aroon_down()
+    return AroonIndicator(close=close, n=n, fillna=fillna).aroon_down()
