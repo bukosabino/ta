@@ -7,3 +7,6 @@ lint:
 
 isort-fix:
 	isort --recursive ta
+
+test:
+	python -m unittest discover
