@@ -1,14 +1,13 @@
 import pandas as pd
 
+from ta.momentum import *  # RSIIndicator, MFIIndicator, TSIIndicator
+from ta.others import *
+from ta.trend import (MACD, ADXIndicator, AroonIndicator, CCIIndicator,
+                      DPOIndicator, EMAIndicator, IchimokuIndicator,
+                      KSTIndicator, MassIndex, TRIXIndicator, VortexIndicator)
 from ta.volatility import (AverageTrueRange, BollingerBands, DonchianChannel,
                            KeltnerChannel)
-
-from .momentum import *  # MFIIndicator
-from .others import *
-from .trend import (MACD, ADXIndicator, AroonIndicator, CCIIndicator,
-                    DPOIndicator, EMAIndicator, IchimokuIndicator,
-                    KSTIndicator, MassIndex, TRIXIndicator, VortexIndicator)
-from .volume import *
+from ta.volume import *
 
 
 def add_volume_ta(df, high, low, close, volume, fillna=False, colprefix=""):
@@ -192,8 +191,10 @@ def add_momentum_ta(df, high, low, close, volume, fillna=False, colprefix=""):
     indicator = MFIIndicator(high=df[high], low=df[low], close=df[close], volume=df[volume], n=14, fillna=fillna)
     df[f'{colprefix}momentum_mfi'] = indicator.money_flow_index()
 
-    df[f'{colprefix}momentum_tsi'] = tsi(
-        df[close], r=25, s=13, fillna=fillna)
+    # TSI Indicator
+    indicator = TSIIndicator(close=df[close], r=25, s=13, fillna=fillna)
+    df[f'{colprefix}momentum_tsi'] = indicator.tsi()
+
     df[f'{colprefix}momentum_uo'] = uo(
         df[high], df[low], df[close], fillna=fillna)
     df[f'{colprefix}momentum_stoch'] = stoch(

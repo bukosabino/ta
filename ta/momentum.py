@@ -109,6 +109,40 @@ class MFIIndicator(IndicatorMixin):
         return pd.Series(mr, name=f'mfi_{self._n}')
 
 
+class TSIIndicator(IndicatorMixin):
+    """True strength index (TSI)
+
+    Shows both trend direction and overbought/oversold conditions.
+
+    https://en.wikipedia.org/wiki/True_strength_index
+    """
+
+    def __init__(self, close: pd.Series, r: int = 25, s: int = 13, fillna: bool = False):
+        """
+        Args:
+            close(pandas.Series): dataset 'Close' column.
+            r(int): high period.
+            s(int): low period.
+            fillna(bool): if True, fill nan values.
+        """
+        self._close = close
+        self._r = r
+        self._s = s
+        self._fillna = fillna
+        self._run()
+
+    def _run(self):
+        m = self._close - self._close.shift(1, fill_value=self._close.mean())
+        m1 = m.ewm(self._r).mean().ewm(self._s).mean()
+        m2 = abs(m).ewm(self._r).mean().ewm(self._s).mean()
+        self._tsi = m1 / m2
+        self._tsi *= 100
+
+    def tsi(self) -> pd.Series:
+        tsi = self.check_fillna(self._tsi, value=0)
+        return pd.Series(tsi, name='tsi')
+
+
 def rsi(close, n=14, fillna=False):
     """Relative Strength Index (RSI)
 
@@ -155,39 +189,6 @@ def money_flow_index(high, low, close, volume, n=14, fillna=False):
     """
     indicator = MFIIndicator(high=high, low=low, close=close, volume=volume, n=n, fillna=fillna)
     return indicator.money_flow_index()
-    """
-    # 0 Prepare dataframe to work
-    df = pd.DataFrame([high, low, close, volume]).T
-    df.columns = ['High', 'Low', 'Close', 'Volume']
-
-    # 1 typical price
-    tp = (df['High'] + df['Low'] + df['Close']) / 3.0
-
-    # 2 up or down column
-    df['Up_or_Down'] = 0
-    df.loc[(tp > tp.shift(1)), 'Up_or_Down'] = 1
-    df.loc[(tp < tp.shift(1)), 'Up_or_Down'] = -1
-
-    # 3 money flow
-    mf = tp * df['Volume'] * df['Up_or_Down']
-
-    # 4 positive and negative money flow with n periods
-    n_positive_mf = mf.rolling(n).apply(
-        lambda x: np.sum(np.where(x >= 0.0, x, 0.0)),
-        raw=True)
-    n_negative_mf = abs(mf.rolling(n).apply(
-        lambda x: np.sum(np.where(x < 0.0, x, 0.0)),
-        raw=True))
-
-    # 5 money flow index
-    mr = n_positive_mf / n_negative_mf
-    mr = (100 - (100 / (1 + mr)))
-
-    if fillna:
-        mr = mr.replace([np.inf, -np.inf], np.nan).fillna(50)
-
-    return pd.Series(mr, name='mfi_'+str(n))
-    """
 
 
 def tsi(close, r=25, s=13, fillna=False):
@@ -206,14 +207,7 @@ def tsi(close, r=25, s=13, fillna=False):
     Returns:
         pandas.Series: New feature generated.
     """
-    m = close - close.shift(1, fill_value=close.mean())
-    m1 = m.ewm(r).mean().ewm(s).mean()
-    m2 = abs(m).ewm(r).mean().ewm(s).mean()
-    tsi = m1 / m2
-    tsi *= 100
-    if fillna:
-        tsi = tsi.replace([np.inf, -np.inf], np.nan).fillna(0)
-    return pd.Series(tsi, name='tsi')
+    return TSIIndicator(close=close, r=r, s=s, fillna=fillna).tsi()
 
 
 def uo(high, low, close, s=7, m=14, len=28, ws=4.0, wm=2.0, wl=1.0,
