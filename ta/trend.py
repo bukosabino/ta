@@ -369,6 +369,119 @@ class CCIIndicator(IndicatorMixin):
         return pd.Series(cci, name='cci')
 
 
+class ADXIndicator(IndicatorMixin):
+    """Average Directional Movement Index (ADX)
+
+    The Plus Directional Indicator (+DI) and Minus Directional Indicator (-DI)
+    are derived from smoothed averages of these differences, and measure trend
+    direction over time. These two indicators are often referred to
+    collectively as the Directional Movement Indicator (DMI).
+
+    The Average Directional Index (ADX) is in turn derived from the smoothed
+    averages of the difference between +DI and -DI, and measures the strength
+    of the trend (regardless of direction) over time.
+
+    Using these three indicators together, chartists can determine both the
+    direction and strength of the trend.
+
+    http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:average_directional_index_adx
+    """
+
+    def __init__(self, high : pd.Series, low : pd.Series, close : pd.Series, n : int = 14, fillna : bool = False):
+        """
+        Args:
+            high(pandas.Series): dataset 'High' column.
+            low(pandas.Series): dataset 'Low' column.
+            close(pandas.Series): dataset 'Close' column.
+            n(int): n period.
+            fillna(bool): if True, fill nan values.
+        """
+        self._high = high
+        self._low = low
+        self._close = close
+        self._n = n
+        self._fillna = fillna
+        self._run()
+
+    def _run(self):
+        assert self._n is not 0 , "N may not be 0 and is %r" % n
+
+        cs = self._close.shift(1)
+        pdm = get_min_max(self._high, cs, 'max')
+        pdn = get_min_max(self._low, cs, 'min')
+        tr = pdm - pdn
+
+        self._trs_initial = np.zeros(self._n-1)
+        self._trs = np.zeros(len(self._close) - (self._n - 1))
+        self._trs[0] = tr.dropna()[0:self._n].sum()
+        tr = tr.reset_index(drop=True)
+
+        for i in range(1, len(self._trs)-1):
+            self._trs[i] = self._trs[i-1] - (self._trs[i-1]/float(self._n)) + tr[self._n+i]
+
+        up = self._high - self._high.shift(1)
+        dn = self._low.shift(1) - self._low
+        pos = abs(((up > dn) & (up > 0)) * up)
+        neg = abs(((dn > up) & (dn > 0)) * dn)
+
+        self._dip = np.zeros(len(self._close) - (self._n - 1))
+        self._dip[0] = pos.dropna()[0:self._n].sum()
+
+        pos = pos.reset_index(drop=True)
+
+        for i in range(1, len(self._dip)-1):
+            self._dip[i] = self._dip[i-1] - (self._dip[i-1]/float(self._n)) + pos[self._n+i]
+
+        self._din = np.zeros(len(self._close) - (self._n - 1))
+        self._din[0] = neg.dropna()[0:self._n].sum()
+
+        neg = neg.reset_index(drop=True)
+
+        for i in range(1, len(self._din)-1):
+            self._din[i] = self._din[i-1] - (self._din[i-1]/float(self._n)) + neg[self._n+i]
+
+    def adx(self) -> pd.Series:
+        dip = np.zeros(len(self._trs))
+        for i in range(len(self._trs)):
+            dip[i] = 100 * (self._dip[i]/self._trs[i])
+
+        din = np.zeros(len(self._trs))
+        for i in range(len(self._trs)):
+            din[i] = 100 * (self._din[i]/self._trs[i])
+
+        dx = 100 * np.abs((dip - din) / (dip + din))
+
+        adx = np.zeros(len(self._trs))
+        adx[self._n] = dx[0:self._n].mean()
+
+        for i in range(self._n+1, len(adx)):
+            adx[i] = ((adx[i-1] * (self._n - 1)) + dx[i-1]) / float(self._n)
+
+        adx = np.concatenate((self._trs_initial, adx), axis=0)
+        self._adx = pd.Series(data=adx, index=self._close.index)
+
+        adx = self.check_fillna(self._adx, value=20)
+        return pd.Series(adx, name='adx')
+
+    def adx_pos(self) -> pd.Series:
+
+        dip = np.zeros(len(self._close))
+        for i in range(1, len(self._trs)-1):
+            dip[i+self._n] = 100 * (self._dip[i]/self._trs[i])
+
+        adx_pos = self.check_fillna(pd.Series(dip), value=20)
+        return pd.Series(adx_pos, name='adx_pos')
+
+    def adx_neg(self) -> pd.Series:
+
+        din = np.zeros(len(self._close))
+        for i in range(1, len(self._trs)-1):
+            din[i+self._n] = 100 * (self._din[i]/self._trs[i])
+
+        adx_neg = self.check_fillna(pd.Series(din), value=20)
+        return pd.Series(adx_neg, name='adx_neg')
+
+
 def ema_indicator(close, n=12, fillna=False):
     """EMA
 
@@ -471,61 +584,7 @@ def adx(high, low, close, n=14, fillna=False):
     Returns:
         pandas.Series: New feature generated.
     """
-    assert n is not 0 , "N may not be 0 and is %r" % n
-
-    cs = close.shift(1)
-    pdm = get_min_max(high, cs, 'max')
-    pdn = get_min_max(low, cs, 'min')
-    tr = pdm - pdn
-
-    trs_initial = np.zeros(n-1)
-    trs = np.zeros(len(close) - (n - 1))
-    trs[0] = tr.dropna()[0:n].sum()
-    tr = tr.reset_index(drop=True)
-    for i in range(0, len(trs)-1):
-        trs[i+1] = trs[i] - (trs[i]/float(n)) + tr[n+i]
-
-    up = high - high.shift(1)
-    dn = low.shift(1) - low
-    pos = abs(((up > dn) & (up > 0)) * up)
-    neg = abs(((dn > up) & (dn > 0)) * dn)
-
-    dip_mio = np.zeros(len(close) - (n - 1))
-    dip_mio[0] = pos.dropna()[0:n].sum()
-
-    pos = pos.reset_index(drop=True)
-    for i in range(0, len(dip_mio)-1):
-        dip_mio[i+1] = dip_mio[i] - (dip_mio[i]/float(n)) + pos[n+i]
-
-    din_mio = np.zeros(len(close) - (n - 1))
-    din_mio[0] = neg.dropna()[0:n].sum()
-
-    neg = neg.reset_index(drop=True)
-    for i in range(0, len(din_mio)-1):
-        din_mio[i+1] = din_mio[i] - (din_mio[i]/float(n)) + neg[n+i]
-
-    dip = np.zeros(len(trs))
-    for i in range(len(trs)):
-        dip[i] = 100 * (dip_mio[i]/trs[i])
-
-    din = np.zeros(len(trs))
-    for i in range(len(trs)):
-        din[i] = 100 * (din_mio[i]/trs[i])
-
-    dx = 100 * np.abs((dip - din) / (dip + din))
-
-    adx = np.zeros(len(trs))
-    adx[n] = dx[0:n].mean()
-
-    for i in range(n+1, len(adx)):
-        adx[i] = ((adx[i-1] * (n - 1)) + dx[i-1]) / float(n)
-
-    adx = np.concatenate((trs_initial, adx), axis=0)
-    adx = pd.Series(data=adx, index=close.index)
-
-    if fillna:
-        adx = adx.replace([np.inf, -np.inf], np.nan).fillna(20)
-    return pd.Series(adx, name='adx')
+    return ADXIndicator(high=high, low=low, close=close, n=n, fillna=fillna).adx()
 
 
 def adx_pos(high, low, close, n=14, fillna=False):
@@ -555,40 +614,7 @@ def adx_pos(high, low, close, n=14, fillna=False):
     Returns:
         pandas.Series: New feature generated.
     """
-    assert n is not 0 , "N may not be 0 and is %r" % n
-    cs = close.shift(1)
-    pdm = get_min_max(high, cs, 'max')
-    pdn = get_min_max(low, cs, 'min')
-    tr = pdm - pdn
-
-    trs_initial = np.zeros(n-1)
-    trs = np.zeros(len(close) - (n - 1))
-    trs[0] = tr.dropna()[0:n].sum()
-    tr = tr.reset_index(drop=True)
-    for i in range(1, len(trs)-1):
-        trs[i] = trs[i-1] - (trs[i-1]/float(n)) + tr[n+i]
-
-    up = high - high.shift(1)
-    dn = low.shift(1) - low
-    pos = abs(((up > dn) & (up > 0)) * up)
-    neg = abs(((dn > up) & (dn > 0)) * dn)
-
-    dip_mio = np.zeros(len(close) - (n - 1))
-    dip_mio[0] = pos.dropna()[0:n].sum()
-
-    pos = pos.reset_index(drop=True)
-    for i in range(1, len(dip_mio)-1):
-        dip_mio[i] = dip_mio[i-1] - (dip_mio[i-1]/float(n)) + pos[n+i]
-
-    dip = np.zeros(len(close))
-    for i in range(1, len(trs)-1):
-        dip[i+n] = 100 * (dip_mio[i]/trs[i])
-
-    dip = pd.Series(data=dip, index=close.index)
-
-    if fillna:
-        dip = dip.replace([np.inf, -np.inf], np.nan).fillna(20)
-    return pd.Series(dip, name='adx_pos')
+    return ADXIndicator(high=high, low=low, close=close, n=n, fillna=fillna).adx_pos()
 
 
 def adx_neg(high, low, close, n=14, fillna=False):
@@ -618,42 +644,7 @@ def adx_neg(high, low, close, n=14, fillna=False):
     Returns:
         pandas.Series: New feature generated.
     """
-    assert n is not 0 , "N may not be 0 and is %r" % n
-
-    cs = close.shift(1)
-    pdm = get_min_max(high, cs, 'max')
-    pdn = get_min_max(low, cs, 'min')
-    tr = pdm - pdn
-
-    trs_initial = np.zeros(n-1)
-    trs = np.zeros(len(close) - (n - 1))
-    trs[0] = tr.dropna()[0:n].sum()
-    tr = tr.reset_index(drop=True)
-
-    for i in range(1, len(trs)-1):
-        trs[i] = trs[i-1] - (trs[i-1]/float(n)) + tr[n+i]
-
-    up = high - high.shift(1)
-    dn = low.shift(1) - low
-    pos = abs(((up > dn) & (up > 0)) * up)
-    neg = abs(((dn > up) & (dn > 0)) * dn)
-
-    din_mio = np.zeros(len(close) - (n - 1))
-    din_mio[0] = neg.dropna()[0:n].sum()
-
-    neg = neg.reset_index(drop=True)
-    for i in range(1, len(din_mio)-1):
-        din_mio[i] = din_mio[i-1] - (din_mio[i-1]/float(n)) + neg[n+i]
-
-    din = np.zeros(len(close))
-    for i in range(1, len(trs)-1):
-        din[i+n] = 100 * (din_mio[i]/float(trs[i]))
-
-    din = pd.Series(data=din, index=close.index)
-
-    if fillna:
-        din = din.replace([np.inf, -np.inf], np.nan).fillna(20)
-    return pd.Series(din, name='adx_neg')
+    return ADXIndicator(high=high, low=low, close=close, n=n, fillna=fillna).adx_neg()
 
 
 class VortexIndicator(IndicatorMixin):
