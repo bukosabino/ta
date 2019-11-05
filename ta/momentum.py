@@ -48,7 +48,13 @@ class MFIIndicator(IndicatorMixin):
     """
     """
 
-    def __init__(self, high : pd.Series, low : pd.Series, close : pd.Series, volume : pd.Series, n : int = 14, fillna : bool = False):
+    def __init__(self,
+                 high: pd.Series,
+                 low: pd.Series,
+                 close: pd.Series,
+                 volume: pd.Series,
+                 n: int = 14,
+                 fillna: bool = False):
         """
         Args:
             high(pandas.Series): dataset 'High' column.
@@ -401,11 +407,11 @@ def kama(close, n=10, pow1=2, pow2=30, fillna=False):
     close_values = close.values
     vol = pd.Series(abs(close - np.roll(close, 1)))
 
-    ER_num = abs(close_values - np.roll(close_values, n) )
+    ER_num = abs(close_values - np.roll(close_values, n))
     ER_den = vol.rolling(n).sum()
     ER = ER_num / ER_den
 
-    sc = (( ER*(2.0/(pow1+1)-2.0/(pow2+1.0))+2/(pow2+1.0) ) ** 2.0).values
+    sc = ((ER*(2.0/(pow1+1)-2.0/(pow2+1.0))+2/(pow2+1.0)) ** 2.0).values
 
     kama = np.zeros(sc.size)
     N = len(kama)

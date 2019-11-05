@@ -22,7 +22,7 @@ class AroonIndicator(IndicatorMixin):
     https://www.investopedia.com/terms/a/aroon.asp
     """
 
-    def __init__(self, close : pd.Series, n : int = 25, fillna : bool = False):
+    def __init__(self, close: pd.Series, n: int = 25, fillna: bool = False):
         """
         Args:
             close(pandas.Series): dataset 'Close' column.
@@ -58,7 +58,12 @@ class AroonIndicator(IndicatorMixin):
 class MACD(IndicatorMixin):
     """
     """
-    def __init__(self, close : pd.Series, n_slow : int = 12, n_fast : int = 26, n_sign : int = 9, fillna : bool = False):
+    def __init__(self,
+                 close: pd.Series,
+                 n_slow: int = 12,
+                 n_fast: int = 26,
+                 n_sign: int = 9,
+                 fillna: bool = False):
         """
         Args:
             close(pandas.Series): dataset 'Close' column.
@@ -100,7 +105,7 @@ class EMAIndicator(IndicatorMixin):
     Exponential Moving Average
     """
 
-    def __init__(self, close : pd.Series, n : int = 14, fillna : bool = False):
+    def __init__(self, close: pd.Series, n: int = 14, fillna: bool = False):
         """
         Args:
             close(pandas.Series): dataset 'Close' column.
@@ -132,7 +137,7 @@ class TRIXIndicator(IndicatorMixin):
     http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:trix
     """
 
-    def __init__(self, close : pd.Series, n : int = 15, fillna : bool = False):
+    def __init__(self, close: pd.Series, n: int = 15, fillna: bool = False):
         """
         Args:
             close(pandas.Series): dataset 'Close' column.
@@ -167,7 +172,7 @@ class MassIndex(IndicatorMixin):
 
     """
 
-    def __init__(self, high : pd.Series, low : pd.Series, n : int = 9, n2 : int = 25, fillna : bool = False):
+    def __init__(self, high: pd.Series, low: pd.Series, n: int = 9, n2: int = 25, fillna: bool = False):
         """
         Args:
             high(pandas.Series): dataset 'High' column.
@@ -202,7 +207,8 @@ class IchimokuIndicator(IndicatorMixin):
 
     """
 
-    def __init__(self, high : pd.Series, low : pd.Series, n1 : int = 9, n2 : int = 26, n3 : int = 52, visual : bool = False, fillna : bool = False):
+    def __init__(self, high: pd.Series, low: pd.Series, n1: int = 9, n2: int = 26, n3: int = 52,
+                 visual: bool = False, fillna: bool = False):
         """
         Args:
             high(pandas.Series): dataset 'High' column.
@@ -222,15 +228,18 @@ class IchimokuIndicator(IndicatorMixin):
         self._fillna = fillna
 
     def ichimoku_a(self) -> pd.Series:
-        conv = 0.5 * (self._high.rolling(self._n1, min_periods=0).max() + self._low.rolling(self._n1, min_periods=0).min())
-        base = 0.5 * (self._high.rolling(self._n2, min_periods=0).max() + self._low.rolling(self._n2, min_periods=0).min())
+        conv = 0.5 * (self._high.rolling(self._n1, min_periods=0).max()
+                      + self._low.rolling(self._n1, min_periods=0).min())
+        base = 0.5 * (self._high.rolling(self._n2, min_periods=0).max()
+                      + self._low.rolling(self._n2, min_periods=0).min())
         spana = 0.5 * (conv + base)
         spana = spana.shift(self._n2, fill_value=spana.mean()) if self._visual else spana
         spana = self.check_fillna(spana, method='backfill')
         return pd.Series(spana, name=f'ichimoku_a_{self._n1}_{self._n2}')
 
     def ichimoku_b(self) -> pd.Series:
-        spanb = 0.5 * (self._high.rolling(self._n3, min_periods=0).max() + self._low.rolling(self._n3, min_periods=0).min())
+        spanb = 0.5 * (self._high.rolling(self._n3, min_periods=0).max()
+                       + self._low.rolling(self._n3, min_periods=0).min())
         spanb = spanb.shift(self._n2, fill_value=spanb.mean()) if self._visual else spanb
         spanb = self.check_fillna(spanb, method='backfill')
         return pd.Series(spanb, name=f'ichimoku_b_{self._n1}_{self._n2}')
@@ -247,7 +256,9 @@ class KSTIndicator(IndicatorMixin):
     http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:know_sure_thing_kst
     """
 
-    def __init__(self, close : pd.Series, r1 : int = 10, r2 : int = 15, r3 : int = 20, r4 : int = 30, n1 : int = 10, n2 : int = 10, n3 : int = 10, n4 : int = 15, nsig : int = 9, fillna : bool = False):
+    def __init__(self, close: pd.Series, r1: int = 10, r2: int = 15, r3: int = 20, r4: int = 30,
+                 n1: int = 10, n2: int = 10, n3: int = 10, n4: int = 15, nsig: int = 9,
+                 fillna: bool = False):
         """
         Args:
             close(pandas.Series): dataset 'Close' column.
@@ -309,7 +320,7 @@ class DPOIndicator(IndicatorMixin):
 
     http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:detrended_price_osci
     """
-    def __init__(self, close : pd.Series, n : int = 20, fillna : bool = False):
+    def __init__(self, close: pd.Series, n: int = 20, fillna: bool = False):
         """
         Args:
             close(pandas.Series): dataset 'Close' column.
@@ -322,7 +333,8 @@ class DPOIndicator(IndicatorMixin):
         self._run()
 
     def _run(self):
-        self._dpo = self._close.shift(int((0.5 * self._n) + 1), fill_value=self._close.mean()) - self._close.rolling(self._n, min_periods=0).mean()
+        self._dpo = (self._close.shift(int((0.5 * self._n) + 1), fill_value=self._close.mean())
+                     - self._close.rolling(self._n, min_periods=0).mean())
 
     def dpo(self) -> pd.Series:
         dpo = self.check_fillna(self._dpo, value=0)
@@ -341,7 +353,13 @@ class CCIIndicator(IndicatorMixin):
     http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:commodity_channel_index_cci
     """
 
-    def __init__(self, high : pd.Series, low : pd.Series, close : pd.Series, n : int = 20, c : float = 0.015, fillna : bool = False):
+    def __init__(self,
+                 high: pd.Series,
+                 low: pd.Series,
+                 close: pd.Series,
+                 n: int = 20,
+                 c: float = 0.015,
+                 fillna: bool = False):
         """
         Args:
             high(pandas.Series): dataset 'High' column.
@@ -360,9 +378,13 @@ class CCIIndicator(IndicatorMixin):
         self._run()
 
     def _run(self):
+
+        def _mad(x):
+            return np.mean(np.abs(x-np.mean(x)))
+
         pp = (self._high + self._low + self._close) / 3.0
-        mad = lambda x : np.mean(np.abs(x-np.mean(x)))
-        self._cci = ((pp - pp.rolling(self._n, min_periods=0).mean()) / (self._c * pp.rolling(self._n, min_periods=0).apply(mad, True)))
+        self._cci = ((pp - pp.rolling(self._n, min_periods=0).mean())
+                     / (self._c * pp.rolling(self._n, min_periods=0).apply(_mad, True)))
 
     def cci(self) -> pd.Series:
         cci = self.check_fillna(self._cci, value=0)
@@ -387,7 +409,7 @@ class ADXIndicator(IndicatorMixin):
     http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:average_directional_index_adx
     """
 
-    def __init__(self, high : pd.Series, low : pd.Series, close : pd.Series, n : int = 14, fillna : bool = False):
+    def __init__(self, high: pd.Series, low: pd.Series, close: pd.Series, n: int = 14, fillna: bool = False):
         """
         Args:
             high(pandas.Series): dataset 'High' column.
@@ -404,7 +426,7 @@ class ADXIndicator(IndicatorMixin):
         self._run()
 
     def _run(self):
-        assert self._n is not 0 , "N may not be 0 and is %r" % n
+        assert self._n is not 0, "N may not be 0 and is %r" % n
 
         cs = self._close.shift(1)
         pdm = get_min_max(self._high, cs, 'max')
@@ -490,7 +512,7 @@ class VortexIndicator(IndicatorMixin):
     http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:vortex_indicator
     """
 
-    def __init__(self, high : pd.Series, low : pd.Series, close : pd.Series, n : int = 14, fillna : bool = False):
+    def __init__(self, high: pd.Series, low: pd.Series, close: pd.Series, n: int = 14, fillna: bool = False):
         """
         Args:
             high(pandas.Series): dataset 'High' column.
@@ -846,7 +868,8 @@ def kst(close, r1=10, r2=15, r3=20, r4=30, n1=10, n2=10, n3=10, n4=15, fillna=Fa
     Returns:
         pandas.Series: New feature generated.
     """
-    return KSTIndicator(close=close, r1=r1, r2=r2, r3=r3, r4=r4, n1=n1, n2=n2, n3=n3, n4=n4, nsig=9, fillna=fillna).kst()
+    return KSTIndicator(
+        close=close, r1=r1, r2=r2, r3=r3, r4=r4, n1=n1, n2=n2, n3=n3, n4=n4, nsig=9, fillna=fillna).kst()
 
 
 def kst_sig(close, r1=10, r2=15, r3=20, r4=30, n1=10, n2=10, n3=10, n4=15, nsig=9, fillna=False):
@@ -875,7 +898,8 @@ def kst_sig(close, r1=10, r2=15, r3=20, r4=30, n1=10, n2=10, n3=10, n4=15, nsig=
     Returns:
         pandas.Series: New feature generated.
     """
-    return KSTIndicator(close=close, r1=r1, r2=r2, r3=r3, r4=r4, n1=n1, n2=n2, n3=n3, n4=n4, nsig=nsig, fillna=fillna).kst_sig()
+    return KSTIndicator(
+        close=close, r1=r1, r2=r2, r3=r3, r4=r4, n1=n1, n2=n2, n3=n3, n4=n4, nsig=nsig, fillna=fillna).kst_sig()
 
 
 def ichimoku_a(high, low, n1=9, n2=26, visual=False, fillna=False):

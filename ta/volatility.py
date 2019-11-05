@@ -21,7 +21,7 @@ class AverageTrueRange(IndicatorMixin):
     http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:average_true_range_atr
     """
 
-    def __init__(self, high : pd.Series, low : pd.Series, close : pd.Series, n : int = 14, fillna : bool = False):
+    def __init__(self, high: pd.Series, low: pd.Series, close: pd.Series, n: int = 14, fillna: bool = False):
         """
         Args:
             high(pandas.Series): dataset 'High' column.
@@ -57,7 +57,7 @@ class BollingerBands(IndicatorMixin):
         https://en.wikipedia.org/wiki/Bollinger_Bands
     """
 
-    def __init__(self, close : pd.Series, n : int = 20, ndev : int = 2, fillna : bool = False):
+    def __init__(self, close: pd.Series, n: int = 20, ndev: int = 2, fillna: bool = False):
         """
         Args:
             close(pandas.Series): dataset 'Close' column.
@@ -104,7 +104,7 @@ class KeltnerChannel(IndicatorMixin):
     """
     """
 
-    def __init__(self, high : pd.Series, low : pd.Series, close : pd.Series, n : int = 14, fillna : bool = False):
+    def __init__(self, high: pd.Series, low: pd.Series, close: pd.Series, n: int = 14, fillna: bool = False):
         """
         Args:
             high(pandas.Series): dataset 'High' column.
@@ -122,8 +122,10 @@ class KeltnerChannel(IndicatorMixin):
 
     def _run(self):
         self._tp = ((self._high + self._low + self._close) / 3.0).rolling(self._n, min_periods=0).mean()
-        self._tp_high = (((4 * self._high) - (2 * self._low) + self._close) / 3.0).rolling(self._n, min_periods=0).mean()
-        self._tp_low = (((-2 * self._high) + (4 * self._low) + self._close) / 3.0).rolling(self._n, min_periods=0).mean()
+        self._tp_high = (((4 * self._high) - (2 * self._low) + self._close) / 3.0).rolling(
+            self._n, min_periods=0).mean()
+        self._tp_low = (((-2 * self._high) + (4 * self._low) + self._close) / 3.0).rolling(
+            self._n, min_periods=0).mean()
 
     def keltner_channel_central(self) -> pd.Series:
         tp = self.check_fillna(self._tp, method='backfill')
@@ -155,7 +157,7 @@ class DonchianChannel(IndicatorMixin):
 
     """
 
-    def __init__(self, close : pd.Series, n : int = 20, fillna : bool = False):
+    def __init__(self, close: pd.Series, n: int = 20, fillna: bool = False):
         """
         Args:
             close(pandas.Series): dataset 'Close' column.

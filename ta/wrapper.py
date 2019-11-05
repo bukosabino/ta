@@ -1,9 +1,13 @@
 import pandas as pd
 
-from .momentum import * # MFIIndicator
+from ta.volatility import (AverageTrueRange, BollingerBands, DonchianChannel,
+                           KeltnerChannel)
+
+from .momentum import *  # MFIIndicator
 from .others import *
-from .trend import * # AroonIndicator, MACD, EMAIndicator, TRIXIndicator, MassIndex, IchimokuIndicator, DPOIndicator
-from ta.volatility import AverageTrueRange, BollingerBands, KeltnerChannel, DonchianChannel
+from .trend import (MACD, ADXIndicator, AroonIndicator, CCIIndicator,
+                    DPOIndicator, EMAIndicator, IchimokuIndicator,
+                    KSTIndicator, MassIndex, TRIXIndicator, VortexIndicator)
 from .volume import *
 
 
@@ -22,34 +26,20 @@ def add_volume_ta(df, high, low, close, volume, fillna=False, colprefix=""):
     Returns:
         pandas.core.frame.DataFrame: Dataframe with new features.
     """
-    df[f'{colprefix}volume_adi'] = acc_dist_index(df[high],
-                                                          df[low],
-                                                          df[close],
-                                                          df[volume],
-                                                          fillna=fillna)
-    df[f'{colprefix}volume_obv'] = on_balance_volume(df[close],
-                                                             df[volume],
-                                                             fillna=fillna)
-    df[f'{colprefix}volume_cmf'] = chaikin_money_flow(df[high],
-                                                              df[low],
-                                                              df[close],
-                                                              df[volume],
-                                                              fillna=fillna)
-    df[f'{colprefix}volume_fi'] = force_index(df[close],
-                                                      df[volume],
-                                                      fillna=fillna)
-    df[f'{colprefix}volume_em'] = ease_of_movement(df[high],
-                                                           df[low],
-                                                           df[close],
-                                                           df[volume],
-                                                           n=14,
-                                                           fillna=fillna)
-    df[f'{colprefix}volume_vpt'] = volume_price_trend(df[close],
-                                                              df[volume],
-                                                              fillna=fillna)
-    df[f'{colprefix}volume_nvi'] = negative_volume_index(df[close],
-                                                                 df[volume],
-                                                                 fillna=fillna)
+    df[f'{colprefix}volume_adi'] = acc_dist_index(
+        df[high], df[low], df[close], df[volume], fillna=fillna)
+    df[f'{colprefix}volume_obv'] = on_balance_volume(
+        df[close], df[volume], fillna=fillna)
+    df[f'{colprefix}volume_cmf'] = chaikin_money_flow(
+        df[high], df[low], df[close], df[volume], fillna=fillna)
+    df[f'{colprefix}volume_fi'] = force_index(
+        df[close], df[volume], fillna=fillna)
+    df[f'{colprefix}volume_em'] = ease_of_movement(
+        df[high], df[low], df[close], df[volume], n=14, fillna=fillna)
+    df[f'{colprefix}volume_vpt'] = volume_price_trend(
+        df[close], df[volume], fillna=fillna)
+    df[f'{colprefix}volume_nvi'] = negative_volume_index(
+        df[close], df[volume], fillna=fillna)
     return df
 
 
@@ -154,9 +144,10 @@ def add_trend_ta(df, high, low, close, fillna=False, colprefix=""):
     df[f'{colprefix}trend_dpo'] = indicator.dpo()
 
     # KST Indicator
-    indicator = KSTIndicator(close=df[close], r1=10, r2=15, r3=20,
-                                              r4=30, n1=10, n2=10, n3=10,
-                                              n4=15, nsig=9, fillna=fillna)
+    indicator = KSTIndicator(close=df[close],
+                             r1=10, r2=15, r3=20,
+                             r4=30, n1=10, n2=10, n3=10,
+                             n4=15, nsig=9, fillna=fillna)
     df[f'{colprefix}trend_kst'] = indicator.kst()
     df[f'{colprefix}trend_kst_sig'] = indicator.kst_sig()
     df[f'{colprefix}trend_kst_diff'] = indicator.kst_diff()
@@ -198,19 +189,16 @@ def add_momentum_ta(df, high, low, close, volume, fillna=False, colprefix=""):
     indicator = MFIIndicator(high=df[high], low=df[low], close=df[close], volume=df[volume], n=14, fillna=fillna)
     df[f'{colprefix}momentum_mfi'] = indicator.money_flow_index()
 
-    df[f'{colprefix}momentum_tsi'] = tsi(df[close], r=25, s=13,
-                                                 fillna=fillna)
-    df[f'{colprefix}momentum_uo'] = uo(df[high], df[low], df[close],
-                                               fillna=fillna)
-    df[f'{colprefix}momentum_stoch'] = stoch(df[high], df[low],
-                                                     df[close], fillna=fillna)
+    df[f'{colprefix}momentum_tsi'] = tsi(
+        df[close], r=25, s=13, fillna=fillna)
+    df[f'{colprefix}momentum_uo'] = uo(
+        df[high], df[low], df[close], fillna=fillna)
+    df[f'{colprefix}momentum_stoch'] = stoch(
+        df[high], df[low], df[close], fillna=fillna)
     df[f'{colprefix}momentum_stoch_signal'] = stoch_signal(
-                                                                df[high],
-                                                                df[low],
-                                                                df[close],
-                                                                fillna=fillna)
-    df[f'{colprefix}momentum_wr'] = wr(df[high], df[low], df[close],
-                                               fillna=fillna)
+        df[high], df[low], df[close], fillna=fillna)
+    df[f'{colprefix}momentum_wr'] = wr(
+        df[high], df[low], df[close], fillna=fillna)
     df[f'{colprefix}momentum_ao'] = ao(
         df[high], df[low], fillna=fillna)
     df[f'{colprefix}momentum_kama'] = kama(df[close], fillna=fillna)
@@ -229,12 +217,9 @@ def add_others_ta(df, close, fillna=False, colprefix=""):
     Returns:
         pandas.core.frame.DataFrame: Dataframe with new features.
     """
-    df[f'{colprefix}others_dr'] = daily_return(df[close],
-                                                       fillna=fillna)
-    df[f'{colprefix}others_dlr'] = daily_log_return(df[close],
-                                                            fillna=fillna)
-    df[f'{colprefix}others_cr'] = cumulative_return(df[close],
-                                                            fillna=fillna)
+    df[f'{colprefix}others_dr'] = daily_return(df[close], fillna=fillna)
+    df[f'{colprefix}others_dlr'] = daily_log_return(df[close], fillna=fillna)
+    df[f'{colprefix}others_cr'] = cumulative_return(df[close], fillna=fillna)
     return df
 
 
@@ -258,8 +243,9 @@ def add_all_ta_features(df, open, high, low, close, volume, fillna=False,
     """
     df = add_volume_ta(df, high, low, close, volume, fillna=fillna, colprefix=colprefix)
     df = add_volatility_ta(df, high, low, close, fillna=fillna, colprefix=colprefix)
-    df = add_trend_ta(df, high, low, close, fillna=fillna, colprefix=colprefix)
     """
+    df = add_trend_ta(df, high, low, close, fillna=fillna, colprefix=colprefix)
+
     df = add_momentum_ta(df, high, low, close, volume, fillna=fillna, colprefix=colprefix)
     """
     df = add_others_ta(df, close, fillna=fillna, colprefix=colprefix)
