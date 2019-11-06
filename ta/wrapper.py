@@ -11,7 +11,10 @@ from ta.trend import (MACD, ADXIndicator, AroonIndicator, CCIIndicator,
                       KSTIndicator, MassIndex, TRIXIndicator, VortexIndicator)
 from ta.volatility import (AverageTrueRange, BollingerBands, DonchianChannel,
                            KeltnerChannel)
-from ta.volume import *
+from ta.volume import (AccDistIndexIndicator, ChaikinMoneyFlowIndicator,
+                       EaseOfMovementIndicator, ForceIndexIndicator,
+                       NegativeVolumeIndexIndicator, OnBalanceVolumeIndicator,
+                       VolumePriceTrendIndicator)
 
 
 def add_volume_ta(df: pd.DataFrame, high: pd.Series, low: pd.Series, close: pd.Series, volume: pd.Series,
@@ -30,20 +33,20 @@ def add_volume_ta(df: pd.DataFrame, high: pd.Series, low: pd.Series, close: pd.S
     Returns:
         pandas.core.frame.DataFrame: Dataframe with new features.
     """
-    df[f'{colprefix}volume_adi'] = acc_dist_index(
-        df[high], df[low], df[close], df[volume], fillna=fillna)
-    df[f'{colprefix}volume_obv'] = on_balance_volume(
-        df[close], df[volume], fillna=fillna)
-    df[f'{colprefix}volume_cmf'] = chaikin_money_flow(
-        df[high], df[low], df[close], df[volume], fillna=fillna)
-    df[f'{colprefix}volume_fi'] = force_index(
-        df[close], df[volume], fillna=fillna)
-    df[f'{colprefix}volume_em'] = ease_of_movement(
-        df[high], df[low], df[close], df[volume], n=14, fillna=fillna)
-    df[f'{colprefix}volume_vpt'] = volume_price_trend(
-        df[close], df[volume], fillna=fillna)
-    df[f'{colprefix}volume_nvi'] = negative_volume_index(
-        df[close], df[volume], fillna=fillna)
+    df[f'{colprefix}volume_adi'] = AccDistIndexIndicator(
+        high=df[high], low=df[low], close=df[close], volume=df[volume], fillna=fillna).acc_dist_index()
+    df[f'{colprefix}volume_obv'] = OnBalanceVolumeIndicator(
+        close=df[close], volume=df[volume], fillna=fillna).on_balance_volume()
+    df[f'{colprefix}volume_cmf'] = ChaikinMoneyFlowIndicator(
+        high=df[high], low=df[low], close=df[close], volume=df[volume], fillna=fillna).chaikin_money_flow()
+    df[f'{colprefix}volume_fi'] = ForceIndexIndicator(
+        close=df[close], volume=df[volume], fillna=fillna).force_index()
+    df[f'{colprefix}volume_em'] = EaseOfMovementIndicator(
+        high=df[high], low=df[low], close=df[close], volume=df[volume], n=14, fillna=fillna).ease_of_movement()
+    df[f'{colprefix}volume_vpt'] = VolumePriceTrendIndicator(
+        close=df[close], volume=df[volume], fillna=fillna).volume_price_trend()
+    df[f'{colprefix}volume_nvi'] = NegativeVolumeIndexIndicator(
+        close=df[close], volume=df[volume], fillna=fillna).negative_volume_index()
     return df
 
 
@@ -239,9 +242,15 @@ def add_others_ta(df: pd.DataFrame, close: pd.Series, fillna: bool = False, colp
     Returns:
         pandas.core.frame.DataFrame: Dataframe with new features.
     """
+    # Daily Return
     df[f'{colprefix}others_dr'] = DailyReturnIndicator(close=df[close], fillna=fillna).daily_return()
+
+    # Daily Log Return
     df[f'{colprefix}others_dlr'] = DailyLogReturnIndicator(close=df[close], fillna=fillna).daily_log_return()
+
+    # Cumulative Return
     df[f'{colprefix}others_cr'] = CumulativeReturnIndicator(close=df[close], fillna=fillna).cumulative_return()
+
     return df
 
 
