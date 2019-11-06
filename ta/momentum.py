@@ -160,7 +160,17 @@ class UltimateOscillatorIndicator(IndicatorMixin):
     UO = 100 x [(4 x Average7)+(2 x Average14)+Average28]/(4+2+1)
     """
 
-    def __init__(self, high: pd.Series, low: pd.Series, close: pd.Series, s: int = 7, m: int = 14, len: int = 28, ws: float = 4.0, wm: float = 2.0, wl: float =1.0, fillna: bool = False):
+    def __init__(self,
+                 high: pd.Series,
+                 low: pd.Series,
+                 close: pd.Series,
+                 s: int = 7,
+                 m: int = 14,
+                 len: int = 28,
+                 ws: float = 4.0,
+                 wm: float = 2.0,
+                 wl: float = 1.0,
+                 fillna: bool = False):
         """
         Args:
             high(pandas.Series): dataset 'High' column.
@@ -213,19 +223,27 @@ class StochIndicator(IndicatorMixin):
     https://www.investopedia.com/terms/s/stochasticoscillator.asp
     """
 
-    def __init__(self, high: pd.Series, low: pd.Series, close: pd.Series, n: int = 14, fillna: bool = False):
+    def __init__(self,
+                 high: pd.Series,
+                 low: pd.Series,
+                 close: pd.Series,
+                 n: int = 14,
+                 d_n: int = 3,
+                 fillna: bool = False):
         """
         Args:
             close(pandas.Series): dataset 'Close' column.
             high(pandas.Series): dataset 'High' column.
             low(pandas.Series): dataset 'Low' column.
             n(int): n period.
+            d_n(int): sma period over stoch_k
             fillna(bool): if True, fill nan values.
         """
         self._close = close
         self._high = high
         self._low = low
         self._n = n
+        self._d_n = d_n
         self._fillna = fillna
         self._run()
 
@@ -237,6 +255,11 @@ class StochIndicator(IndicatorMixin):
     def stoch(self) -> pd.Series:
         stoch_k = self.check_fillna(self._stoch_k, value=50)
         return pd.Series(stoch_k, name='stoch_k')
+
+    def stoch_signal(self) -> pd.Series:
+        stoch_d = self._stoch_k.rolling(self._d_n, min_periods=0).mean()
+        stoch_d = self.check_fillna(stoch_d, value=50)
+        return pd.Series(stoch_d, name='stoch_k_signal')
 
 
 def rsi(close, n=14, fillna=False):
@@ -338,7 +361,8 @@ def uo(high, low, close, s=7, m=14, len=28, ws=4.0, wm=2.0, wl=1.0, fillna=False
         pandas.Series: New feature generated.
 
     """
-    return UltimateOscillatorIndicator(high=high, low=low, close=close, s=7, m=14, len=28, ws=4.0, wm=2.0, wl=1.0, fillna=fillna).uo()
+    return UltimateOscillatorIndicator(
+        high=high, low=low, close=close, s=7, m=14, len=28, ws=4.0, wm=2.0, wl=1.0, fillna=fillna).uo()
 
 
 def stoch(high, low, close, n=14, fillna=False):
@@ -362,17 +386,7 @@ def stoch(high, low, close, n=14, fillna=False):
         pandas.Series: New feature generated.
     """
 
-    return StochIndicator(high=high, low=low, close=close, n=n, fillna=fillna).stoch()
-
-    """
-    smin = low.rolling(n, min_periods=0).min()
-    smax = high.rolling(n, min_periods=0).max()
-    stoch_k = 100 * (close - smin) / (smax - smin)
-
-    if fillna:
-        stoch_k = stoch_k.replace([np.inf, -np.inf], np.nan).fillna(50)
-    return pd.Series(stoch_k, name='stoch_k')
-    """
+    return StochIndicator(high=high, low=low, close=close, n=n, d_n=3, fillna=fillna).stoch()
 
 
 def stoch_signal(high, low, close, n=14, d_n=3, fillna=False):
@@ -393,12 +407,16 @@ def stoch_signal(high, low, close, n=14, d_n=3, fillna=False):
     Returns:
         pandas.Series: New feature generated.
     """
+    return StochIndicator(high=high, low=low, close=close, n=n, d_n=d_n, fillna=fillna).stoch_signal()
+
+    """
     stoch_k = stoch(high, low, close, n, fillna=fillna)
     stoch_d = stoch_k.rolling(d_n, min_periods=0).mean()
 
     if fillna:
         stoch_d = stoch_d.replace([np.inf, -np.inf], np.nan).fillna(50)
     return pd.Series(stoch_d, name='stoch_d')
+    """
 
 
 def wr(high, low, close, lbp=14, fillna=False):

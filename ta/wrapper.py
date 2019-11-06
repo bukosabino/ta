@@ -1,6 +1,6 @@
 import pandas as pd
 
-from ta.momentum import *  # RSIIndicator, MFIIndicator, TSIIndicator
+from ta.momentum import *  # RSIIndicator, MFIIndicator, TSIIndicator, UltimateOscillatorIndicator, StochIndicator
 from ta.others import *
 from ta.trend import (MACD, ADXIndicator, AroonIndicator, CCIIndicator,
                       DPOIndicator, EMAIndicator, IchimokuIndicator,
@@ -201,11 +201,10 @@ def add_momentum_ta(df, high, low, close, volume, fillna=False, colprefix=""):
         fillna=fillna).uo()
 
     # Stoch Indicator
-    df[f'{colprefix}momentum_stoch'] = StochIndicator(
-        high=df[high], low=df[low], close=df[close], n=14, fillna=fillna).stoch()
+    indicator = StochIndicator(high=df[high], low=df[low], close=df[close], n=14, d_n=3, fillna=fillna)
+    df[f'{colprefix}momentum_stoch'] = indicator.stoch()
+    df[f'{colprefix}momentum_stoch_signal'] = indicator.stoch_signal()
 
-    df[f'{colprefix}momentum_stoch_signal'] = stoch_signal(
-        df[high], df[low], df[close], fillna=fillna)
     df[f'{colprefix}momentum_wr'] = wr(
         df[high], df[low], df[close], fillna=fillna)
     df[f'{colprefix}momentum_ao'] = ao(
