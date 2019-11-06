@@ -216,7 +216,7 @@ def add_momentum_ta(df: pd.DataFrame, high: pd.Series, low: pd.Series, close: pd
 
     # Williams R Indicator
     df[f'{colprefix}momentum_wr'] = WilliamsRIndicator(
-        high=df[high], low=df[low], close=df[close], lbp=14, fillna=fillna)
+        high=df[high], low=df[low], close=df[close], lbp=14, fillna=fillna).wr()
 
     # Awesome Oscillator
     df[f'{colprefix}momentum_ao'] = AwesomeOscillatorIndicator(
