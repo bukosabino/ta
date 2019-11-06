@@ -262,11 +262,9 @@ def add_all_ta_features(df: pd.DataFrame, open: pd.Series, high: pd.Series, low:
     Returns:
         pandas.core.frame.DataFrame: Dataframe with new features.
     """
-    df = add_volume_ta(df, high, low, close, volume, fillna=fillna, colprefix=colprefix)
-    """
-    df = add_volatility_ta(df, high, low, close, fillna=fillna, colprefix=colprefix)
-    df = add_trend_ta(df, high, low, close, fillna=fillna, colprefix=colprefix)
-    df = add_momentum_ta(df, high, low, close, volume, fillna=fillna, colprefix=colprefix)
-    df = add_others_ta(df, close, fillna=fillna, colprefix=colprefix)
-    """
+    df = add_volume_ta(df=df, high=high, low=low, close=close, volume=volume, fillna=fillna, colprefix=colprefix)
+    df = add_volatility_ta(df=df, high=high, low=low, close=close, fillna=fillna, colprefix=colprefix)
+    df = add_trend_ta(df=df, high=high, low=low, close=close, fillna=fillna, colprefix=colprefix)
+    df = add_momentum_ta(df=df, high=high, low=low, close=close, volume=volume, fillna=fillna, colprefix=colprefix)
+    df = add_others_ta(df=df, close=close, fillna=fillna, colprefix=colprefix)
     return df
