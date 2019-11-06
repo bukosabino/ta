@@ -569,6 +569,35 @@ def wr(high, low, close, lbp=14, fillna=False):
     return pd.Series(wr, name='wr')
 
 
+class AwesomeOscillatorIndicator(IndicatorMixin):
+    """
+    """
+
+    def __init__(self, high: pd.Series, low: pd.Series, s: int = 5, len: int = 34, fillna: bool = False):
+        """
+        Args:
+            high(pandas.Series): dataset 'High' column.
+            low(pandas.Series): dataset 'Low' column.
+            s(int): short period
+            len(int): long period
+            fillna(bool): if True, fill nan values.
+        """
+        self._high = high
+        self._low = low
+        self._s = s
+        self._len = len
+        self._fillna = fillna
+        self._run()
+
+    def _run(self):
+        mp = 0.5 * (self._high + self._low)
+        self._ao = mp.rolling(self._s, min_periods=0).mean() - mp.rolling(self._len, min_periods=0).mean()
+
+    def ao(self) -> pd.Series:
+        ao = self.check_fillna(self._ao, value=0)
+        return pd.Series(ao, name='ao')
+
+
 def ao(high, low, s=5, len=34, fillna=False):
     """Awesome Oscillator
 
@@ -605,13 +634,15 @@ def ao(high, low, s=5, len=34, fillna=False):
     Returns:
         pandas.Series: New feature generated.
     """
-
+    """
     mp = 0.5 * (high + low)
     ao = mp.rolling(s, min_periods=0).mean() - mp.rolling(len, min_periods=0).mean()
 
     if fillna:
         ao = ao.replace([np.inf, -np.inf], np.nan).fillna(0)
     return pd.Series(ao, name='ao')
+    """
+    return AwesomeOscillatorIndicator(high=high, low=low, s=s, len=34, fillna=fillna).ao()
 
 
 def kama(close, n=10, pow1=2, pow2=30, fillna=False):

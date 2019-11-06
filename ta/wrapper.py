@@ -1,6 +1,6 @@
 import pandas as pd
 
-from ta.momentum import *  # RSIIndicator, MFIIndicator, TSIIndicator, UltimateOscillatorIndicator, StochIndicator
+from ta.momentum import *  # RSIIndicator, MFIIndicator, TSIIndicator, UltimateOscillatorIndicator, StochIndicator, KAMAIndicator, AwesomeOscillatorIndicator
 from ta.others import *
 from ta.trend import (MACD, ADXIndicator, AroonIndicator, CCIIndicator,
                       DPOIndicator, EMAIndicator, IchimokuIndicator,
@@ -207,8 +207,10 @@ def add_momentum_ta(df, high, low, close, volume, fillna=False, colprefix=""):
 
     df[f'{colprefix}momentum_wr'] = wr(
         df[high], df[low], df[close], fillna=fillna)
-    df[f'{colprefix}momentum_ao'] = ao(
-        df[high], df[low], fillna=fillna)
+
+    # Awesome Oscillator
+    df[f'{colprefix}momentum_ao'] = AwesomeOscillatorIndicator(
+        high=df[high], low=df[low], s=5, len=34, fillna=fillna).ao()
 
     # KAMA
     df[f'{colprefix}momentum_kama'] = KAMAIndicator(close=df[close], n=10, pow1=2, pow2=30, fillna=fillna).kama()
