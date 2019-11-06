@@ -262,6 +262,45 @@ class StochIndicator(IndicatorMixin):
         return pd.Series(stoch_d, name='stoch_k_signal')
 
 
+class ROCIndicator(IndicatorMixin):
+    """Rate of Change (ROC)
+
+    The Rate-of-Change (ROC) indicator, which is also referred to as simply
+    Momentum, is a pure momentum oscillator that measures the percent change in
+    price from one period to the next. The ROC calculation compares the current
+    price with the price “n” periods ago. The plot forms an oscillator that
+    fluctuates above and below the zero line as the Rate-of-Change moves from
+    positive to negative. As a momentum oscillator, ROC signals include
+    centerline crossovers, divergences and overbought-oversold readings.
+    Divergences fail to foreshadow reversals more often than not, so this
+    article will forgo a detailed discussion on them. Even though centerline
+    crossovers are prone to whipsaw, especially short-term, these crossovers
+    can be used to identify the overall trend. Identifying overbought or
+    oversold extremes comes naturally to the Rate-of-Change oscillator.
+
+    https://school.stockcharts.com/doku.php?id=technical_indicators:rate_of_change_roc_and_momentum
+    """
+
+    def __init__(self, close: pd.Series, n: int = 12, fillna: bool = False):
+        """
+        Args:
+            close(pandas.Series): dataset 'Close' column.
+            n(int): n period.
+            fillna(bool): if True, fill nan values.
+        """
+        self._close = close
+        self._n = n
+        self._fillna = fillna
+        self._run()
+
+    def _run(self):
+        self._roc = ((self._close - self._close.shift(self._n)) / self._close.shift(self._n)) * 100
+
+    def roc(self) -> pd.Series:
+        roc = self.check_fillna(self._roc)
+        return pd.Series(roc, name='roc')
+
+
 def rsi(close, n=14, fillna=False):
     """Relative Strength Index (RSI)
 
@@ -595,7 +634,4 @@ def roc(close, n=12, fillna=False):
         pandas.Series: New feature generated.
 
     """
-    roc = ((close - close.shift(n)) / close.shift(n)) * 100
-    if fillna:
-        roc = roc.replace([np.inf, -np.inf], np.nan).fillna(0)
-    return pd.Series(roc, name='roc')
+    return ROCIndicator(close=df[close], n=12, fillna=fillna).roc()

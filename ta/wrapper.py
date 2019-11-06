@@ -210,6 +210,9 @@ def add_momentum_ta(df, high, low, close, volume, fillna=False, colprefix=""):
     df[f'{colprefix}momentum_ao'] = ao(
         df[high], df[low], fillna=fillna)
     df[f'{colprefix}momentum_kama'] = kama(df[close], fillna=fillna)
+
+    # Rate Of Change
+    df[f'{colprefix}momentum_roc'] = ROCIndicator(close=df[close], n=12, fillna=fillna).roc()
     return df
 
 
