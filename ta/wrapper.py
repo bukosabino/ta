@@ -4,7 +4,8 @@ from ta.momentum import (AwesomeOscillatorIndicator, KAMAIndicator,
                          MFIIndicator, ROCIndicator, RSIIndicator,
                          StochIndicator, TSIIndicator,
                          UltimateOscillatorIndicator, WilliamsRIndicator)
-from ta.others import *
+from ta.others import (CumulativeReturnIndicator, DailyLogReturnIndicator,
+                       DailyReturnIndicator)
 from ta.trend import (MACD, ADXIndicator, AroonIndicator, CCIIndicator,
                       DPOIndicator, EMAIndicator, IchimokuIndicator,
                       KSTIndicator, MassIndex, TRIXIndicator, VortexIndicator)
@@ -234,9 +235,9 @@ def add_others_ta(df, close, fillna=False, colprefix=""):
     Returns:
         pandas.core.frame.DataFrame: Dataframe with new features.
     """
-    df[f'{colprefix}others_dr'] = daily_return(df[close], fillna=fillna)
-    df[f'{colprefix}others_dlr'] = daily_log_return(df[close], fillna=fillna)
-    df[f'{colprefix}others_cr'] = cumulative_return(df[close], fillna=fillna)
+    df[f'{colprefix}others_dr'] = DailyReturnIndicator(close=df[close], fillna=fillna).daily_return()
+    df[f'{colprefix}others_dlr'] = DailyLogReturnIndicator(close=df[close], fillna=fillna).daily_log_return()
+    df[f'{colprefix}others_cr'] = CumulativeReturnIndicator(close=df[close], fillna=fillna).cumulative_return()
     return df
 
 
