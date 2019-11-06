@@ -14,7 +14,8 @@ from ta.volatility import (AverageTrueRange, BollingerBands, DonchianChannel,
 from ta.volume import *
 
 
-def add_volume_ta(df, high, low, close, volume, fillna=False, colprefix=""):
+def add_volume_ta(df: pd.DataFrame, high: pd.Series, low: pd.Series, close: pd.Series, volume: pd.Series,
+                  fillna: bool = False, colprefix: str = ""):
     """Add volume technical analysis features to dataframe.
 
     Args:
@@ -46,7 +47,8 @@ def add_volume_ta(df, high, low, close, volume, fillna=False, colprefix=""):
     return df
 
 
-def add_volatility_ta(df, high, low, close, fillna=False, colprefix=""):
+def add_volatility_ta(df: pd.DataFrame, high: pd.Series, low: pd.Series, close: pd.Series,
+                      fillna: bool = False, colprefix: str = ""):
     """Add volatility technical analysis features to dataframe.
 
     Args:
@@ -62,8 +64,8 @@ def add_volatility_ta(df, high, low, close, fillna=False, colprefix=""):
     """
 
     # Average True Range
-    indicator_atr = AverageTrueRange(close=df[close], high=df[high], low=df[low], n=10, fillna=fillna)
-    df[f'{colprefix}volatility_atr'] = indicator_atr.average_true_range()
+    df[f'{colprefix}volatility_atr'] = AverageTrueRange(
+        close=df[close], high=df[high], low=df[low], n=10, fillna=fillna).average_true_range()
 
     # Bollinger Bands
     indicator_bb = BollingerBands(close=df[close], n=20, ndev=2, fillna=fillna)
@@ -91,7 +93,8 @@ def add_volatility_ta(df, high, low, close, fillna=False, colprefix=""):
     return df
 
 
-def add_trend_ta(df, high, low, close, fillna=False, colprefix=""):
+def add_trend_ta(df: pd.DataFrame, high: pd.Series, low: pd.Series, close: pd.Series, fillna: bool = False,
+                 colprefix: str = ""):
     """Add trend technical analysis features to dataframe.
 
     Args:
@@ -172,7 +175,8 @@ def add_trend_ta(df, high, low, close, fillna=False, colprefix=""):
     return df
 
 
-def add_momentum_ta(df, high, low, close, volume, fillna=False, colprefix=""):
+def add_momentum_ta(df: pd.DataFrame, high: pd.Series, low: pd.Series, close: pd.Series, volume: pd.Series,
+                    fillna: bool = False, colprefix: str = ""):
     """Add trend technical analysis features to dataframe.
 
     Args:
@@ -223,7 +227,7 @@ def add_momentum_ta(df, high, low, close, volume, fillna=False, colprefix=""):
     return df
 
 
-def add_others_ta(df, close, fillna=False, colprefix=""):
+def add_others_ta(df: pd.DataFrame, close: pd.Series, fillna: bool = False, colprefix: str = ""):
     """Add others analysis features to dataframe.
 
     Args:
@@ -241,8 +245,8 @@ def add_others_ta(df, close, fillna=False, colprefix=""):
     return df
 
 
-def add_all_ta_features(df, open, high, low, close, volume, fillna=False,
-                        colprefix=""):
+def add_all_ta_features(df: pd.DataFrame, open: pd.Series, high: pd.Series, low: pd.Series,
+                        close: pd.Series, volume: pd.Series, fillna: bool = False, colprefix: str = ""):
     """Add all technical analysis features to dataframe.
 
     Args:
@@ -258,11 +262,11 @@ def add_all_ta_features(df, open, high, low, close, volume, fillna=False,
     Returns:
         pandas.core.frame.DataFrame: Dataframe with new features.
     """
-    """
     df = add_volume_ta(df, high, low, close, volume, fillna=fillna, colprefix=colprefix)
+    """
     df = add_volatility_ta(df, high, low, close, fillna=fillna, colprefix=colprefix)
     df = add_trend_ta(df, high, low, close, fillna=fillna, colprefix=colprefix)
     df = add_momentum_ta(df, high, low, close, volume, fillna=fillna, colprefix=colprefix)
-    """
     df = add_others_ta(df, close, fillna=fillna, colprefix=colprefix)
+    """
     return df
