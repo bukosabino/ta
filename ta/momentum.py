@@ -262,6 +262,65 @@ class StochIndicator(IndicatorMixin):
         return pd.Series(stoch_d, name='stoch_k_signal')
 
 
+class KAMAIndicator(IndicatorMixin):
+    """Kaufman's Adaptive Moving Average (KAMA)
+
+    Moving average designed to account for market noise or volatility. KAMA
+    will closely follow prices when the price swings are relatively small and
+    the noise is low. KAMA will adjust when the price swings widen and follow
+    prices from a greater distance. This trend-following indicator can be
+    used to identify the overall trend, time turning points and filter price
+    movements.
+
+    https://www.tradingview.com/ideas/kama/
+    """
+
+    def __init__(self, close: pd.Series, n: int = 10, pow1: int = 2, pow2: int = 30, fillna: bool = False):
+        """
+        Args:
+            close(pandas.Series): dataset 'Close' column.
+            n(int): n period.
+            pow1(int): number of periods for the fastest EMA constant
+            pow2(int): number of periods for the slowest EMA constant
+            fillna(bool): if True, fill nan values.
+        """
+        self._close = close
+        self._n = n
+        self._pow1 = pow1
+        self._pow2 = pow2
+        self._fillna = fillna
+        self._run()
+
+    def _run(self):
+        close_values = self._close.values
+        vol = pd.Series(abs(self._close - np.roll(self._close, 1)))
+
+        ER_num = abs(close_values - np.roll(close_values, self._n))
+        ER_den = vol.rolling(self._n).sum()
+        ER = ER_num / ER_den
+
+        sc = ((ER*(2.0/(self._pow1+1)-2.0/(self._pow2+1.0))+2/(self._pow2+1.0)) ** 2.0).values
+
+        self._kama = np.zeros(sc.size)
+        n = len(self._kama)
+        first_value = True
+
+        for i in range(n):
+            if np.isnan(sc[i]):
+                self._kama[i] = np.nan
+            else:
+                if first_value:
+                    self._kama[i] = close_values[i]
+                    first_value = False
+                else:
+                    self._kama[i] = self._kama[i-1] + sc[i] * (close_values[i] - self._kama[i-1])
+
+    def kama(self) -> pd.Series:
+        kama = pd.Series(self._kama, index=self._close.index)
+        kama = self.check_fillna(kama, value=self._close)
+        return pd.Series(kama, name='kama')
+
+
 class ROCIndicator(IndicatorMixin):
     """Rate of Change (ROC)
 
@@ -572,9 +631,12 @@ def kama(close, n=10, pow1=2, pow2=30, fillna=False):
         n(int): n number of periods for the efficiency ratio
         pow1(int): number of periods for the fastest EMA constant
         pow2(int): number of periods for the slowest EMA constant
+        fillna(bool): if True, fill nan values.
 
     Returns:
         pandas.Series: New feature generated.
+    """
+    return KAMAIndicator(close=close, n=n, pow1=pow1, pow2=pow2, fillna=fillna).kama()
     """
     close_values = close.values
     vol = pd.Series(abs(close - np.roll(close, 1)))
@@ -605,6 +667,7 @@ def kama(close, n=10, pow1=2, pow2=30, fillna=False):
         kama = kama.replace([np.inf, -np.inf], np.nan).fillna(close)
 
     return kama
+    """
 
 
 def roc(close, n=12, fillna=False):
