@@ -200,8 +200,10 @@ def add_momentum_ta(df, high, low, close, volume, fillna=False, colprefix=""):
         high=df[high], low=df[low], close=df[close], s=7, m=14, len=28, ws=4.0, wm=2.0, wl=1.0,
         fillna=fillna).uo()
 
-    df[f'{colprefix}momentum_stoch'] = stoch(
-        df[high], df[low], df[close], fillna=fillna)
+    # Stoch Indicator
+    df[f'{colprefix}momentum_stoch'] = StochIndicator(
+        high=df[high], low=df[low], close=df[close], n=14, fillna=fillna).stoch()
+
     df[f'{colprefix}momentum_stoch_signal'] = stoch_signal(
         df[high], df[low], df[close], fillna=fillna)
     df[f'{colprefix}momentum_wr'] = wr(

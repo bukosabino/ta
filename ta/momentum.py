@@ -144,7 +144,20 @@ class TSIIndicator(IndicatorMixin):
 
 
 class UltimateOscillatorIndicator(IndicatorMixin):
-    """
+    """Ultimate Oscillator
+
+    Larry Williams' (1976) signal, a momentum oscillator designed to capture
+    momentum across three different timeframes.
+
+    http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:ultimate_oscillator
+
+    BP = Close - Minimum(Low or Prior Close).
+    TR = Maximum(High or Prior Close)  -  Minimum(Low or Prior Close)
+    Average7 = (7-period BP Sum) / (7-period TR Sum)
+    Average14 = (14-period BP Sum) / (14-period TR Sum)
+    Average28 = (28-period BP Sum) / (28-period TR Sum)
+
+    UO = 100 x [(4 x Average7)+(2 x Average14)+Average28]/(4+2+1)
     """
 
     def __init__(self, high: pd.Series, low: pd.Series, close: pd.Series, s: int = 7, m: int = 14, len: int = 28, ws: float = 4.0, wm: float = 2.0, wl: float =1.0, fillna: bool = False):
@@ -187,6 +200,43 @@ class UltimateOscillatorIndicator(IndicatorMixin):
     def uo(self) -> pd.Series:
         uo = self.check_fillna(self._uo, value=50)
         return pd.Series(uo, name='uo')
+
+
+class StochIndicator(IndicatorMixin):
+    """Stochastic Oscillator
+
+    Developed in the late 1950s by George Lane. The stochastic
+    oscillator presents the location of the closing price of a
+    stock in relation to the high and low range of the price
+    of a stock over a period of time, typically a 14-day period.
+
+    https://www.investopedia.com/terms/s/stochasticoscillator.asp
+    """
+
+    def __init__(self, high: pd.Series, low: pd.Series, close: pd.Series, n: int = 14, fillna: bool = False):
+        """
+        Args:
+            close(pandas.Series): dataset 'Close' column.
+            high(pandas.Series): dataset 'High' column.
+            low(pandas.Series): dataset 'Low' column.
+            n(int): n period.
+            fillna(bool): if True, fill nan values.
+        """
+        self._close = close
+        self._high = high
+        self._low = low
+        self._n = n
+        self._fillna = fillna
+        self._run()
+
+    def _run(self):
+        smin = self._low.rolling(self._n, min_periods=0).min()
+        smax = self._high.rolling(self._n, min_periods=0).max()
+        self._stoch_k = 100 * (self._close - smin) / (smax - smin)
+
+    def stoch(self) -> pd.Series:
+        stoch_k = self.check_fillna(self._stoch_k, value=50)
+        return pd.Series(stoch_k, name='stoch_k')
 
 
 def rsi(close, n=14, fillna=False):
@@ -311,6 +361,10 @@ def stoch(high, low, close, n=14, fillna=False):
     Returns:
         pandas.Series: New feature generated.
     """
+
+    return StochIndicator(high=high, low=low, close=close, n=n, fillna=fillna).stoch()
+
+    """
     smin = low.rolling(n, min_periods=0).min()
     smax = high.rolling(n, min_periods=0).max()
     stoch_k = 100 * (close - smin) / (smax - smin)
@@ -318,6 +372,7 @@ def stoch(high, low, close, n=14, fillna=False):
     if fillna:
         stoch_k = stoch_k.replace([np.inf, -np.inf], np.nan).fillna(50)
     return pd.Series(stoch_k, name='stoch_k')
+    """
 
 
 def stoch_signal(high, low, close, n=14, d_n=3, fillna=False):
