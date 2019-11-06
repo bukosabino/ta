@@ -360,6 +360,68 @@ class ROCIndicator(IndicatorMixin):
         return pd.Series(roc, name='roc')
 
 
+class AwesomeOscillatorIndicator(IndicatorMixin):
+    """
+    """
+
+    def __init__(self, high: pd.Series, low: pd.Series, s: int = 5, len: int = 34, fillna: bool = False):
+        """
+        Args:
+            high(pandas.Series): dataset 'High' column.
+            low(pandas.Series): dataset 'Low' column.
+            s(int): short period
+            len(int): long period
+            fillna(bool): if True, fill nan values.
+        """
+        self._high = high
+        self._low = low
+        self._s = s
+        self._len = len
+        self._fillna = fillna
+        self._run()
+
+    def _run(self):
+        mp = 0.5 * (self._high + self._low)
+        self._ao = mp.rolling(self._s, min_periods=0).mean() - mp.rolling(self._len, min_periods=0).mean()
+
+    def ao(self) -> pd.Series:
+        ao = self.check_fillna(self._ao, value=0)
+        return pd.Series(ao, name='ao')
+
+
+class WilliamsRIndicator(IndicatorMixin):
+    """Williams %R
+
+    http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:williams_r
+
+    """
+
+    def __init__(self, high: pd.Series, low: pd.Series, close: pd.Series, lbp: int = 14, fillna: bool = False):
+        """
+        Args:
+            high(pandas.Series): dataset 'High' column.
+            low(pandas.Series): dataset 'Low' column.
+            close(pandas.Series): dataset 'Close' column.
+            lbp(int): lookback period
+            fillna(bool): if True, fill nan values.
+        """
+        self._high = high
+        self._low = low
+        self._close = close
+        self._lbp = lbp
+        self._fillna = fillna
+        self._run()
+
+    def _run(self):
+        hh = self._high.rolling(self._lbp, min_periods=0).max()  # highest high over lookback period lbp
+        ll = self._low.rolling(self._lbp, min_periods=0).min()  # lowest low over lookback period lbp
+        self._wr = -100 * (hh - self._close) / (hh - ll)
+
+    def wr(self) -> pd.Series:
+        wr = self.check_fillna(self._wr, value=-50)
+        return pd.Series(wr, name='wr')
+
+
 def rsi(close, n=14, fillna=False):
     """Relative Strength Index (RSI)
 
@@ -507,15 +569,6 @@ def stoch_signal(high, low, close, n=14, d_n=3, fillna=False):
     """
     return StochIndicator(high=high, low=low, close=close, n=n, d_n=d_n, fillna=fillna).stoch_signal()
 
-    """
-    stoch_k = stoch(high, low, close, n, fillna=fillna)
-    stoch_d = stoch_k.rolling(d_n, min_periods=0).mean()
-
-    if fillna:
-        stoch_d = stoch_d.replace([np.inf, -np.inf], np.nan).fillna(50)
-    return pd.Series(stoch_d, name='stoch_d')
-    """
-
 
 def wr(high, low, close, lbp=14, fillna=False):
     """Williams %R
@@ -558,44 +611,7 @@ def wr(high, low, close, lbp=14, fillna=False):
     Returns:
         pandas.Series: New feature generated.
     """
-
-    hh = high.rolling(lbp, min_periods=0).max()  # highest high over lookback period lbp
-    ll = low.rolling(lbp, min_periods=0).min()  # lowest low over lookback period lbp
-
-    wr = -100 * (hh - close) / (hh - ll)
-
-    if fillna:
-        wr = wr.replace([np.inf, -np.inf], np.nan).fillna(-50)
-    return pd.Series(wr, name='wr')
-
-
-class AwesomeOscillatorIndicator(IndicatorMixin):
-    """
-    """
-
-    def __init__(self, high: pd.Series, low: pd.Series, s: int = 5, len: int = 34, fillna: bool = False):
-        """
-        Args:
-            high(pandas.Series): dataset 'High' column.
-            low(pandas.Series): dataset 'Low' column.
-            s(int): short period
-            len(int): long period
-            fillna(bool): if True, fill nan values.
-        """
-        self._high = high
-        self._low = low
-        self._s = s
-        self._len = len
-        self._fillna = fillna
-        self._run()
-
-    def _run(self):
-        mp = 0.5 * (self._high + self._low)
-        self._ao = mp.rolling(self._s, min_periods=0).mean() - mp.rolling(self._len, min_periods=0).mean()
-
-    def ao(self) -> pd.Series:
-        ao = self.check_fillna(self._ao, value=0)
-        return pd.Series(ao, name='ao')
+    return WilliamsRIndicator(high=high, low=low, close=close, lbp=lbp, fillna=fillna).wr()
 
 
 def ao(high, low, s=5, len=34, fillna=False):
@@ -633,14 +649,6 @@ def ao(high, low, s=5, len=34, fillna=False):
 
     Returns:
         pandas.Series: New feature generated.
-    """
-    """
-    mp = 0.5 * (high + low)
-    ao = mp.rolling(s, min_periods=0).mean() - mp.rolling(len, min_periods=0).mean()
-
-    if fillna:
-        ao = ao.replace([np.inf, -np.inf], np.nan).fillna(0)
-    return pd.Series(ao, name='ao')
     """
     return AwesomeOscillatorIndicator(high=high, low=low, s=s, len=34, fillna=fillna).ao()
 

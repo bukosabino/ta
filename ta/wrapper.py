@@ -1,6 +1,9 @@
 import pandas as pd
 
-from ta.momentum import *  # RSIIndicator, MFIIndicator, TSIIndicator, UltimateOscillatorIndicator, StochIndicator, KAMAIndicator, AwesomeOscillatorIndicator
+from ta.momentum import (AwesomeOscillatorIndicator, KAMAIndicator,
+                         MFIIndicator, ROCIndicator, RSIIndicator,
+                         StochIndicator, TSIIndicator,
+                         UltimateOscillatorIndicator, WilliamsRIndicator)
 from ta.others import *
 from ta.trend import (MACD, ADXIndicator, AroonIndicator, CCIIndicator,
                       DPOIndicator, EMAIndicator, IchimokuIndicator,
@@ -184,16 +187,14 @@ def add_momentum_ta(df, high, low, close, volume, fillna=False, colprefix=""):
     """
 
     # Relative Strength Index (RSI)
-    indicator = RSIIndicator(close=df[close], n=14, fillna=fillna)
-    df[f'{colprefix}momentum_rsi'] = indicator.rsi()
+    df[f'{colprefix}momentum_rsi'] = RSIIndicator(close=df[close], n=14, fillna=fillna).rsi()
 
     # Money Flow Indicator
-    indicator = MFIIndicator(high=df[high], low=df[low], close=df[close], volume=df[volume], n=14, fillna=fillna)
-    df[f'{colprefix}momentum_mfi'] = indicator.money_flow_index()
+    df[f'{colprefix}momentum_mfi'] = MFIIndicator(
+        high=df[high], low=df[low], close=df[close], volume=df[volume], n=14, fillna=fillna).money_flow_index()
 
     # TSI Indicator
-    indicator = TSIIndicator(close=df[close], r=25, s=13, fillna=fillna)
-    df[f'{colprefix}momentum_tsi'] = indicator.tsi()
+    df[f'{colprefix}momentum_tsi'] = TSIIndicator(close=df[close], r=25, s=13, fillna=fillna).tsi()
 
     # Ultimate Oscillator
     df[f'{colprefix}momentum_uo'] = UltimateOscillatorIndicator(
@@ -205,8 +206,9 @@ def add_momentum_ta(df, high, low, close, volume, fillna=False, colprefix=""):
     df[f'{colprefix}momentum_stoch'] = indicator.stoch()
     df[f'{colprefix}momentum_stoch_signal'] = indicator.stoch_signal()
 
-    df[f'{colprefix}momentum_wr'] = wr(
-        df[high], df[low], df[close], fillna=fillna)
+    # Williams R Indicator
+    df[f'{colprefix}momentum_wr'] = WilliamsRIndicator(
+        high=df[high], low=df[low], close=df[close], lbp=14, fillna=fillna)
 
     # Awesome Oscillator
     df[f'{colprefix}momentum_ao'] = AwesomeOscillatorIndicator(
@@ -259,9 +261,7 @@ def add_all_ta_features(df, open, high, low, close, volume, fillna=False,
     df = add_volume_ta(df, high, low, close, volume, fillna=fillna, colprefix=colprefix)
     df = add_volatility_ta(df, high, low, close, fillna=fillna, colprefix=colprefix)
     df = add_trend_ta(df, high, low, close, fillna=fillna, colprefix=colprefix)
-    """
     df = add_momentum_ta(df, high, low, close, volume, fillna=fillna, colprefix=colprefix)
     """
     df = add_others_ta(df, close, fillna=fillna, colprefix=colprefix)
-    """
     return df
