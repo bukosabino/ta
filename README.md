@@ -135,7 +135,6 @@ $ python bollinger_band_features_example.py
 
 # In Progress:
 
-* class based style code
 * automated tests for indicators.
 * coverage
 * CI repo
