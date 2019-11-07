@@ -71,10 +71,10 @@ class OnBalanceVolumeIndicator(IndicatorMixin):
 
     def _run(self):
         obv = np.where(self._close < self._close.shift(1), -self._volume, self._volume)
-        self._obv = obv.cumsum()
+        self._obv = pd.Series(obv, index=self._close.index).cumsum()
 
     def on_balance_volume(self) -> pd.Series:
-        obv = self.check_fillna(pd.Series(self._obv), value=0)
+        obv = self.check_fillna(self._obv, value=0)
         return pd.Series(obv, name='obv')
 
 
