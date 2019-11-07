@@ -490,7 +490,7 @@ class ADXIndicator(IndicatorMixin):
         for i in range(1, len(self._trs)-1):
             dip[i+self._n] = 100 * (self._dip[i]/self._trs[i])
 
-        adx_pos = self.check_fillna(pd.Series(dip), value=20)
+        adx_pos = self.check_fillna(pd.Series(dip, index=self._close.index), value=20)
         return pd.Series(adx_pos, name='adx_pos')
 
     def adx_neg(self) -> pd.Series:
@@ -498,7 +498,7 @@ class ADXIndicator(IndicatorMixin):
         for i in range(1, len(self._trs)-1):
             din[i+self._n] = 100 * (self._din[i]/self._trs[i])
 
-        adx_neg = self.check_fillna(pd.Series(din), value=20)
+        adx_neg = self.check_fillna(pd.Series(din, index=self._close.index), value=20)
         return pd.Series(adx_neg, name='adx_neg')
 
 
