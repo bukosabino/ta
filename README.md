@@ -119,9 +119,8 @@ df['bb_low_indicator'] = ta.bollinger_lband_indicator(df["Close"], n=20, ndev=2,
 ```sh
 $ git clone https://github.com/bukosabino/ta.git
 $ cd ta
-$ pip install -r dev-requirements.txt
-$ cd dev
-$ python bollinger_band_features_example.py
+$ pip install -r requirements.txt
+$ make test
 ```
 
 
