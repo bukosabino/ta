@@ -10,6 +10,249 @@
 import numpy as np
 import pandas as pd
 
+from ta.utils import IndicatorMixin
+
+
+class AccDistIndexIndicator(IndicatorMixin):
+    """Accumulation/Distribution Index (ADI)
+
+    Acting as leading indicator of price movements.
+
+    https://en.wikipedia.org/wiki/Accumulation/distribution_index
+    """
+
+    def __init__(self, high: pd.Series, low: pd.Series, close: pd.Series, volume: pd.Series, fillna: bool = False):
+        """
+        Args:
+            high(pandas.Series): dataset 'High' column.
+            low(pandas.Series): dataset 'Low' column.
+            close(pandas.Series): dataset 'Close' column.
+            volume(pandas.Series): dataset 'Volume' column.
+            fillna(bool): if True, fill nan values.
+        """
+        self._high = high
+        self._low = low
+        self._close = close
+        self._volume = volume
+        self._fillna = fillna
+        self._run()
+
+    def _run(self):
+        clv = ((self._close - self._low) - (self._high - self._close)) / (self._high - self._low)
+        clv = clv.fillna(0.0)  # float division by zero
+        ad = clv * self._volume
+        self._ad = ad + ad.shift(1, fill_value=ad.mean())
+
+    def acc_dist_index(self) -> pd.Series:
+        ad = self.check_fillna(self._ad, value=0)
+        return pd.Series(ad, name='adi')
+
+
+class OnBalanceVolumeIndicator(IndicatorMixin):
+    """On-balance volume (OBV)
+
+    It relates price and volume in the stock market. OBV is based on a
+    cumulative total volume.
+
+    https://en.wikipedia.org/wiki/On-balance_volume
+    """
+
+    def __init__(self, close: pd.Series, volume: pd.Series, fillna: bool = False):
+        """
+        Args:
+            close(pandas.Series): dataset 'Close' column.
+            volume(pandas.Series): dataset 'Volume' column.
+            fillna(bool): if True, fill nan values.
+        """
+        self._close = close
+        self._volume = volume
+        self._fillna = fillna
+        self._run()
+
+    def _run(self):
+        obv = np.where(self._close < self._close.shift(1), -self._volume, self._volume)
+        self._obv = pd.Series(obv, index=self._close.index).cumsum()
+
+    def on_balance_volume(self) -> pd.Series:
+        obv = self.check_fillna(self._obv, value=0)
+        return pd.Series(obv, name='obv')
+
+
+class ChaikinMoneyFlowIndicator(IndicatorMixin):
+    """Chaikin Money Flow (CMF)
+
+    It measures the amount of Money Flow Volume over a specific period.
+
+    http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:chaikin_money_flow_cmf
+    """
+
+    def __init__(self, high: pd.Series, low: pd.Series, close: pd.Series,
+                 volume: pd.Series, n: int = 20, fillna: bool = False):
+        """
+        Args:
+            high(pandas.Series): dataset 'High' column.
+            low(pandas.Series): dataset 'Low' column.
+            close(pandas.Series): dataset 'Close' column.
+            volume(pandas.Series): dataset 'Volume' column.
+            n(int): n period.
+            fillna(bool): if True, fill nan values.
+        """
+        self._high = high
+        self._low = low
+        self._close = close
+        self._volume = volume
+        self._n = n
+        self._fillna = fillna
+        self._run()
+
+    def _run(self):
+        mfv = ((self._close - self._low) - (self._high - self._close)) / (self._high - self._low)
+        mfv = mfv.fillna(0.0)  # float division by zero
+        mfv *= self._volume
+        self._cmf = mfv.rolling(self._n, min_periods=0).sum() / self._volume.rolling(self._n, min_periods=0).sum()
+
+    def chaikin_money_flow(self) -> pd.Series:
+        cmf = self.check_fillna(self._cmf, value=0)
+        return pd.Series(cmf, name='cmf')
+
+
+class ForceIndexIndicator(IndicatorMixin):
+    """Force Index (FI)
+
+    It illustrates how strong the actual buying or selling pressure is. High
+    positive values mean there is a strong rising trend, and low values signify
+    a strong downward trend.
+
+    http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:force_index
+    """
+
+    def __init__(self, close: pd.Series, volume: pd.Series, n: int = 2, fillna: bool = False):
+        """
+        Args:
+            high(pandas.Series): dataset 'High' column.
+            low(pandas.Series): dataset 'Low' column.
+            close(pandas.Series): dataset 'Close' column.
+            volume(pandas.Series): dataset 'Volume' column.
+            n(int): n period.
+            fillna(bool): if True, fill nan values.
+        """
+        self._close = close
+        self._volume = volume
+        self._n = n
+        self._fillna = fillna
+        self._run()
+
+    def _run(self):
+        self._fi = self._close.diff(self._n) * self._volume.diff(self._n)
+
+    def force_index(self) -> pd.Series:
+        fi = self.check_fillna(self._fi, value=0)
+        return pd.Series(fi, name=f'fi_{self._n}')
+
+
+class EaseOfMovementIndicator(IndicatorMixin):
+    """Ease of movement (EoM, EMV)
+
+    It relate an asset's price change to its volume and is particularly useful
+    for assessing the strength of a trend.
+
+    https://en.wikipedia.org/wiki/Ease_of_movement
+    """
+
+    def __init__(self, high: pd.Series, low: pd.Series, close: pd.Series,
+                 volume: pd.Series, n: int = 20, fillna: bool = False):
+        """
+        Args:
+            high(pandas.Series): dataset 'High' column.
+            low(pandas.Series): dataset 'Low' column.
+            close(pandas.Series): dataset 'Close' column.
+            volume(pandas.Series): dataset 'Volume' column.
+            n(int): n period.
+            fillna(bool): if True, fill nan values.
+        """
+        self._high = high
+        self._low = low
+        self._close = close
+        self._volume = volume
+        self._n = n
+        self._fillna = fillna
+        self._run()
+
+    def _run(self):
+        emv = (self._high.diff(1) + self._low.diff(1)) * (self._high - self._low) / (2 * self._volume)
+        self._emv = emv.rolling(self._n, min_periods=0).mean()
+
+    def ease_of_movement(self) -> pd.Series:
+        emv = self.check_fillna(self._emv, value=0)
+        return pd.Series(emv, name=f'eom_{self._n}')
+
+
+class VolumePriceTrendIndicator(IndicatorMixin):
+    """Volume-price trend (VPT)
+
+    Is based on a running cumulative volume that adds or substracts a multiple
+    of the percentage change in share price trend and current volume, depending
+    upon the investment's upward or downward movements.
+
+    https://en.wikipedia.org/wiki/Volume%E2%80%93price_trend
+    """
+
+    def __init__(self, close: pd.Series, volume: pd.Series, fillna: bool = False):
+        """
+        Args:
+            close(pandas.Series): dataset 'Close' column.
+            volume(pandas.Series): dataset 'Volume' column.
+            fillna(bool): if True, fill nan values.
+        """
+        self._close = close
+        self._volume = volume
+        self._fillna = fillna
+        self._run()
+
+    def _run(self):
+        vpt = (self._volume * ((self._close - self._close.shift(1, fill_value=self._close.mean()))
+                               / self._close.shift(1, fill_value=self._close.mean())))
+        self._vpt = vpt.shift(1, fill_value=vpt.mean()) + vpt
+
+    def volume_price_trend(self) -> pd.Series:
+        vpt = self.check_fillna(self._vpt, value=0)
+        return pd.Series(vpt, name='vpt')
+
+
+class NegativeVolumeIndexIndicator(IndicatorMixin):
+    """Negative Volume Index (NVI)
+
+    http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:negative_volume_inde
+    """
+
+    def __init__(self, close: pd.Series, volume: pd.Series, fillna: bool = False):
+        """
+        Args:
+            close(pandas.Series): dataset 'Close' column.
+            volume(pandas.Series): dataset 'Volume' column.
+            fillna(bool): if True, fill nan values with 1000.
+        """
+        self._close = close
+        self._volume = volume
+        self._fillna = fillna
+        self._run()
+
+    def _run(self):
+        price_change = self._close.pct_change()
+        vol_decrease = (self._volume.shift(1) > self._volume)
+        self._nvi = pd.Series(data=np.nan, index=self._close.index, dtype='float64', name='nvi')
+        self._nvi.iloc[0] = 1000
+        for i in range(1, len(self._nvi)):
+            if vol_decrease.iloc[i]:
+                self._nvi.iloc[i] = self._nvi.iloc[i - 1] * (1.0 + price_change.iloc[i])
+            else:
+                self._nvi.iloc[i] = self._nvi.iloc[i - 1]
+
+    def negative_volume_index(self) -> pd.Series:
+        # IDEA: There shouldn't be any na; might be better to throw exception
+        nvi = self.check_fillna(self._nvi, value=1000)
+        return pd.Series(nvi, name='nvi')
+
 
 def acc_dist_index(high, low, close, volume, fillna=False):
     """Accumulation/Distribution Index (ADI)
@@ -28,13 +271,7 @@ def acc_dist_index(high, low, close, volume, fillna=False):
     Returns:
         pandas.Series: New feature generated.
     """
-    clv = ((close - low) - (high - close)) / (high - low)
-    clv = clv.fillna(0.0)  # float division by zero
-    ad = clv * volume
-    ad = ad + ad.shift(1, fill_value=ad.mean())
-    if fillna:
-        ad = ad.replace([np.inf, -np.inf], np.nan).fillna(0)
-    return pd.Series(ad, name='adi')
+    return AccDistIndexIndicator(high=high, low=low, close=close, volume=volume, fillna=fillna).acc_dist_index()
 
 
 def on_balance_volume(close, volume, fillna=False):
@@ -53,18 +290,7 @@ def on_balance_volume(close, volume, fillna=False):
     Returns:
         pandas.Series: New feature generated.
     """
-    df = pd.DataFrame([close, volume]).transpose()
-    df['OBV'] = np.nan
-    c1 = close < close.shift(1)
-    c2 = close > close.shift(1)
-    if c1.any():
-        df.loc[c1, 'OBV'] = - volume
-    if c2.any():
-        df.loc[c2, 'OBV'] = volume
-    obv = df['OBV'].cumsum()
-    if fillna:
-        obv = obv.replace([np.inf, -np.inf], np.nan).fillna(0)
-    return pd.Series(obv, name='obv')
+    return OnBalanceVolumeIndicator(close=close, volume=volume, fillna=fillna).on_balance_volume()
 
 
 def chaikin_money_flow(high, low, close, volume, n=20, fillna=False):
@@ -85,14 +311,8 @@ def chaikin_money_flow(high, low, close, volume, n=20, fillna=False):
     Returns:
         pandas.Series: New feature generated.
     """
-    mfv = ((close - low) - (high - close)) / (high - low)
-    mfv = mfv.fillna(0.0)  # float division by zero
-    mfv *= volume
-    cmf = (mfv.rolling(n, min_periods=0).sum()
-           / volume.rolling(n, min_periods=0).sum())
-    if fillna:
-        cmf = cmf.replace([np.inf, -np.inf], np.nan).fillna(0)
-    return pd.Series(cmf, name='cmf')
+    return ChaikinMoneyFlowIndicator(
+        high=high, low=low, close=close, volume=volume, n=n, fillna=fillna).chaikin_money_flow()
 
 
 def force_index(close, volume, n=2, fillna=False):
@@ -113,10 +333,7 @@ def force_index(close, volume, n=2, fillna=False):
     Returns:
         pandas.Series: New feature generated.
     """
-    fi = close.diff(n) * volume.diff(n)
-    if fillna:
-        fi = fi.replace([np.inf, -np.inf], np.nan).fillna(0)
-    return pd.Series(fi, name='fi_'+str(n))
+    return ForceIndexIndicator(close=close, volume=volume, n=n, fillna=fillna).force_index()
 
 
 def ease_of_movement(high, low, close, volume, n=20, fillna=False):
@@ -138,11 +355,8 @@ def ease_of_movement(high, low, close, volume, n=20, fillna=False):
     Returns:
         pandas.Series: New feature generated.
     """
-    emv = (high.diff(1) + low.diff(1)) * (high - low) / (2 * volume)
-    emv = emv.rolling(n, min_periods=0).mean()
-    if fillna:
-        emv = emv.replace([np.inf, -np.inf], np.nan).fillna(0)
-    return pd.Series(emv, name='eom_' + str(n))
+    return EaseOfMovementIndicator(
+        high=high, low=low, close=close, volume=volume, n=n, fillna=fillna).ease_of_movement()
 
 
 def volume_price_trend(close, volume, fillna=False):
@@ -157,17 +371,12 @@ def volume_price_trend(close, volume, fillna=False):
     Args:
         close(pandas.Series): dataset 'Close' column.
         volume(pandas.Series): dataset 'Volume' column.
-        n(int): n period.
         fillna(bool): if True, fill nan values.
 
     Returns:
         pandas.Series: New feature generated.
     """
-    vpt = volume * ((close - close.shift(1, fill_value=close.mean())) / close.shift(1, fill_value=close.mean()))
-    vpt = vpt.shift(1, fill_value=vpt.mean()) + vpt
-    if fillna:
-        vpt = vpt.replace([np.inf, -np.inf], np.nan).fillna(0)
-    return pd.Series(vpt, name='vpt')
+    return VolumePriceTrendIndicator(close=close, volume=volume, fillna=fillna).volume_price_trend()
 
 
 def negative_volume_index(close, volume, fillna=False):
@@ -208,34 +417,15 @@ def negative_volume_index(close, volume, fillna=False):
         pandas.Series: New feature generated.
 
     See also:
-    https://en.wikipedia.org/wiki/Negative_volume_index
+        https://en.wikipedia.org/wiki/Negative_volume_index
     """
-    price_change = close.pct_change()
-    vol_decrease = (volume.shift(1) > volume)
-
-    nvi = pd.Series(
-        data=np.nan, index=close.index, dtype='float64', name='nvi')
-
-    nvi.iloc[0] = 1000
-    for i in range(1, len(nvi)):
-        if vol_decrease.iloc[i]:
-            nvi.iloc[i] = nvi.iloc[i - 1] * (1.0 + price_change.iloc[i])
-        else:
-            nvi.iloc[i] = nvi.iloc[i - 1]
-
-    if fillna:
-        # IDEA: There shouldn't be any na; might be better to throw exception
-        nvi = nvi.replace([np.inf, -np.inf], np.nan).fillna(1000)
-
-    return pd.Series(nvi, name='nvi')
+    return NegativeVolumeIndexIndicator(close=close, volume=volume, fillna=fillna).negative_volume_index()
 
 
 # TODO
 def put_call_ratio():
-    # will need options volumes for this put/call ratio
-
     """Put/Call ratio (PCR)
     https://en.wikipedia.org/wiki/Put/call_ratio
     """
     # TODO
-    return
+    pass

@@ -1,8 +1,21 @@
-# -*- coding: utf-8 -*-
 import math
 
 import numpy as np
 import pandas as pd
+
+
+class IndicatorMixin():
+
+    def check_fillna(self, serie: pd.Series, method: str = '', value: int = 0):
+        """
+        """
+        if self._fillna:
+            serie_output = serie.copy(deep=False)
+            serie_output = serie.replace([np.inf, -np.inf], np.nan)
+            serie_output = serie_output.fillna(method='backfill') if method else serie_output.fillna(value)
+            return serie_output
+        else:
+            return serie
 
 
 def dropna(df):
@@ -16,8 +29,8 @@ def dropna(df):
 
 def ema(series, periods, fillna=False):
     if fillna:
-        return series.ewm(span=periods, min_periods=0).mean()
-    return series.ewm(span=periods, min_periods=periods).mean()
+        return series.ewm(span=periods, min_periods=0, adjust=False).mean()
+    return series.ewm(span=periods, min_periods=periods, adjust=False).mean()
 
 
 def get_min_max(x1, x2, f='min'):

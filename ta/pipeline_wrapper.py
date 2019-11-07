@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from sklearn.base import BaseEstimator, TransformerMixin
 
-from .wrapper import *
+import ta
 
 
 class TAFeaturesTransform(BaseEstimator, TransformerMixin):
@@ -20,24 +20,23 @@ class TAFeaturesTransform(BaseEstimator, TransformerMixin):
         pandas.core.frame.DataFrame: Dataframe with new features.
     """
 
-    def __init__(self, open_column, high_column, low_column, close_column,
-                 volume_column, fillna=False, colprefix=""):
-        self.open_column = open_column
-        self.high_column = high_column
-        self.low_column = low_column
-        self.close_column = close_column
-        self.volume_column = volume_column
-        self.fillna = fillna
-        self.colprefix = colprefix
+    def __init__(self, open_column: str, high_column: str, low_column: str, close_column: str,
+                 volume_column: str, fillna: bool = False, colprefix: str = ""):
+        self._open_column = open_column
+        self._high_column = high_column
+        self._low_column = low_column
+        self._close_column = close_column
+        self._volume_column = volume_column
+        self._fillna = fillna
+        self._colprefix = colprefix
 
     def fit(self, X, y=None, **fit_params):
         return self
 
     def transform(self, X, **transform_params):
-
-        X = add_all_ta_features(X, self.open_column, self.high_column,
-                                self.low_column, self.close_column,
-                                self.volume_column, fillna=self.fillna,
-                                colprefix=self.colprefix)
+        X = ta.add_all_ta_features(df=X, open=self._open_column, high=self._high_column,
+                                   low=self._low_column, close=self._close_column,
+                                   volume=self._volume_column, fillna=self._fillna,
+                                   colprefix=self._colprefix)
 
         return X.values
