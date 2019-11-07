@@ -131,7 +131,7 @@ def add_trend_ta(df: pd.DataFrame, high: str, low: str, close: str, fillna: bool
     df[f'{colprefix}trend_adx_neg'] = indicator.adx_neg()
 
     # Vortex Indicator
-    indicator = VortexIndicator(high=df[high], low=df[low], close=df[close], n=14, fillna=False)
+    indicator = VortexIndicator(high=df[high], low=df[low], close=df[close], n=14, fillna=fillna)
     df[f'{colprefix}trend_vortex_ind_pos'] = indicator.vortex_indicator_pos()
     df[f'{colprefix}trend_vortex_ind_neg'] = indicator.vortex_indicator_neg()
     df[f'{colprefix}trend_vortex_ind_diff'] = indicator.vortex_indicator_diff()
