@@ -676,37 +676,6 @@ def kama(close, n=10, pow1=2, pow2=30, fillna=False):
         pandas.Series: New feature generated.
     """
     return KAMAIndicator(close=close, n=n, pow1=pow1, pow2=pow2, fillna=fillna).kama()
-    """
-    close_values = close.values
-    vol = pd.Series(abs(close - np.roll(close, 1)))
-
-    ER_num = abs(close_values - np.roll(close_values, n))
-    ER_den = vol.rolling(n).sum()
-    ER = ER_num / ER_den
-
-    sc = ((ER*(2.0/(pow1+1)-2.0/(pow2+1.0))+2/(pow2+1.0)) ** 2.0).values
-
-    kama = np.zeros(sc.size)
-    N = len(kama)
-    first_value = True
-
-    for i in range(N):
-        if np.isnan(sc[i]):
-            kama[i] = np.nan
-        else:
-            if first_value:
-                kama[i] = close_values[i]
-                first_value = False
-            else:
-                kama[i] = kama[i-1] + sc[i] * (close_values[i] - kama[i-1])
-
-    kama = pd.Series(kama, name='kama', index=close.index)
-
-    if fillna:
-        kama = kama.replace([np.inf, -np.inf], np.nan).fillna(close)
-
-    return kama
-    """
 
 
 def roc(close, n=12, fillna=False):
