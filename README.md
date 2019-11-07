@@ -1,8 +1,8 @@
 # Technical Analysis Library in Python
 
-It is a Technical Analysis library to financial time series datasets (open, close, high, low, volume). You can use it to do feature engineering from financial datasets. It is builded on Python Pandas library.
-
 [![CircleCI](https://circleci.com/gh/bukosabino/ta/tree/master.svg?style=svg)](https://circleci.com/gh/bukosabino/ta/tree/master)
+
+It is a Technical Analysis library to financial time series datasets (open, close, high, low, volume). You can use it to do feature engineering from financial datasets. It is builded on Python Pandas library.
 
 ![alt text](https://raw.githubusercontent.com/bukosabino/ta/master/doc/figure.png)
 
@@ -60,10 +60,12 @@ The library has implemented 32 indicators:
 
 https://technical-analysis-library-in-python.readthedocs.io/en/latest/
 
+
 # Motivation to use
 
 * English: https://towardsdatascience.com/technical-analysis-library-to-financial-datasets-with-pandas-python-4b2b390d3543
 * Spanish: https://medium.com/datos-y-ciencia/biblioteca-de-an%C3%A1lisis-t%C3%A9cnico-sobre-series-temporales-financieras-para-machine-learning-con-cb28f9427d0
+
 
 # How to use (python >= 3.6)
 
@@ -78,6 +80,7 @@ You should clean or fill NaN values in your dataset before add technical analysi
 You can get code examples in [examples_to_use](https://github.com/bukosabino/ta/tree/master/examples_to_use) folder.
 
 You can visualize the features in [this notebook](https://github.com/bukosabino/ta/blob/master/examples_to_use/visualize_features.ipynb).
+
 
 #### Example adding all features
 
@@ -116,12 +119,13 @@ df['bb_low_indicator'] = ta.bollinger_lband_indicator(df["Close"], n=20, ndev=2,
 ```
 
 
-# Deploy for developers
+# Deploy and develop (for developers)
 
 ```sh
 $ git clone https://github.com/bukosabino/ta.git
 $ cd ta
 $ pip install -r requirements.txt
+$ make lint
 $ make test
 ```
 
