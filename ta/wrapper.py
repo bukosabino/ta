@@ -33,20 +33,36 @@ def add_volume_ta(df: pd.DataFrame, high: str, low: str, close: str, volume: str
     Returns:
         pandas.core.frame.DataFrame: Dataframe with new features.
     """
+
+    # Accumulation Distribution Index
     df[f'{colprefix}volume_adi'] = AccDistIndexIndicator(
         high=df[high], low=df[low], close=df[close], volume=df[volume], fillna=fillna).acc_dist_index()
+
+    # On Balance Volume
     df[f'{colprefix}volume_obv'] = OnBalanceVolumeIndicator(
         close=df[close], volume=df[volume], fillna=fillna).on_balance_volume()
+
+    # Chaikin Money Flow
     df[f'{colprefix}volume_cmf'] = ChaikinMoneyFlowIndicator(
         high=df[high], low=df[low], close=df[close], volume=df[volume], fillna=fillna).chaikin_money_flow()
+
+    # Force Index
     df[f'{colprefix}volume_fi'] = ForceIndexIndicator(
         close=df[close], volume=df[volume], fillna=fillna).force_index()
-    df[f'{colprefix}volume_em'] = EaseOfMovementIndicator(
-        high=df[high], low=df[low], close=df[close], volume=df[volume], n=14, fillna=fillna).ease_of_movement()
+
+    # Ease of Movement
+    indicator = EaseOfMovementIndicator(high=df[high], low=df[low], volume=df[volume], n=14, fillna=fillna)
+    df[f'{colprefix}volume_em'] = indicator.ease_of_movement()
+    df[f'{colprefix}volume_sma_em'] = indicator.sma_ease_of_movement()
+
+    # Volume Price Trend
     df[f'{colprefix}volume_vpt'] = VolumePriceTrendIndicator(
         close=df[close], volume=df[volume], fillna=fillna).volume_price_trend()
+
+    # Negative Volume Index
     df[f'{colprefix}volume_nvi'] = NegativeVolumeIndexIndicator(
         close=df[close], volume=df[volume], fillna=fillna).negative_volume_index()
+
     return df
 
 

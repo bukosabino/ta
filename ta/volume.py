@@ -159,32 +159,34 @@ class EaseOfMovementIndicator(IndicatorMixin):
     https://en.wikipedia.org/wiki/Ease_of_movement
     """
 
-    def __init__(self, high: pd.Series, low: pd.Series, close: pd.Series,
-                 volume: pd.Series, n: int = 20, fillna: bool = False):
+    def __init__(self, high: pd.Series, low: pd.Series, volume: pd.Series, n: int = 14, fillna: bool = False):
         """
         Args:
             high(pandas.Series): dataset 'High' column.
             low(pandas.Series): dataset 'Low' column.
-            close(pandas.Series): dataset 'Close' column.
             volume(pandas.Series): dataset 'Volume' column.
             n(int): n period.
             fillna(bool): if True, fill nan values.
         """
         self._high = high
         self._low = low
-        self._close = close
         self._volume = volume
         self._n = n
         self._fillna = fillna
         self._run()
 
     def _run(self):
-        emv = (self._high.diff(1) + self._low.diff(1)) * (self._high - self._low) / (2 * self._volume)
-        self._emv = emv.rolling(self._n, min_periods=0).mean()
+        self._emv = (self._high.diff(1) + self._low.diff(1)) * (self._high - self._low) / (2 * self._volume)
+        self._emv *= 100000000
 
     def ease_of_movement(self) -> pd.Series:
         emv = self.check_fillna(self._emv, value=0)
         return pd.Series(emv, name=f'eom_{self._n}')
+
+    def sma_ease_of_movement(self) -> pd.Series:
+        emv = self._emv.rolling(self._n, min_periods=0).mean()
+        emv = self.check_fillna(emv, value=0)
+        return pd.Series(emv, name=f'sma_eom_{self._n}')
 
 
 class VolumePriceTrendIndicator(IndicatorMixin):
@@ -336,7 +338,7 @@ def force_index(close, volume, n=2, fillna=False):
     return ForceIndexIndicator(close=close, volume=volume, n=n, fillna=fillna).force_index()
 
 
-def ease_of_movement(high, low, close, volume, n=20, fillna=False):
+def ease_of_movement(high, low, volume, n=14, fillna=False):
     """Ease of movement (EoM, EMV)
 
     It relate an asset's price change to its volume and is particularly useful
@@ -347,7 +349,6 @@ def ease_of_movement(high, low, close, volume, n=20, fillna=False):
     Args:
         high(pandas.Series): dataset 'High' column.
         low(pandas.Series): dataset 'Low' column.
-        close(pandas.Series): dataset 'Close' column.
         volume(pandas.Series): dataset 'Volume' column.
         n(int): n period.
         fillna(bool): if True, fill nan values.
@@ -356,7 +357,29 @@ def ease_of_movement(high, low, close, volume, n=20, fillna=False):
         pandas.Series: New feature generated.
     """
     return EaseOfMovementIndicator(
-        high=high, low=low, close=close, volume=volume, n=n, fillna=fillna).ease_of_movement()
+        high=high, low=low, volume=volume, n=n, fillna=fillna).ease_of_movement()
+
+
+def sma_ease_of_movement(high, low, volume, n=14, fillna=False):
+    """Ease of movement (EoM, EMV)
+
+    It relate an asset's price change to its volume and is particularly useful
+    for assessing the strength of a trend.
+
+    https://en.wikipedia.org/wiki/Ease_of_movement
+
+    Args:
+        high(pandas.Series): dataset 'High' column.
+        low(pandas.Series): dataset 'Low' column.
+        volume(pandas.Series): dataset 'Volume' column.
+        n(int): n period.
+        fillna(bool): if True, fill nan values.
+
+    Returns:
+        pandas.Series: New feature generated.
+    """
+    return EaseOfMovementIndicator(
+        high=high, low=low, volume=volume, n=n, fillna=fillna).sma_ease_of_movement()
 
 
 def volume_price_trend(close, volume, fillna=False):
