@@ -952,6 +952,7 @@ def aroon_up(close, n=25, fillna=False):
     Aroon Up - ((N - Days Since N-day High) / N) x 100
 
     https://www.investopedia.com/terms/a/aroon.asp
+
     Args:
         close(pandas.Series): dataset 'Close' column.
         n(int): n period.
@@ -972,6 +973,7 @@ def aroon_down(close, n=25, fillna=False):
     Aroon Down - ((N - Days Since N-day Low) / N) x 100
 
     https://www.investopedia.com/terms/a/aroon.asp
+
     Args:
         close(pandas.Series): dataset 'Close' column.
         n(int): n period.
