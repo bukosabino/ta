@@ -18,5 +18,6 @@ class TestOnBalanceVolumeIndicator(TestIndicator):
 
     def test_obv2(self):
         target = 'OBV'
-        result = OnBalanceVolumeIndicator(close=self._df['Close'], volume=self._df['Volume'], fillna=False).on_balance_volume()
+        result = OnBalanceVolumeIndicator(
+            close=self._df['Close'], volume=self._df['Volume'], fillna=False).on_balance_volume()
         pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)

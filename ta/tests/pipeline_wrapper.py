@@ -1,14 +1,13 @@
 import pandas as pd
-from sklearn.model_selection import train_test_split
-from sklearn.model_selection import cross_val_score
-from sklearn.pipeline import make_pipeline
 from sklearn.ensemble import ExtraTreesRegressor
 from sklearn.metrics import mean_absolute_error
+from sklearn.model_selection import cross_val_score, train_test_split
+from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
 
 import ta
-from ta.tests.utils import TestIndicator
 from ta.pipeline_wrapper import TAFeaturesTransform
+from ta.tests.utils import TestIndicator
 
 
 class TestTAFeaturesTransform(TestIndicator):
@@ -20,7 +19,7 @@ class TestTAFeaturesTransform(TestIndicator):
 
     def test_pipeline(self):
 
-        # SETTINGS
+        # Settings
         target = 'target'  # name target column
         score = "neg_mean_absolute_error"
         model = ExtraTreesRegressor(n_estimators=50)

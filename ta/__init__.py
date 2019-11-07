@@ -5,4 +5,5 @@ builded on pandas python library.
 .. moduleauthor:: Dario Lopez Padial (Bukosabino)
 
 """
-from ta.wrapper import add_volume_ta, add_volatility_ta, add_trend_ta, add_momentum_ta, add_others_ta, add_all_ta_features
+from ta.wrapper import (add_all_ta_features, add_momentum_ta, add_others_ta,
+                        add_trend_ta, add_volatility_ta, add_volume_ta)
