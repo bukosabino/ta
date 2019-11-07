@@ -17,7 +17,7 @@ from ta.volume import (AccDistIndexIndicator, ChaikinMoneyFlowIndicator,
                        VolumePriceTrendIndicator)
 
 
-def add_volume_ta(df: pd.DataFrame, high: pd.Series, low: pd.Series, close: pd.Series, volume: pd.Series,
+def add_volume_ta(df: pd.DataFrame, high: str, low: str, close: str, volume: str,
                   fillna: bool = False, colprefix: str = ""):
     """Add volume technical analysis features to dataframe.
 
@@ -50,7 +50,7 @@ def add_volume_ta(df: pd.DataFrame, high: pd.Series, low: pd.Series, close: pd.S
     return df
 
 
-def add_volatility_ta(df: pd.DataFrame, high: pd.Series, low: pd.Series, close: pd.Series,
+def add_volatility_ta(df: pd.DataFrame, high: str, low: str, close: str,
                       fillna: bool = False, colprefix: str = ""):
     """Add volatility technical analysis features to dataframe.
 
@@ -96,7 +96,7 @@ def add_volatility_ta(df: pd.DataFrame, high: pd.Series, low: pd.Series, close: 
     return df
 
 
-def add_trend_ta(df: pd.DataFrame, high: pd.Series, low: pd.Series, close: pd.Series, fillna: bool = False,
+def add_trend_ta(df: pd.DataFrame, high: str, low: str, close: str, fillna: bool = False,
                  colprefix: str = ""):
     """Add trend technical analysis features to dataframe.
 
@@ -178,7 +178,7 @@ def add_trend_ta(df: pd.DataFrame, high: pd.Series, low: pd.Series, close: pd.Se
     return df
 
 
-def add_momentum_ta(df: pd.DataFrame, high: pd.Series, low: pd.Series, close: pd.Series, volume: pd.Series,
+def add_momentum_ta(df: pd.DataFrame, high: str, low: str, close: str, volume: str,
                     fillna: bool = False, colprefix: str = ""):
     """Add trend technical analysis features to dataframe.
 
@@ -230,7 +230,7 @@ def add_momentum_ta(df: pd.DataFrame, high: pd.Series, low: pd.Series, close: pd
     return df
 
 
-def add_others_ta(df: pd.DataFrame, close: pd.Series, fillna: bool = False, colprefix: str = ""):
+def add_others_ta(df: pd.DataFrame, close: str, fillna: bool = False, colprefix: str = ""):
     """Add others analysis features to dataframe.
 
     Args:
@@ -254,8 +254,8 @@ def add_others_ta(df: pd.DataFrame, close: pd.Series, fillna: bool = False, colp
     return df
 
 
-def add_all_ta_features(df: pd.DataFrame, open: pd.Series, high: pd.Series, low: pd.Series,
-                        close: pd.Series, volume: pd.Series, fillna: bool = False, colprefix: str = ""):
+def add_all_ta_features(df: pd.DataFrame, open: str, high: str, low: str,
+                        close: str, volume: str, fillna: bool = False, colprefix: str = ""):
     """Add all technical analysis features to dataframe.
 
     Args:
