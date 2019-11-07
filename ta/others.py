@@ -15,7 +15,7 @@ class DailyReturnIndicator(IndicatorMixin):
     """Daily Return (DR)
     """
 
-    def __init__(self, close: pd.Series, fillna: bool = False):
+    def __init__(self, close : pd.Series, fillna: bool = False):
         """
         Args:
             close(pandas.Series): dataset 'Close' column.
