@@ -95,7 +95,8 @@ df = pd.read_csv('your-file.csv', sep=',')
 df = ta.utils.dropna(df)
 
 # Add ta features filling NaN values
-df = ta.add_all_ta_features(df, "Open", "High", "Low", "Close", "Volume_BTC", fillna=True)
+df = ta.add_all_ta_features(
+    df, open="Open", high="High", low="Low", close="Close", volume="Volume_BTC", fillna=True)
 ```
 
 
@@ -112,10 +113,10 @@ df = pd.read_csv('your-file.csv', sep=',')
 df = ta.utils.dropna(df)
 
 # Add bollinger band high indicator filling NaN values
-df['bb_high_indicator'] = ta.bollinger_hband_indicator(df["Close"], n=20, ndev=2, fillna=True)
+df['bb_high_indicator'] = ta.volatility.bollinger_hband_indicator(close=df["Close"], n=20, ndev=2, fillna=True)
 
 # Add bollinger band low indicator filling NaN values
-df['bb_low_indicator'] = ta.bollinger_lband_indicator(df["Close"], n=20, ndev=2, fillna=True)
+df['bb_low_indicator'] = ta.volatility.bollinger_lband_indicator(close=df["Close"], n=20, ndev=2, fillna=True)
 ```
 
 
@@ -142,13 +143,11 @@ $ make test
 
 * automated tests for indicators.
 * coverage
-* CI repo
 
 
 # TODO:
 
 * add [more technical analysis features](https://en.wikipedia.org/wiki/Technical_analysis).
-* use Dask library to parallelize the implementation
 * use Dash/Streamlit to visualize features
 
 
@@ -158,4 +157,4 @@ Developed by Darío López Padial (aka Bukosabino) and other contributors: https
 
 Please, let me know about any comment or feedback.
 
-Also, I am a software freelance focused on Data Science using Python tools such as Pandas, Scikit-Learn, Backtrader, Zipline or Catalyst. Don't hesitate to contact me if you need something related with this library, Python, Technical Analysis, AlgoTrading, Machine Learning, etc.
+Also, I am a software engineer freelance focused on Data Science using Python tools such as Pandas, Scikit-Learn, Backtrader, Zipline or Catalyst. Don't hesitate to contact me if you need something related with this library, Python, Technical Analysis, AlgoTrading, Machine Learning, etc.
