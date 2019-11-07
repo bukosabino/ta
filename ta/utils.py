@@ -10,10 +10,12 @@ class IndicatorMixin():
         """
         """
         if self._fillna:
-            serie = serie.copy(deep=False)
-            serie = serie.replace([np.inf, -np.inf], np.nan)
-            serie = serie.fillna(method='backfill') if method else serie.fillna(value)
-        return serie
+            serie_output = serie.copy(deep=False)
+            serie_output = serie.replace([np.inf, -np.inf], np.nan)
+            serie_output = serie_output.fillna(method='backfill') if method else serie_output.fillna(value)
+            return serie_output
+        else:
+            return serie
 
 
 def dropna(df):

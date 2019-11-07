@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from sklearn.base import BaseEstimator, TransformerMixin
 
+import ta
 
 class TAFeaturesTransform(BaseEstimator, TransformerMixin):
     """Add all technical analysis features to dataframe.
