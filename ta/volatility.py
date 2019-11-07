@@ -90,12 +90,12 @@ class BollingerBands(IndicatorMixin):
         return pd.Series(lband, name='lband')
 
     def bollinger_hband_indicator(self) -> pd.Series:
-        hband = pd.Series(np.where(self._close > self._hband, 1.0, 0.0))
+        hband = pd.Series(np.where(self._close > self._hband, 1.0, 0.0), index=self._close.index)
         hband = self.check_fillna(hband, value=0)
-        return pd.Series(hband, name='bbihband')
+        return pd.Series(hband, index=self._close.index, name='bbihband')
 
     def bollinger_lband_indicator(self) -> pd.Series:
-        lband = pd.Series(np.where(self._close < self._lband, 1.0, 0.0))
+        lband = pd.Series(np.where(self._close < self._lband, 1.0, 0.0), index=self._close.index)
         lband = self.check_fillna(lband, value=0)
         return pd.Series(lband, name='bbilband')
 
@@ -140,12 +140,12 @@ class KeltnerChannel(IndicatorMixin):
         return pd.Series(tp_low, name='kc_lband')
 
     def keltner_channel_hband_indicator(self) -> pd.Series:
-        hband = pd.Series(np.where(self._close > self._tp_high, 1.0, 0.0))
+        hband = pd.Series(np.where(self._close > self._tp_high, 1.0, 0.0), index=self._close.index)
         hband = self.check_fillna(hband, value=0)
         return pd.Series(hband, name='dcihband')
 
     def keltner_channel_lband_indicator(self) -> pd.Series:
-        lband = pd.Series(np.where(self._close < self._tp_low, 1.0, 0.0))
+        lband = pd.Series(np.where(self._close < self._tp_low, 1.0, 0.0), index=self._close.index)
         lband = self.check_fillna(lband, value=0)
         return pd.Series(lband, name='dcilband')
 
@@ -183,12 +183,12 @@ class DonchianChannel(IndicatorMixin):
         return pd.Series(lband, name='dclband')
 
     def donchian_channel_hband_indicator(self) -> pd.Series:
-        hband = pd.Series(np.where(self._close >= self._hband, 1.0, 0.0))
+        hband = pd.Series(np.where(self._close >= self._hband, 1.0, 0.0), index=self._close.index)
         hband = self.check_fillna(hband, value=0)
         return pd.Series(hband, name='dcihband')
 
     def donchian_channel_lband_indicator(self) -> pd.Series:
-        lband = pd.Series(np.where(self._close <= self._lband, 1.0, 0.0))
+        lband = pd.Series(np.where(self._close <= self._lband, 1.0, 0.0), index=self._close.index)
         lband = self.check_fillna(lband, value=0)
         return pd.Series(lband, name='dcilband')
 
