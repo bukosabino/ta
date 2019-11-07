@@ -1,5 +1,5 @@
 init:
-	pip install -r dev-requirements.txt
+	pip install -r requirements.txt
 
 lint:
 	pycodestyle --max-line-length=119 ta && isort --check-only --recursive ta
