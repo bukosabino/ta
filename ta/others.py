@@ -94,14 +94,6 @@ def daily_return(close, fillna=False):
     """
     return DailyReturnIndicator(close=close, fillna=fillna).daily_return()
 
-    """
-    dr = (close / close.shift(1, fill_value=close.mean())) - 1
-    dr *= 100
-    if fillna:
-        dr = dr.replace([np.inf, -np.inf], np.nan).fillna(0)
-    return pd.Series(dr, name='d_ret')
-    """
-
 
 def daily_log_return(close, fillna=False):
     """Daily Log Return (DLR)
@@ -116,14 +108,6 @@ def daily_log_return(close, fillna=False):
         pandas.Series: New feature generated.
     """
     return DailyLogReturnIndicator(close=close, fillna=fillna).daily_log_return()
-
-    """
-    dr = np.log(close).diff()
-    dr *= 100
-    if fillna:
-        dr = dr.replace([np.inf, -np.inf], np.nan).fillna(0)
-    return pd.Series(dr, name='d_logret')
-    """
 
 
 def cumulative_return(close, fillna=False):
