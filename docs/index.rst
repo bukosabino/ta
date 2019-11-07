@@ -25,16 +25,16 @@ Adding all features:
 .. code-block:: python
 
    import pandas as pd
-   from ta import *
+   import ta
 
    # Load datas
    df = pd.read_csv('your-file.csv', sep=',')
 
    # Clean nan values
-   df = utils.dropna(df)
+   df = ta.utils.dropna(df)
 
    # Add ta features filling Nans values
-   df = add_all_ta_features(df, "Open", "High", "Low", "Close", "Volume_BTC", fillna=True)
+   df = ta.add_all_ta_features(df=df, open="Open", high="High", low="Low", close="Close", volume="Volume_BTC", fillna=True)
 
 
 Adding individual features:
@@ -42,19 +42,19 @@ Adding individual features:
 .. code-block:: python
 
    import pandas as pd
-   from ta import *
+   import ta
 
    # Load datas
    df = pd.read_csv('your-file.csv', sep=',')
 
    # Clean nan values
-   df = utils.dropna(df)
+   df = ta.utils.dropna(df)
 
    # Add bollinger band high indicator filling Nans values
-   df['bb_high_indicator'] = bollinger_hband_indicator(df["Close"], n=20, ndev=2, fillna=True)
+   df['bb_high_indicator'] = ta.volatility.bollinger_hband_indicator(df["Close"], n=20, ndev=2, fillna=True)
 
    # Add bollinger band low indicator filling Nans values
-   df['bb_low_indicator'] = bollinger_lband_indicator(df["Close"], n=20, ndev=2, fillna=True)
+   df['bb_low_indicator'] = ta.volatility.bollinger_lband_indicator(df["Close"], n=20, ndev=2, fillna=True)
 
 
 Motivation
