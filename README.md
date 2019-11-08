@@ -113,10 +113,12 @@ df = pd.read_csv('your-file.csv', sep=',')
 df = ta.utils.dropna(df)
 
 # Add bollinger band high indicator filling NaN values
-df['bb_high_indicator'] = ta.volatility.bollinger_hband_indicator(close=df["Close"], n=20, ndev=2, fillna=True)
+df['bb_high_indicator'] = ta.volatility.bollinger_hband_indicator(
+    close=df["Close"], n=20, ndev=2, fillna=True)
 
 # Add bollinger band low indicator filling NaN values
-df['bb_low_indicator'] = ta.volatility.bollinger_lband_indicator(close=df["Close"], n=20, ndev=2, fillna=True)
+df['bb_low_indicator'] = ta.volatility.bollinger_lband_indicator(
+    close=df["Close"], n=20, ndev=2, fillna=True)
 ```
 
 
