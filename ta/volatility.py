@@ -8,7 +8,7 @@
 import numpy as np
 import pandas as pd
 
-from ta.utils import IndicatorMixin
+from ta.utils import IndicatorMixin, ema
 
 
 class AverageTrueRange(IndicatorMixin):
@@ -41,8 +41,8 @@ class AverageTrueRange(IndicatorMixin):
         cs = self._close.shift(1)
         tr = self._high.combine(cs, max) - self._low.combine(cs, min)
         atr = np.zeros(len(self._close))
-        atr[0] = tr[1::].mean()
-        for i in range(1, len(atr)):
+        atr[self._n-1] = tr[0:self._n].mean()
+        for i in range(self._n, len(atr)):
             atr[i] = (atr[i-1] * (self._n-1) + tr.iloc[i]) / float(self._n)
         self._atr = pd.Series(data=atr, index=tr.index)
 
