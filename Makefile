@@ -7,5 +7,5 @@ lint:
 isort-fix:
 	isort --recursive ta
 
-test:
+test: lint
 	python -m unittest discover
