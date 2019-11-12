@@ -1,9 +1,9 @@
 import pandas as pd
 
 from ta.tests.utils import TestIndicator
-from ta.volume import (EaseOfMovementIndicator, OnBalanceVolumeIndicator,
-                       ease_of_movement, on_balance_volume,
-                       sma_ease_of_movement)
+from ta.volume import (EaseOfMovementIndicator, ForceIndexIndicator,
+                       OnBalanceVolumeIndicator, ease_of_movement, force_index,
+                       on_balance_volume, sma_ease_of_movement)
 
 
 class TestOnBalanceVolumeIndicator(TestIndicator):
@@ -22,6 +22,25 @@ class TestOnBalanceVolumeIndicator(TestIndicator):
         target = 'OBV'
         result = OnBalanceVolumeIndicator(
             close=self._df['Close'], volume=self._df['Volume'], fillna=False).on_balance_volume()
+        pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
+
+
+class TestForceIndexIndicator(TestIndicator):
+    """
+    https://school.stockcharts.com/doku.php?id=technical_indicators:force_index
+    """
+
+    _filename = 'ta/tests/data/cs-fi.csv'
+
+    def test_fi(self):
+        target = 'FI'
+        result = force_index(close=self._df['Close'], volume=self._df['Volume'], n=13, fillna=False)
+        pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
+
+    def test_fi2(self):
+        target = 'FI'
+        result = ForceIndexIndicator(
+            close=self._df['Close'], volume=self._df['Volume'], n=13, fillna=False).force_index()
         pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
 
 

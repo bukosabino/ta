@@ -4,4 +4,5 @@ from ta.tests.trend import (TestADXIndicator, TestCCIIndicator,
 from ta.tests.utils import TestGeneral
 from ta.tests.volatility import TestAverageTrueRange
 from ta.tests.volume import (TestEaseOfMovementIndicator,
+                             TestForceIndexIndicator,
                              TestOnBalanceVolumeIndicator)
