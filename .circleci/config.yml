@@ -1,24 +1,58 @@
 version: 2
+
 jobs:
-  build:
-    working_directory: ~/ta
+  test_py36: &test-template  # See https://discuss.circleci.com/t/run-tests-on-multiple-versions-of-python/15462/2
     docker:
-      - image: circleci/python:3.7
+      - image: circleci/python:3.6
+    working_directory: ~/ta
     steps:
       - checkout
       - run:
+          name: Install dependencies
           command: |
             pip install --upgrade pip
             python3 -m venv venv
             . venv/bin/activate
             pip install -r requirements.txt
       - run:
-          name: Running linter
+          name: Run linter
           command: |
             . venv/bin/activate
             pycodestyle --max-line-length=119 ta && isort --check-only --recursive ta
       - run:
-          name: Running test
+          name: Run test
           command: |
             . venv/bin/activate
             python -m unittest discover
+
+  test_py37:
+    <<: *test-template
+    docker:
+      - image: circleci/python:3.7
+
+  coverage:
+    docker:
+      - image: circleci/python:3.7
+    working_directory: ~/ta
+    steps:
+      - checkout
+      - run:
+          name: Install dependencies
+          command: |
+            pip install --upgrade pip
+            python3 -m venv venv
+            . venv/bin/activate
+            sudo pip install -r requirements.txt
+      - run:
+          name: Run coverage
+          command: |
+            coverage run tests.py
+            coverage report -m
+
+workflows:
+  version: 2
+  build:
+    jobs:
+      - test_py36
+      - test_py37
+      - coverage
