@@ -2,9 +2,8 @@ import pandas as pd
 
 from ta.tests.utils import TestIndicator
 from ta.volume import (AccDistIndexIndicator, EaseOfMovementIndicator,
-                       ForceIndexIndicator,
-                       OnBalanceVolumeIndicator, acc_dist_index,
-                       ease_of_movement, force_index, 
+                       ForceIndexIndicator, OnBalanceVolumeIndicator,
+                       acc_dist_index, ease_of_movement, force_index,
                        on_balance_volume, sma_ease_of_movement)
 
 
