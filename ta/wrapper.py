@@ -48,7 +48,7 @@ def add_volume_ta(df: pd.DataFrame, high: str, low: str, close: str, volume: str
 
     # Force Index
     df[f'{colprefix}volume_fi'] = ForceIndexIndicator(
-        close=df[close], volume=df[volume], fillna=fillna).force_index()
+        close=df[close], volume=df[volume], n=13, fillna=fillna).force_index()
 
     # Ease of Movement
     indicator = EaseOfMovementIndicator(high=df[high], low=df[low], volume=df[volume], n=14, fillna=fillna)

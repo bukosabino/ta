@@ -10,7 +10,7 @@
 import numpy as np
 import pandas as pd
 
-from ta.utils import IndicatorMixin
+from ta.utils import IndicatorMixin, ema
 
 
 class AccDistIndexIndicator(IndicatorMixin):
@@ -126,7 +126,7 @@ class ForceIndexIndicator(IndicatorMixin):
     http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:force_index
     """
 
-    def __init__(self, close: pd.Series, volume: pd.Series, n: int = 2, fillna: bool = False):
+    def __init__(self, close: pd.Series, volume: pd.Series, n: int = 13, fillna: bool = False):
         """
         Args:
             high(pandas.Series): dataset 'High' column.
@@ -143,7 +143,8 @@ class ForceIndexIndicator(IndicatorMixin):
         self._run()
 
     def _run(self):
-        self._fi = self._close.diff(self._n) * self._volume.diff(self._n)
+        fi = (self._close - self._close.shift(1)) * self._volume
+        self._fi = ema(fi, self._n, fillna=self._fillna)
 
     def force_index(self) -> pd.Series:
         fi = self.check_fillna(self._fi, value=0)
@@ -317,7 +318,7 @@ def chaikin_money_flow(high, low, close, volume, n=20, fillna=False):
         high=high, low=low, close=close, volume=volume, n=n, fillna=fillna).chaikin_money_flow()
 
 
-def force_index(close, volume, n=2, fillna=False):
+def force_index(close, volume, n=13, fillna=False):
     """Force Index (FI)
 
     It illustrates how strong the actual buying or selling pressure is. High
