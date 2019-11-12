@@ -1,7 +1,8 @@
 import pandas as pd
 
 from ta.tests.utils import TestIndicator
-from ta.volume import (EaseOfMovementIndicator, OnBalanceVolumeIndicator,
+from ta.volume import (AccDistIndexIndicator, EaseOfMovementIndicator,
+                       OnBalanceVolumeIndicator, acc_dist_index,
                        ease_of_movement, on_balance_volume,
                        sma_ease_of_movement)
 
@@ -56,4 +57,26 @@ class TestEaseOfMovementIndicator(TestIndicator):
         result = EaseOfMovementIndicator(
             high=self._df['High'], low=self._df['Low'], volume=self._df['Volume'], n=14, fillna=False
         ).sma_ease_of_movement()
+        pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
+
+
+class TestAccDistIndexIndicator(TestIndicator):
+    """
+    https://school.stockcharts.com/doku.php?id=technical_indicators:accumulation_distribution_line
+    """
+
+    _filename = 'ta/tests/data/cs-accum.csv'
+
+    def test_adl(self):
+        target = 'ADLine'
+        result = acc_dist_index(
+            high=self._df['High'], low=self._df['Low'], close=self._df['Close'], volume=self._df['Volume'],
+            fillna=False)
+        pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
+
+    def test_adl2(self):
+        target = 'ADLine'
+        result = AccDistIndexIndicator(
+            high=self._df['High'], low=self._df['Low'], close=self._df['Close'], volume=self._df['Volume'],
+            fillna=False).acc_dist_index()
         pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
