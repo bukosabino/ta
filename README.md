@@ -1,7 +1,8 @@
 # Technical Analysis Library in Python
 
 [![CircleCI](https://circleci.com/gh/bukosabino/ta/tree/master.svg?style=svg)](https://circleci.com/gh/bukosabino/ta/tree/master)
-[![codecov](https://codecov.io/gh/bukosabino/ta/branch/master/graph/badge.svg)](https://codecov.io/gh/bukosabino/ta)
+[![Coverage Status](https://coveralls.io/repos/github/bukosabino/ta/badge.svg)](https://coveralls.io/github/bukosabino/ta)
+![PyPI - Downloads](https://img.shields.io/pypi/dm/ta)
 
 
 It is a Technical Analysis library to financial time series datasets (open, close, high, low, volume). You can use it to do feature engineering from financial datasets. It is builded on Python Pandas library.
