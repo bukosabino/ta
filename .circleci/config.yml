@@ -48,11 +48,24 @@ jobs:
           command: |
             coverage run tests.py
             coverage report -m
+      - run:
+          name: Publish coverage
+          command: |
+            sudo pip install codecov
+            codecov
 
 workflows:
   version: 2
   build:
     jobs:
       - test_py36
-      - test_py37
+      # - test_py37
       - coverage
+
+
+###########################################
+# Testing CircleCI in local
+###########################################
+# circleci local execute --job test_py36
+# circleci local execute --job test_py37
+# circleci local execute --job coverage
