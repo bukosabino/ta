@@ -51,8 +51,8 @@ jobs:
       - run:
           name: Publish coverage
           command: |
-            sudo pip install codecov
-            codecov
+            export COVERALLS_REPO_TOKEN=ec4rvBLjmegWPIejLkGXntb92iyWF7tnR
+            coveralls
 
 workflows:
   version: 2
