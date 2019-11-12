@@ -1,7 +1,8 @@
 # Technical Analysis Library in Python
 
-[![CircleCI](https://circleci.com/gh/bukosabino/ta/tree/master.svg?style=svg)](https://circleci.com/gh/bukosabino/ta/tree/master)
+![CircleCI](https://img.shields.io/circleci/build/github/bukosabino/ta/master)
 [![Coverage Status](https://coveralls.io/repos/github/bukosabino/ta/badge.svg)](https://coveralls.io/github/bukosabino/ta)
+![PyPI](https://img.shields.io/pypi/v/ta)
 ![PyPI - Downloads](https://img.shields.io/pypi/dm/ta)
 
 
