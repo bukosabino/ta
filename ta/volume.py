@@ -18,7 +18,7 @@ class AccDistIndexIndicator(IndicatorMixin):
 
     Acting as leading indicator of price movements.
 
-    https://en.wikipedia.org/wiki/Accumulation/distribution_index
+    https://school.stockcharts.com/doku.php?id=technical_indicators:accumulation_distribution_line
     """
 
     def __init__(self, high: pd.Series, low: pd.Series, close: pd.Series, volume: pd.Series, fillna: bool = False):
@@ -41,7 +41,7 @@ class AccDistIndexIndicator(IndicatorMixin):
         clv = ((self._close - self._low) - (self._high - self._close)) / (self._high - self._low)
         clv = clv.fillna(0.0)  # float division by zero
         ad = clv * self._volume
-        self._ad = ad + ad.shift(1, fill_value=ad.mean())
+        self._ad = ad.cumsum()
 
     def acc_dist_index(self) -> pd.Series:
         ad = self.check_fillna(self._ad, value=0)
