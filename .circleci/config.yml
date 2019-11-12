@@ -42,15 +42,12 @@ jobs:
             pip install --upgrade pip
             python3 -m venv venv
             . venv/bin/activate
-            pip install -r requirements.txt
+            sudo pip install -r requirements.txt
       - run:
           name: Run coverage
           command: |
+            coverage run tests.py
             coverage report -m
-      - run:
-          name: Publish coverage
-          command: |
-            codecov
 
 workflows:
   version: 2
