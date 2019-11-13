@@ -54,8 +54,7 @@ jobs:
             export COVERALLS_REPO_TOKEN=ec4rvBLjmegWPIejLkGXntb92iyWF7tnR
             coveralls
 
-
-  coverage:
+  doc:
     docker:
       - image: circleci/python:3.7
     working_directory: ~/ta
@@ -81,6 +80,7 @@ workflows:
       - test_py36
       # - test_py37
       - coverage
+      - doc
 
 
 ###########################################
