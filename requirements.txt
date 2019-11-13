@@ -9,7 +9,6 @@ isort==4.3.16
 # coverage test code
 coverage==4.5.4
 coveralls==1.8.2
-# codecov==2.0.15
 
 # doc
 Sphinx==2.2.1
@@ -17,5 +16,5 @@ sphinx-autobuild==0.7.1
 sphinx-rtd-theme==0.4.3
 
 # examples to use
-jupyterlab==0.33.12
-matplotlib==2.2.4
+jupyterlab==1.2.3
+matplotlib==3.1.1
