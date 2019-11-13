@@ -6,7 +6,7 @@ coverage==4.5.4
 # codecov==2.0.15
 coveralls==1.8.2
 isort==4.3.16
-jupyterlab==0.35.4
+jupyterlab==1.2.3
 Sphinx==1.8.5
 sphinx-autobuild==0.7.1
 sphinx-rtd-theme==0.4.3
