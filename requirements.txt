@@ -12,7 +12,7 @@ coveralls==1.8.2
 # codecov==2.0.15
 
 # doc
-Sphinx==1.8.5
+Sphinx==2.2.1
 sphinx-autobuild==0.7.1
 sphinx-rtd-theme==0.4.3
 
