@@ -19,17 +19,16 @@ class AccDistIndexIndicator(IndicatorMixin):
     Acting as leading indicator of price movements.
 
     https://school.stockcharts.com/doku.php?id=technical_indicators:accumulation_distribution_line
+
+    Args:
+        high(pandas.Series): dataset 'High' column.
+        low(pandas.Series): dataset 'Low' column.
+        close(pandas.Series): dataset 'Close' column.
+        volume(pandas.Series): dataset 'Volume' column.
+        fillna(bool): if True, fill nan values.
     """
 
     def __init__(self, high: pd.Series, low: pd.Series, close: pd.Series, volume: pd.Series, fillna: bool = False):
-        """
-        Args:
-            high(pandas.Series): dataset 'High' column.
-            low(pandas.Series): dataset 'Low' column.
-            close(pandas.Series): dataset 'Close' column.
-            volume(pandas.Series): dataset 'Volume' column.
-            fillna(bool): if True, fill nan values.
-        """
         self._high = high
         self._low = low
         self._close = close
@@ -55,15 +54,14 @@ class OnBalanceVolumeIndicator(IndicatorMixin):
     cumulative total volume.
 
     https://en.wikipedia.org/wiki/On-balance_volume
+
+    Args:
+        close(pandas.Series): dataset 'Close' column.
+        volume(pandas.Series): dataset 'Volume' column.
+        fillna(bool): if True, fill nan values.
     """
 
     def __init__(self, close: pd.Series, volume: pd.Series, fillna: bool = False):
-        """
-        Args:
-            close(pandas.Series): dataset 'Close' column.
-            volume(pandas.Series): dataset 'Volume' column.
-            fillna(bool): if True, fill nan values.
-        """
         self._close = close
         self._volume = volume
         self._fillna = fillna
@@ -84,19 +82,18 @@ class ChaikinMoneyFlowIndicator(IndicatorMixin):
     It measures the amount of Money Flow Volume over a specific period.
 
     http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:chaikin_money_flow_cmf
+
+    Args:
+        high(pandas.Series): dataset 'High' column.
+        low(pandas.Series): dataset 'Low' column.
+        close(pandas.Series): dataset 'Close' column.
+        volume(pandas.Series): dataset 'Volume' column.
+        n(int): n period.
+        fillna(bool): if True, fill nan values.
     """
 
     def __init__(self, high: pd.Series, low: pd.Series, close: pd.Series,
                  volume: pd.Series, n: int = 20, fillna: bool = False):
-        """
-        Args:
-            high(pandas.Series): dataset 'High' column.
-            low(pandas.Series): dataset 'Low' column.
-            close(pandas.Series): dataset 'Close' column.
-            volume(pandas.Series): dataset 'Volume' column.
-            n(int): n period.
-            fillna(bool): if True, fill nan values.
-        """
         self._high = high
         self._low = low
         self._close = close
@@ -124,18 +121,17 @@ class ForceIndexIndicator(IndicatorMixin):
     a strong downward trend.
 
     http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:force_index
+
+    Args:
+        high(pandas.Series): dataset 'High' column.
+        low(pandas.Series): dataset 'Low' column.
+        close(pandas.Series): dataset 'Close' column.
+        volume(pandas.Series): dataset 'Volume' column.
+        n(int): n period.
+        fillna(bool): if True, fill nan values.
     """
 
     def __init__(self, close: pd.Series, volume: pd.Series, n: int = 13, fillna: bool = False):
-        """
-        Args:
-            high(pandas.Series): dataset 'High' column.
-            low(pandas.Series): dataset 'Low' column.
-            close(pandas.Series): dataset 'Close' column.
-            volume(pandas.Series): dataset 'Volume' column.
-            n(int): n period.
-            fillna(bool): if True, fill nan values.
-        """
         self._close = close
         self._volume = volume
         self._n = n
@@ -158,17 +154,16 @@ class EaseOfMovementIndicator(IndicatorMixin):
     for assessing the strength of a trend.
 
     https://en.wikipedia.org/wiki/Ease_of_movement
+
+    Args:
+        high(pandas.Series): dataset 'High' column.
+        low(pandas.Series): dataset 'Low' column.
+        volume(pandas.Series): dataset 'Volume' column.
+        n(int): n period.
+        fillna(bool): if True, fill nan values.
     """
 
     def __init__(self, high: pd.Series, low: pd.Series, volume: pd.Series, n: int = 14, fillna: bool = False):
-        """
-        Args:
-            high(pandas.Series): dataset 'High' column.
-            low(pandas.Series): dataset 'Low' column.
-            volume(pandas.Series): dataset 'Volume' column.
-            n(int): n period.
-            fillna(bool): if True, fill nan values.
-        """
         self._high = high
         self._low = low
         self._volume = volume
@@ -198,15 +193,14 @@ class VolumePriceTrendIndicator(IndicatorMixin):
     upon the investment's upward or downward movements.
 
     https://en.wikipedia.org/wiki/Volume%E2%80%93price_trend
+
+    Args:
+        close(pandas.Series): dataset 'Close' column.
+        volume(pandas.Series): dataset 'Volume' column.
+        fillna(bool): if True, fill nan values.
     """
 
     def __init__(self, close: pd.Series, volume: pd.Series, fillna: bool = False):
-        """
-        Args:
-            close(pandas.Series): dataset 'Close' column.
-            volume(pandas.Series): dataset 'Volume' column.
-            fillna(bool): if True, fill nan values.
-        """
         self._close = close
         self._volume = volume
         self._fillna = fillna
@@ -226,15 +220,14 @@ class NegativeVolumeIndexIndicator(IndicatorMixin):
     """Negative Volume Index (NVI)
 
     http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:negative_volume_inde
+
+    Args:
+        close(pandas.Series): dataset 'Close' column.
+        volume(pandas.Series): dataset 'Volume' column.
+        fillna(bool): if True, fill nan values with 1000.
     """
 
     def __init__(self, close: pd.Series, volume: pd.Series, fillna: bool = False):
-        """
-        Args:
-            close(pandas.Series): dataset 'Close' column.
-            volume(pandas.Series): dataset 'Volume' column.
-            fillna(bool): if True, fill nan values with 1000.
-        """
         self._close = close
         self._volume = volume
         self._fillna = fillna

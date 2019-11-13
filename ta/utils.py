@@ -34,7 +34,7 @@ def ema(series, periods, fillna=False):
 
 
 def get_min_max(x1, x2, f='min'):
-    """ Find min or max value between two lists for each index
+    """Find min or max value between two lists for each index
     """
     x1 = np.array(x1)
     x2 = np.array(x2)
