@@ -20,15 +20,14 @@ class AroonIndicator(IndicatorMixin):
     Aroon Down - ((N - Days Since N-day Low) / N) x 100
 
     https://www.investopedia.com/terms/a/aroon.asp
+
+    Args:
+        close(pandas.Series): dataset 'Close' column.
+        n(int): n period.
+        fillna(bool): if True, fill nan values.
     """
 
     def __init__(self, close: pd.Series, n: int = 25, fillna: bool = False):
-        """
-        Args:
-            close(pandas.Series): dataset 'Close' column.
-            n(int): n period.
-            fillna(bool): if True, fill nan values.
-        """
         self._close = close
         self._n = n
         self._fillna = fillna
@@ -56,7 +55,19 @@ class AroonIndicator(IndicatorMixin):
 
 
 class MACD(IndicatorMixin):
-    """
+    """Moving Average Convergence Divergence (MACD)
+
+    Is a trend-following momentum indicator that shows the relationship between
+    two moving averages of prices.
+
+    https://en.wikipedia.org/wiki/MACD
+
+    Args:
+        close(pandas.Series): dataset 'Close' column.
+        n_fast(int): n period short-term.
+        n_slow(int): n period long-term.
+        n_sign(int): n period to signal.
+        fillna(bool): if True, fill nan values.
     """
     def __init__(self,
                  close: pd.Series,
@@ -64,14 +75,6 @@ class MACD(IndicatorMixin):
                  n_fast: int = 26,
                  n_sign: int = 9,
                  fillna: bool = False):
-        """
-        Args:
-            close(pandas.Series): dataset 'Close' column.
-            n_fast(int): n period short-term.
-            n_slow(int): n period long-term.
-            n_sign(int): n period to signal.
-            fillna(bool): if True, fill nan values.
-        """
         self._close = close
         self._n_slow = n_slow
         self._n_fast = n_fast
@@ -100,18 +103,15 @@ class MACD(IndicatorMixin):
 
 
 class EMAIndicator(IndicatorMixin):
-    """EMA
+    """EMA - Exponential Moving Average
 
-    Exponential Moving Average
+    Args:
+        close(pandas.Series): dataset 'Close' column.
+        n(int): n period.
+        fillna(bool): if True, fill nan values.
     """
 
     def __init__(self, close: pd.Series, n: int = 14, fillna: bool = False):
-        """
-        Args:
-            close(pandas.Series): dataset 'Close' column.
-            n(int): n period.
-            fillna(bool): if True, fill nan values.
-        """
         self._close = close
         self._n = n
         self._fillna = fillna
@@ -135,15 +135,14 @@ class TRIXIndicator(IndicatorMixin):
     average.
 
     http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:trix
+
+    Args:
+        close(pandas.Series): dataset 'Close' column.
+        n(int): n period.
+        fillna(bool): if True, fill nan values.
     """
 
     def __init__(self, close: pd.Series, n: int = 15, fillna: bool = False):
-        """
-        Args:
-            close(pandas.Series): dataset 'Close' column.
-            n(int): n period.
-            fillna(bool): if True, fill nan values.
-        """
         self._close = close
         self._n = n
         self._fillna = fillna
@@ -170,17 +169,15 @@ class MassIndex(IndicatorMixin):
 
     http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:mass_index
 
+    Args:
+        high(pandas.Series): dataset 'High' column.
+        low(pandas.Series): dataset 'Low' column.
+        n(int): n low period.
+        n2(int): n high period.
+        fillna(bool): if True, fill nan values.
     """
 
     def __init__(self, high: pd.Series, low: pd.Series, n: int = 9, n2: int = 25, fillna: bool = False):
-        """
-        Args:
-            high(pandas.Series): dataset 'High' column.
-            low(pandas.Series): dataset 'Low' column.
-            n(int): n low period.
-            n2(int): n high period.
-            fillna(bool): if True, fill nan values.
-        """
         self._high = high
         self._low = low
         self._n = n
@@ -205,20 +202,18 @@ class IchimokuIndicator(IndicatorMixin):
 
     http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:ichimoku_cloud
 
+    Args:
+        high(pandas.Series): dataset 'High' column.
+        low(pandas.Series): dataset 'Low' column.
+        n1(int): n1 low period.
+        n2(int): n2 medium period.
+        n3(int): n3 high period.
+        visual(bool): if True, shift n2 values.
+        fillna(bool): if True, fill nan values.
     """
 
     def __init__(self, high: pd.Series, low: pd.Series, n1: int = 9, n2: int = 26, n3: int = 52,
                  visual: bool = False, fillna: bool = False):
-        """
-        Args:
-            high(pandas.Series): dataset 'High' column.
-            low(pandas.Series): dataset 'Low' column.
-            n1(int): n1 low period.
-            n2(int): n2 medium period.
-            n3(int): n3 high period.
-            visual(bool): if True, shift n2 values.
-            fillna(bool): if True, fill nan values.
-        """
         self._high = high
         self._low = low
         self._n1 = n1
@@ -254,25 +249,24 @@ class KSTIndicator(IndicatorMixin):
     market cycle.
 
     http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:know_sure_thing_kst
+
+    Args:
+        close(pandas.Series): dataset 'Close' column.
+        r1(int): r1 period.
+        r2(int): r2 period.
+        r3(int): r3 period.
+        r4(int): r4 period.
+        n1(int): n1 smoothed period.
+        n2(int): n2 smoothed period.
+        n3(int): n3 smoothed period.
+        n4(int): n4 smoothed period.
+        nsig(int): n period to signal.
+        fillna(bool): if True, fill nan values.
     """
 
     def __init__(self, close: pd.Series, r1: int = 10, r2: int = 15, r3: int = 20, r4: int = 30,
                  n1: int = 10, n2: int = 10, n3: int = 10, n4: int = 15, nsig: int = 9,
                  fillna: bool = False):
-        """
-        Args:
-            close(pandas.Series): dataset 'Close' column.
-            r1(int): r1 period.
-            r2(int): r2 period.
-            r3(int): r3 period.
-            r4(int): r4 period.
-            n1(int): n1 smoothed period.
-            n2(int): n2 smoothed period.
-            n3(int): n3 smoothed period.
-            n4(int): n4 smoothed period.
-            nsig(int): n period to signal.
-            fillna(bool): if True, fill nan values.
-        """
         self._close = close
         self._r1 = r1
         self._r2 = r2
@@ -319,14 +313,13 @@ class DPOIndicator(IndicatorMixin):
     identify cycles.
 
     http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:detrended_price_osci
+
+    Args:
+        close(pandas.Series): dataset 'Close' column.
+        n(int): n period.
+        fillna(bool): if True, fill nan values.
     """
     def __init__(self, close: pd.Series, n: int = 20, fillna: bool = False):
-        """
-        Args:
-            close(pandas.Series): dataset 'Close' column.
-            n(int): n period.
-            fillna(bool): if True, fill nan values.
-        """
         self._close = close
         self._n = n
         self._fillna = fillna
@@ -351,6 +344,14 @@ class CCIIndicator(IndicatorMixin):
     weakness.
 
     http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:commodity_channel_index_cci
+
+    Args:
+        high(pandas.Series): dataset 'High' column.
+        low(pandas.Series): dataset 'Low' column.
+        close(pandas.Series): dataset 'Close' column.
+        n(int): n period.
+        c(int): constant.
+        fillna(bool): if True, fill nan values.
     """
 
     def __init__(self,
@@ -360,15 +361,6 @@ class CCIIndicator(IndicatorMixin):
                  n: int = 20,
                  c: float = 0.015,
                  fillna: bool = False):
-        """
-        Args:
-            high(pandas.Series): dataset 'High' column.
-            low(pandas.Series): dataset 'Low' column.
-            close(pandas.Series): dataset 'Close' column.
-            n(int): n period.
-            c(int): constant.
-            fillna(bool): if True, fill nan values.
-        """
         self._high = high
         self._low = low
         self._close = close
@@ -407,17 +399,16 @@ class ADXIndicator(IndicatorMixin):
     direction and strength of the trend.
 
     http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:average_directional_index_adx
+
+    Args:
+        high(pandas.Series): dataset 'High' column.
+        low(pandas.Series): dataset 'Low' column.
+        close(pandas.Series): dataset 'Close' column.
+        n(int): n period.
+        fillna(bool): if True, fill nan values.
     """
 
     def __init__(self, high: pd.Series, low: pd.Series, close: pd.Series, n: int = 14, fillna: bool = False):
-        """
-        Args:
-            high(pandas.Series): dataset 'High' column.
-            low(pandas.Series): dataset 'Low' column.
-            close(pandas.Series): dataset 'Close' column.
-            n(int): n period.
-            fillna(bool): if True, fill nan values.
-        """
         self._high = high
         self._low = low
         self._close = close
@@ -510,17 +501,16 @@ class VortexIndicator(IndicatorMixin):
     crosses above the negative trend indicator or a key level.
 
     http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:vortex_indicator
+
+    Args:
+        high(pandas.Series): dataset 'High' column.
+        low(pandas.Series): dataset 'Low' column.
+        close(pandas.Series): dataset 'Close' column.
+        n(int): n period.
+        fillna(bool): if True, fill nan values.
     """
 
     def __init__(self, high: pd.Series, low: pd.Series, close: pd.Series, n: int = 14, fillna: bool = False):
-        """
-        Args:
-            high(pandas.Series): dataset 'High' column.
-            low(pandas.Series): dataset 'Low' column.
-            close(pandas.Series): dataset 'Close' column.
-            n(int): n period.
-            fillna(bool): if True, fill nan values.
-        """
         self._high = high
         self._low = low
         self._close = close
