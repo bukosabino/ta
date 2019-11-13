@@ -13,14 +13,13 @@ from ta.utils import IndicatorMixin
 
 class DailyReturnIndicator(IndicatorMixin):
     """Daily Return (DR)
+
+    Args:
+        close(pandas.Series): dataset 'Close' column.
+        fillna(bool): if True, fill nan values.
     """
 
     def __init__(self, close: pd.Series, fillna: bool = False):
-        """
-        Args:
-            close(pandas.Series): dataset 'Close' column.
-            fillna(bool): if True, fill nan values.
-        """
         self._close = close
         self._fillna = fillna
         self._run()
@@ -38,14 +37,13 @@ class DailyLogReturnIndicator(IndicatorMixin):
     """Daily Log Return (DLR)
 
     https://stackoverflow.com/questions/31287552/logarithmic-returns-in-pandas-dataframe
+
+    Args:
+        close(pandas.Series): dataset 'Close' column.
+        fillna(bool): if True, fill nan values.
     """
 
     def __init__(self, close: pd.Series, fillna: bool = False):
-        """
-        Args:
-            close(pandas.Series): dataset 'Close' column.
-            fillna(bool): if True, fill nan values.
-        """
         self._close = close
         self._fillna = fillna
         self._run()
@@ -61,14 +59,13 @@ class DailyLogReturnIndicator(IndicatorMixin):
 
 class CumulativeReturnIndicator(IndicatorMixin):
     """Cumulative Return (CR)
+
+    Args:
+        close(pandas.Series): dataset 'Close' column.
+        fillna(bool): if True, fill nan values.
     """
 
     def __init__(self, close: pd.Series, fillna: bool = False):
-        """
-        Args:
-            close(pandas.Series): dataset 'Close' column.
-            fillna(bool): if True, fill nan values.
-        """
         self._close = close
         self._fillna = fillna
         self._run()

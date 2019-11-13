@@ -20,15 +20,13 @@ class RSIIndicator(IndicatorMixin):
     the trading of an asset.
 
     https://www.investopedia.com/terms/r/rsi.asp
-    """
 
+    Args:
+        close(pandas.Series): dataset 'Close' column.
+        n(int): n period.
+        fillna(bool): if True, fill nan values.
+    """
     def __init__(self, close: pd.Series, n: int = 14, fillna: bool = False):
-        """
-        Args:
-            close(pandas.Series): dataset 'Close' column.
-            n(int): n period.
-            fillna(bool): if True, fill nan values.
-        """
         self._close = close
         self._n = n
         self._fillna = fillna
@@ -60,6 +58,14 @@ class MFIIndicator(IndicatorMixin):
     oscillator that moves between zero and one hundred.
 
     http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:money_flow_index_mfi
+
+    Args:
+        high(pandas.Series): dataset 'High' column.
+        low(pandas.Series): dataset 'Low' column.
+        close(pandas.Series): dataset 'Close' column.
+        volume(pandas.Series): dataset 'Volume' column.
+        n(int): n period.
+        fillna(bool): if True, fill nan values.
     """
 
     def __init__(self,
@@ -69,15 +75,6 @@ class MFIIndicator(IndicatorMixin):
                  volume: pd.Series,
                  n: int = 14,
                  fillna: bool = False):
-        """
-        Args:
-            high(pandas.Series): dataset 'High' column.
-            low(pandas.Series): dataset 'Low' column.
-            close(pandas.Series): dataset 'Close' column.
-            volume(pandas.Series): dataset 'Volume' column.
-            n(int): n period.
-            fillna(bool): if True, fill nan values.
-        """
         self._high = high
         self._low = low
         self._close = close
@@ -115,16 +112,15 @@ class TSIIndicator(IndicatorMixin):
     Shows both trend direction and overbought/oversold conditions.
 
     https://en.wikipedia.org/wiki/True_strength_index
+
+    Args:
+        close(pandas.Series): dataset 'Close' column.
+        r(int): high period.
+        s(int): low period.
+        fillna(bool): if True, fill nan values.
     """
 
     def __init__(self, close: pd.Series, r: int = 25, s: int = 13, fillna: bool = False):
-        """
-        Args:
-            close(pandas.Series): dataset 'Close' column.
-            r(int): high period.
-            s(int): low period.
-            fillna(bool): if True, fill nan values.
-        """
         self._close = close
         self._r = r
         self._s = s
@@ -158,6 +154,18 @@ class UltimateOscillatorIndicator(IndicatorMixin):
     Average28 = (28-period BP Sum) / (28-period TR Sum)
 
     UO = 100 x [(4 x Average7)+(2 x Average14)+Average28]/(4+2+1)
+
+    Args:
+        high(pandas.Series): dataset 'High' column.
+        low(pandas.Series): dataset 'Low' column.
+        close(pandas.Series): dataset 'Close' column.
+        s(int): short period.
+        m(int): medium period.
+        len(int): long period.
+        ws(float): weight of short BP average for UO.
+        wm(float): weight of medium BP average for UO.
+        wl(float): weight of long BP average for UO.
+        fillna(bool): if True, fill nan values with 50.
     """
 
     def __init__(self,
@@ -171,19 +179,6 @@ class UltimateOscillatorIndicator(IndicatorMixin):
                  wm: float = 2.0,
                  wl: float = 1.0,
                  fillna: bool = False):
-        """
-        Args:
-            high(pandas.Series): dataset 'High' column.
-            low(pandas.Series): dataset 'Low' column.
-            close(pandas.Series): dataset 'Close' column.
-            s(int): short period
-            m(int): medium period
-            len(int): long period
-            ws(float): weight of short BP average for UO
-            wm(float): weight of medium BP average for UO
-            wl(float): weight of long BP average for UO
-            fillna(bool): if True, fill nan values with 50.
-        """
         self._high = high
         self._low = low
         self._close = close
@@ -221,6 +216,14 @@ class StochIndicator(IndicatorMixin):
     of a stock over a period of time, typically a 14-day period.
 
     https://www.investopedia.com/terms/s/stochasticoscillator.asp
+
+    Args:
+        close(pandas.Series): dataset 'Close' column.
+        high(pandas.Series): dataset 'High' column.
+        low(pandas.Series): dataset 'Low' column.
+        n(int): n period.
+        d_n(int): sma period over stoch_k.
+        fillna(bool): if True, fill nan values.
     """
 
     def __init__(self,
@@ -230,15 +233,6 @@ class StochIndicator(IndicatorMixin):
                  n: int = 14,
                  d_n: int = 3,
                  fillna: bool = False):
-        """
-        Args:
-            close(pandas.Series): dataset 'Close' column.
-            high(pandas.Series): dataset 'High' column.
-            low(pandas.Series): dataset 'Low' column.
-            n(int): n period.
-            d_n(int): sma period over stoch_k
-            fillna(bool): if True, fill nan values.
-        """
         self._close = close
         self._high = high
         self._low = low
@@ -273,17 +267,16 @@ class KAMAIndicator(IndicatorMixin):
     movements.
 
     https://www.tradingview.com/ideas/kama/
+
+    Args:
+        close(pandas.Series): dataset 'Close' column.
+        n(int): n period.
+        pow1(int): number of periods for the fastest EMA constant.
+        pow2(int): number of periods for the slowest EMA constant.
+        fillna(bool): if True, fill nan values.
     """
 
     def __init__(self, close: pd.Series, n: int = 10, pow1: int = 2, pow2: int = 30, fillna: bool = False):
-        """
-        Args:
-            close(pandas.Series): dataset 'Close' column.
-            n(int): n period.
-            pow1(int): number of periods for the fastest EMA constant
-            pow2(int): number of periods for the slowest EMA constant
-            fillna(bool): if True, fill nan values.
-        """
         self._close = close
         self._n = n
         self._pow1 = pow1
@@ -338,15 +331,14 @@ class ROCIndicator(IndicatorMixin):
     oversold extremes comes naturally to the Rate-of-Change oscillator.
 
     https://school.stockcharts.com/doku.php?id=technical_indicators:rate_of_change_roc_and_momentum
+
+    Args:
+        close(pandas.Series): dataset 'Close' column.
+        n(int): n period.
+        fillna(bool): if True, fill nan values.
     """
 
     def __init__(self, close: pd.Series, n: int = 12, fillna: bool = False):
-        """
-        Args:
-            close(pandas.Series): dataset 'Close' column.
-            n(int): n period.
-            fillna(bool): if True, fill nan values.
-        """
         self._close = close
         self._n = n
         self._fillna = fillna
@@ -361,18 +353,40 @@ class ROCIndicator(IndicatorMixin):
 
 
 class AwesomeOscillatorIndicator(IndicatorMixin):
-    """
+    """Awesome Oscillator
+
+    From: https://www.tradingview.com/wiki/Awesome_Oscillator_(AO)
+
+    The Awesome Oscillator is an indicator used to measure market momentum. AO
+    calculates the difference of a 34 Period and 5 Period Simple Moving
+    Averages. The Simple Moving Averages that are used are not calculated
+    using closing price but rather each bar's midpoints. AO is generally used
+    to affirm trends or to anticipate possible reversals.
+
+    From: https://www.ifcm.co.uk/ntx-indicators/awesome-oscillator
+
+    Awesome Oscillator is a 34-period simple moving average, plotted through
+    the central points of the bars (H+L)/2, and subtracted from the 5-period
+    simple moving average, graphed across the central points of the bars
+    (H+L)/2.
+
+    MEDIAN PRICE = (HIGH+LOW)/2
+
+    AO = SMA(MEDIAN PRICE, 5)-SMA(MEDIAN PRICE, 34)
+
+    where
+
+    SMA — Simple Moving Average.
+
+    Args:
+        high(pandas.Series): dataset 'High' column.
+        low(pandas.Series): dataset 'Low' column.
+        s(int): short period.
+        len(int): long period.
+        fillna(bool): if True, fill nan values with -50.
     """
 
     def __init__(self, high: pd.Series, low: pd.Series, s: int = 5, len: int = 34, fillna: bool = False):
-        """
-        Args:
-            high(pandas.Series): dataset 'High' column.
-            low(pandas.Series): dataset 'Low' column.
-            s(int): short period
-            len(int): long period
-            fillna(bool): if True, fill nan values.
-        """
         self._high = high
         self._low = low
         self._s = s
@@ -392,19 +406,41 @@ class AwesomeOscillatorIndicator(IndicatorMixin):
 class WilliamsRIndicator(IndicatorMixin):
     """Williams %R
 
-    http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:williams_r
+    Developed by Larry Williams, Williams %R is a momentum indicator that is
+    the inverse of the Fast Stochastic Oscillator. Also referred to as %R,
+    Williams %R reflects the level of the close relative to the highest high
+    for the look-back period. In contrast, the Stochastic Oscillator reflects
+    the level of the close relative to the lowest low. %R corrects for the
+    inversion by multiplying the raw value by -100. As a result, the Fast
+    Stochastic Oscillator and Williams %R produce the exact same lines, only
+    the scaling is different. Williams %R oscillates from 0 to -100.
 
+    Readings from 0 to -20 are considered overbought. Readings from -80 to -100
+    are considered oversold.
+
+    Unsurprisingly, signals derived from the Stochastic Oscillator are also
+    applicable to Williams %R.
+
+    %R = (Highest High - Close)/(Highest High - Lowest Low) * -100
+
+    Lowest Low = lowest low for the look-back period
+    Highest High = highest high for the look-back period
+    %R is multiplied by -100 correct the inversion and move the decimal.
+
+    From: https://www.investopedia.com/terms/w/williamsr.asp
+    The Williams %R oscillates from 0 to -100. When the indicator produces
+    readings from 0 to -20, this indicates overbought market conditions. When
+    readings are -80 to -100, it indicates oversold market conditions.
+
+    Args:
+        high(pandas.Series): dataset 'High' column.
+        low(pandas.Series): dataset 'Low' column.
+        close(pandas.Series): dataset 'Close' column.
+        lbp(int): lookback period.
+        fillna(bool): if True, fill nan values with -50.
     """
 
     def __init__(self, high: pd.Series, low: pd.Series, close: pd.Series, lbp: int = 14, fillna: bool = False):
-        """
-        Args:
-            high(pandas.Series): dataset 'High' column.
-            low(pandas.Series): dataset 'Low' column.
-            close(pandas.Series): dataset 'Close' column.
-            lbp(int): lookback period
-            fillna(bool): if True, fill nan values.
-        """
         self._high = high
         self._low = low
         self._close = close
@@ -509,12 +545,12 @@ def uo(high, low, close, s=7, m=14, len=28, ws=4.0, wm=2.0, wl=1.0, fillna=False
         high(pandas.Series): dataset 'High' column.
         low(pandas.Series): dataset 'Low' column.
         close(pandas.Series): dataset 'Close' column.
-        s(int): short period
-        m(int): medium period
-        len(int): long period
-        ws(float): weight of short BP average for UO
-        wm(float): weight of medium BP average for UO
-        wl(float): weight of long BP average for UO
+        s(int): short period.
+        m(int): medium period.
+        len(int): long period.
+        ws(float): weight of short BP average for UO.
+        wm(float): weight of medium BP average for UO.
+        wl(float): weight of long BP average for UO.
         fillna(bool): if True, fill nan values with 50.
 
     Returns:
@@ -605,7 +641,7 @@ def wr(high, low, close, lbp=14, fillna=False):
         high(pandas.Series): dataset 'High' column.
         low(pandas.Series): dataset 'Low' column.
         close(pandas.Series): dataset 'Close' column.
-        lbp(int): lookback period
+        lbp(int): lookback period.
         fillna(bool): if True, fill nan values with -50.
 
     Returns:
@@ -643,8 +679,8 @@ def ao(high, low, s=5, len=34, fillna=False):
     Args:
         high(pandas.Series): dataset 'High' column.
         low(pandas.Series): dataset 'Low' column.
-        s(int): short period
-        len(int): long period
+        s(int): short period.
+        len(int): long period.
         fillna(bool): if True, fill nan values with -50.
 
     Returns:
@@ -666,10 +702,10 @@ def kama(close, n=10, pow1=2, pow2=30, fillna=False):
     https://www.tradingview.com/ideas/kama/
 
     Args:
-        close(pandas.Series): dataset 'Close' column
-        n(int): n number of periods for the efficiency ratio
-        pow1(int): number of periods for the fastest EMA constant
-        pow2(int): number of periods for the slowest EMA constant
+        close(pandas.Series): dataset 'Close' column.
+        n(int): n number of periods for the efficiency ratio.
+        pow1(int): number of periods for the fastest EMA constant.
+        pow2(int): number of periods for the slowest EMA constant.
         fillna(bool): if True, fill nan values.
 
     Returns:
