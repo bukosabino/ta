@@ -29,6 +29,11 @@ class DailyReturnIndicator(IndicatorMixin):
         self._dr *= 100
 
     def daily_return(self) -> pd.Series:
+        """Daily Return (DR)
+
+        Returns:
+            pandas.Series: New feature generated.
+        """
         dr = self.check_fillna(self._dr, value=0)
         return pd.Series(dr, name='d_ret')
 
@@ -53,6 +58,11 @@ class DailyLogReturnIndicator(IndicatorMixin):
         self._dr *= 100
 
     def daily_log_return(self) -> pd.Series:
+        """Daily Log Return (DLR)
+
+        Returns:
+            pandas.Series: New feature generated.
+        """
         dr = self.check_fillna(self._dr, value=0)
         return pd.Series(dr, name='d_logret')
 
@@ -75,6 +85,11 @@ class CumulativeReturnIndicator(IndicatorMixin):
         self._cr *= 100
 
     def cumulative_return(self) -> pd.Series:
+        """Cumulative Return (CR)
+
+        Returns:
+            pandas.Series: New feature generated.
+        """
         cr = self.check_fillna(self._cr, method='backfill')
         return pd.Series(cr, name='cum_ret')
 
