@@ -16,8 +16,9 @@ class AroonIndicator(IndicatorMixin):
 
     Identify when trends are likely to change direction.
 
-    Aroon Up - ((N - Days Since N-day High) / N) x 100
-    Aroon Down - ((N - Days Since N-day Low) / N) x 100
+    Aroon Up = ((N - Days Since N-day High) / N) x 100
+    Aroon Down = ((N - Days Since N-day Low) / N) x 100
+    Aroon Indicator = Aroon Up - Aroon Down
 
     https://www.investopedia.com/terms/a/aroon.asp
 
@@ -41,14 +42,29 @@ class AroonIndicator(IndicatorMixin):
             lambda x: float(np.argmin(x) + 1) / self._n * 100, raw=True)
 
     def aroon_up(self) -> pd.Series:
+        """Aroon Up Channel
+
+        Returns:
+            pandas.Series: New feature generated.
+        """
         aroon_up = self.check_fillna(self._aroon_up, value=0)
         return pd.Series(aroon_up, name=f'aroon_up_{self._n}')
 
     def aroon_down(self) -> pd.Series:
+        """Aroon Down Channel
+
+        Returns:
+            pandas.Series: New feature generated.
+        """
         aroon_down = self.check_fillna(self._aroon_down, value=0)
         return pd.Series(aroon_down, name=f'aroon_down_{self._n}')
 
     def aroon_indicator(self) -> pd.Series:
+        """Aroon Indicator
+
+        Returns:
+            pandas.Series: New feature generated.
+        """
         aroon_diff = self._aroon_up - self._aroon_down
         aroon_diff = self.check_fillna(aroon_diff, value=0)
         return pd.Series(aroon_diff, name=f'aroon_ind_{self._n}')
@@ -60,7 +76,7 @@ class MACD(IndicatorMixin):
     Is a trend-following momentum indicator that shows the relationship between
     two moving averages of prices.
 
-    https://en.wikipedia.org/wiki/MACD
+    https://school.stockcharts.com/doku.php?id=technical_indicators:moving_average_convergence_divergence_macd
 
     Args:
         close(pandas.Series): dataset 'Close' column.
@@ -90,14 +106,29 @@ class MACD(IndicatorMixin):
         self._macd_diff = self._macd - self._macd_signal
 
     def macd(self) -> pd.Series:
+        """MACD Line
+
+        Returns:
+            pandas.Series: New feature generated.
+        """
         macd = self.check_fillna(self._macd, value=0)
         return pd.Series(macd, name=f'MACD_{self._n_fast}_{self._n_slow}')
 
     def macd_signal(self) -> pd.Series:
+        """Signal Line
+
+        Returns:
+            pandas.Series: New feature generated.
+        """
         macd_diff = self.check_fillna(self._macd_signal, value=0)
         return pd.Series(macd_diff, name=f'MACD_sign_{self._n_fast}_{self._n_slow}')
 
     def macd_diff(self) -> pd.Series:
+        """MACD Histogram
+
+        Returns:
+            pandas.Series: New feature generated.
+        """
         macd_diff = self.check_fillna(self._macd_diff, value=0)
         return pd.Series(macd_diff, name=f'MACD_diff_{self._n_fast}_{self._n_slow}')
 
@@ -117,9 +148,7 @@ class EMAIndicator(IndicatorMixin):
         self._fillna = fillna
 
     def ema_indicator(self) -> pd.Series:
-        """EMA
-
-        Exponential Moving Average
+        """Exponential Moving Average (EMA)
 
         Returns:
             pandas.Series: New feature generated.
@@ -156,6 +185,11 @@ class TRIXIndicator(IndicatorMixin):
         self._trix *= 100
 
     def trix(self) -> pd.Series:
+        """Trix (TRIX)
+
+        Returns:
+            pandas.Series: New feature generated.
+        """
         trix = self.check_fillna(self._trix, value=0)
         return pd.Series(trix, name=f'trix_{self._n}')
 
@@ -193,6 +227,11 @@ class MassIndex(IndicatorMixin):
         self._mass = mass.rolling(self._n2, min_periods=0).sum()
 
     def mass_index(self) -> pd.Series:
+        """Mass Index (MI)
+
+        Returns:
+            pandas.Series: New feature generated.
+        """
         mass = self.check_fillna(self._mass, value=0)
         return pd.Series(mass, name=f'mass_index_{self._n}_{self._n2}')
 
@@ -223,6 +262,11 @@ class IchimokuIndicator(IndicatorMixin):
         self._fillna = fillna
 
     def ichimoku_a(self) -> pd.Series:
+        """Senkou Span A (Leading Span A)
+
+        Returns:
+            pandas.Series: New feature generated.
+        """
         conv = 0.5 * (self._high.rolling(self._n1, min_periods=0).max()
                       + self._low.rolling(self._n1, min_periods=0).min())
         base = 0.5 * (self._high.rolling(self._n2, min_periods=0).max()
@@ -233,6 +277,11 @@ class IchimokuIndicator(IndicatorMixin):
         return pd.Series(spana, name=f'ichimoku_a_{self._n1}_{self._n2}')
 
     def ichimoku_b(self) -> pd.Series:
+        """Senkou Span B (Leading Span B)
+
+        Returns:
+            pandas.Series: New feature generated.
+        """
         spanb = 0.5 * (self._high.rolling(self._n3, min_periods=0).max()
                        + self._low.rolling(self._n3, min_periods=0).min())
         spanb = spanb.shift(self._n2, fill_value=spanb.mean()) if self._visual else spanb
@@ -293,14 +342,33 @@ class KSTIndicator(IndicatorMixin):
         self._kst_sig = self._kst.rolling(self._nsig, min_periods=0).mean()
 
     def kst(self) -> pd.Series:
+        """Know Sure Thing (KST)
+
+        Returns:
+            pandas.Series: New feature generated.
+        """
         kst = self.check_fillna(self._kst, value=0)
         return pd.Series(kst, name='kst')
 
     def kst_sig(self) -> pd.Series:
+        """Signal Line Know Sure Thing (KST)
+
+        nsig-period SMA of KST
+
+        Returns:
+            pandas.Series: New feature generated.
+        """
         kst_sig = self.check_fillna(self._kst_sig, value=0)
         return pd.Series(kst_sig, name='kst_sig')
 
     def kst_diff(self) -> pd.Series:
+        """Diff Know Sure Thing (KST)
+
+        KST - Signal_KST
+
+        Returns:
+            pandas.Series: New feature generated.
+        """
         kst_diff = self._kst - self._kst_sig
         kst_diff = self.check_fillna(kst_diff, value=0)
         return pd.Series(kst_diff, name='kst_diff')
@@ -330,6 +398,11 @@ class DPOIndicator(IndicatorMixin):
                      - self._close.rolling(self._n, min_periods=0).mean())
 
     def dpo(self) -> pd.Series:
+        """Detrended Price Oscillator (DPO)
+
+        Returns:
+            pandas.Series: New feature generated.
+        """
         dpo = self.check_fillna(self._dpo, value=0)
         return pd.Series(dpo, name='dpo_'+str(self._n))
 
@@ -379,6 +452,11 @@ class CCIIndicator(IndicatorMixin):
                      / (self._c * pp.rolling(self._n, min_periods=0).apply(_mad, True)))
 
     def cci(self) -> pd.Series:
+        """Commodity Channel Index (CCI)
+
+        Returns:
+            pandas.Series: New feature generated.
+        """
         cci = self.check_fillna(self._cci, value=0)
         return pd.Series(cci, name='cci')
 
@@ -454,6 +532,11 @@ class ADXIndicator(IndicatorMixin):
             self._din[i] = self._din[i-1] - (self._din[i-1]/float(self._n)) + neg[self._n+i]
 
     def adx(self) -> pd.Series:
+        """Average Directional Index (ADX)
+
+        Returns:
+            pandas.Series: New feature generated.
+        """
         dip = np.zeros(len(self._trs))
         for i in range(len(self._trs)):
             dip[i] = 100 * (self._dip[i]/self._trs[i])
@@ -477,6 +560,11 @@ class ADXIndicator(IndicatorMixin):
         return pd.Series(adx, name='adx')
 
     def adx_pos(self) -> pd.Series:
+        """Plus Directional Indicator (+DI)
+
+        Returns:
+            pandas.Series: New feature generated.
+        """
         dip = np.zeros(len(self._close))
         for i in range(1, len(self._trs)-1):
             dip[i+self._n] = 100 * (self._dip[i]/self._trs[i])
@@ -485,6 +573,11 @@ class ADXIndicator(IndicatorMixin):
         return pd.Series(adx_pos, name='adx_pos')
 
     def adx_neg(self) -> pd.Series:
+        """Minus Directional Indicator (-DI)
+
+        Returns:
+            pandas.Series: New feature generated.
+        """
         din = np.zeros(len(self._close))
         for i in range(1, len(self._trs)-1):
             din[i+self._n] = 100 * (self._din[i]/self._trs[i])
@@ -528,23 +621,36 @@ class VortexIndicator(IndicatorMixin):
         self._vin = vmm.rolling(self._n, min_periods=0).sum() / trn
 
     def vortex_indicator_pos(self):
+        """+VI
+
+        Returns:
+            pandas.Series: New feature generated.
+        """
         vip = self.check_fillna(self._vip, value=1)
         return pd.Series(vip, name='vip')
 
     def vortex_indicator_neg(self):
+        """-VI
+
+        Returns:
+            pandas.Series: New feature generated.
+        """
         vin = self.check_fillna(self._vin, value=1)
         return pd.Series(vin, name='vin')
 
     def vortex_indicator_diff(self):
+        """Diff VI
+
+        Returns:
+            pandas.Series: New feature generated.
+        """
         vid = self._vip - self._vin
         vid = self.check_fillna(vid, value=0)
         return pd.Series(vid, name='vid')
 
 
 def ema_indicator(close, n=12, fillna=False):
-    """EMA
-
-    Exponential Moving Average
+    """Exponential Moving Average (EMA)
 
     Returns:
         pandas.Series: New feature generated.
