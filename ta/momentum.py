@@ -44,6 +44,11 @@ class RSIIndicator(IndicatorMixin):
         self._rsi = 100 * emaup / (emaup + emadn)
 
     def rsi(self) -> pd.Series:
+        """Relative Strength Index (RSI)
+
+        Returns:
+            pandas.Series: New feature generated.
+        """
         rsi = self.check_fillna(self._rsi, value=50)
         return pd.Series(rsi, name='rsi')
 
@@ -102,6 +107,11 @@ class MFIIndicator(IndicatorMixin):
         self._mr = (100 - (100 / (1 + mr)))
 
     def money_flow_index(self) -> pd.Series:
+        """Money Flow Index (MFI)
+
+        Returns:
+            pandas.Series: New feature generated.
+        """
         mr = self.check_fillna(self._mr, value=50)
         return pd.Series(mr, name=f'mfi_{self._n}')
 
@@ -135,6 +145,11 @@ class TSIIndicator(IndicatorMixin):
         self._tsi *= 100
 
     def tsi(self) -> pd.Series:
+        """True strength index (TSI)
+
+        Returns:
+            pandas.Series: New feature generated.
+        """
         tsi = self.check_fillna(self._tsi, value=0)
         return pd.Series(tsi, name='tsi')
 
@@ -203,6 +218,11 @@ class UltimateOscillatorIndicator(IndicatorMixin):
                     / (self._ws + self._wm + self._wl))
 
     def uo(self) -> pd.Series:
+        """Ultimate Oscillator
+
+        Returns:
+            pandas.Series: New feature generated.
+        """
         uo = self.check_fillna(self._uo, value=50)
         return pd.Series(uo, name='uo')
 
@@ -247,10 +267,20 @@ class StochIndicator(IndicatorMixin):
         self._stoch_k = 100 * (self._close - smin) / (smax - smin)
 
     def stoch(self) -> pd.Series:
+        """Stochastic Oscillator
+
+        Returns:
+            pandas.Series: New feature generated.
+        """
         stoch_k = self.check_fillna(self._stoch_k, value=50)
         return pd.Series(stoch_k, name='stoch_k')
 
     def stoch_signal(self) -> pd.Series:
+        """Signal Stochastic Oscillator
+
+        Returns:
+            pandas.Series: New feature generated.
+        """
         stoch_d = self._stoch_k.rolling(self._d_n, min_periods=0).mean()
         stoch_d = self.check_fillna(stoch_d, value=50)
         return pd.Series(stoch_d, name='stoch_k_signal')
@@ -309,6 +339,11 @@ class KAMAIndicator(IndicatorMixin):
                     self._kama[i] = self._kama[i-1] + sc[i] * (close_values[i] - self._kama[i-1])
 
     def kama(self) -> pd.Series:
+        """Kaufman's Adaptive Moving Average (KAMA)
+
+        Returns:
+            pandas.Series: New feature generated.
+        """
         kama = pd.Series(self._kama, index=self._close.index)
         kama = self.check_fillna(kama, value=self._close)
         return pd.Series(kama, name='kama')
@@ -348,6 +383,11 @@ class ROCIndicator(IndicatorMixin):
         self._roc = ((self._close - self._close.shift(self._n)) / self._close.shift(self._n)) * 100
 
     def roc(self) -> pd.Series:
+        """Rate of Change (ROC)
+
+        Returns:
+            pandas.Series: New feature generated.
+        """
         roc = self.check_fillna(self._roc)
         return pd.Series(roc, name='roc')
 
@@ -399,6 +439,11 @@ class AwesomeOscillatorIndicator(IndicatorMixin):
         self._ao = mp.rolling(self._s, min_periods=0).mean() - mp.rolling(self._len, min_periods=0).mean()
 
     def ao(self) -> pd.Series:
+        """Awesome Oscillator
+
+        Returns:
+            pandas.Series: New feature generated.
+        """
         ao = self.check_fillna(self._ao, value=0)
         return pd.Series(ao, name='ao')
 
@@ -454,6 +499,11 @@ class WilliamsRIndicator(IndicatorMixin):
         self._wr = -100 * (hh - self._close) / (hh - ll)
 
     def wr(self) -> pd.Series:
+        """Williams %R
+
+        Returns:
+            pandas.Series: New feature generated.
+        """
         wr = self.check_fillna(self._wr, value=-50)
         return pd.Series(wr, name='wr')
 
