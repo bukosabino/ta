@@ -1,8 +1,8 @@
 ![CircleCI](https://img.shields.io/circleci/build/github/bukosabino/ta/master)
+[![Documentation Status](https://readthedocs.org/projects/technical-analysis-library-in-python/badge/?version=latest)](https://technical-analysis-library-in-python.readthedocs.io/en/latest/?badge=latest)
 [![Coverage Status](https://coveralls.io/repos/github/bukosabino/ta/badge.svg)](https://coveralls.io/github/bukosabino/ta)
 ![PyPI](https://img.shields.io/pypi/v/ta)
 ![PyPI - Downloads](https://img.shields.io/pypi/dm/ta)
-[![Documentation Status](https://readthedocs.org/projects/technical-analysis-library-in-python/badge/?version=latest)](https://technical-analysis-library-in-python.readthedocs.io/en/latest/?badge=latest)
 
 
 # Technical Analysis Library in Python
@@ -72,7 +72,7 @@ https://technical-analysis-library-in-python.readthedocs.io/en/latest/
 * Spanish: https://medium.com/datos-y-ciencia/biblioteca-de-an%C3%A1lisis-t%C3%A9cnico-sobre-series-temporales-financieras-para-machine-learning-con-cb28f9427d0
 
 
-# How to use (python >= 3.6)
+# How to use (python >= v3.6)
 
 ```sh
 $ pip install --upgrade ta

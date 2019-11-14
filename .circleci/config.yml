@@ -54,6 +54,25 @@ jobs:
             export COVERALLS_REPO_TOKEN=ec4rvBLjmegWPIejLkGXntb92iyWF7tnR
             coveralls
 
+  doc:
+    docker:
+      - image: circleci/python:3.7
+    working_directory: ~/ta
+    steps:
+      - checkout
+      - run:
+          name: Install dependencies
+          command: |
+            pip install --upgrade pip
+            python3 -m venv venv
+            . venv/bin/activate
+            sudo pip install -r requirements.txt
+      - run:
+          name: Build documentation
+          command: |
+            cd docs
+            make html
+
 workflows:
   version: 2
   build:
@@ -61,6 +80,7 @@ workflows:
       - test_py36
       # - test_py37
       - coverage
+      - doc
 
 
 ###########################################

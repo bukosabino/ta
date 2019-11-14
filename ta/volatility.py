@@ -19,17 +19,16 @@ class AverageTrueRange(IndicatorMixin):
     or large True Ranges.
 
     http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:average_true_range_atr
+
+    Args:
+        high(pandas.Series): dataset 'High' column.
+        low(pandas.Series): dataset 'Low' column.
+        close(pandas.Series): dataset 'Close' column.
+        n(int): n period.
+        fillna(bool): if True, fill nan values.
     """
 
     def __init__(self, high: pd.Series, low: pd.Series, close: pd.Series, n: int = 14, fillna: bool = False):
-        """
-        Args:
-            high(pandas.Series): dataset 'High' column.
-            low(pandas.Series): dataset 'Low' column.
-            close(pandas.Series): dataset 'Close' column.
-            n(int): n period.
-            fillna(bool): if True, fill nan values.
-        """
         self._high = high
         self._low = low
         self._close = close
@@ -52,19 +51,18 @@ class AverageTrueRange(IndicatorMixin):
 
 
 class BollingerBands(IndicatorMixin):
-    """ Bollinger Bands
+    """Bollinger Bands
 
-        https://en.wikipedia.org/wiki/Bollinger_Bands
+    https://school.stockcharts.com/doku.php?id=technical_indicators:bollinger_bands
+
+    Args:
+        close(pandas.Series): dataset 'Close' column.
+        n(int): n period.
+        ndev(int): n factor standard deviation
+        fillna(bool): if True, fill nan values.
     """
 
     def __init__(self, close: pd.Series, n: int = 20, ndev: int = 2, fillna: bool = False):
-        """
-        Args:
-            close(pandas.Series): dataset 'Close' column.
-            n(int): n period.
-            ndev(int): n factor standard deviation
-            fillna(bool): if True, fill nan values.
-        """
         self._close = close
         self._n = n
         self._ndev = ndev
@@ -101,18 +99,23 @@ class BollingerBands(IndicatorMixin):
 
 
 class KeltnerChannel(IndicatorMixin):
-    """
+    """KeltnerChannel
+
+    Keltner Channels are a trend following indicator used to identify reversals with channel breakouts and
+    channel direction. Channels can also be used to identify overbought and oversold levels when the trend
+    is flat.
+
+    https://school.stockcharts.com/doku.php?id=technical_indicators:keltner_channels
+
+    Args:
+        high(pandas.Series): dataset 'High' column.
+        low(pandas.Series): dataset 'Low' column.
+        close(pandas.Series): dataset 'Close' column.
+        n(int): n period.
+        fillna(bool): if True, fill nan values.
     """
 
     def __init__(self, high: pd.Series, low: pd.Series, close: pd.Series, n: int = 14, fillna: bool = False):
-        """
-        Args:
-            high(pandas.Series): dataset 'High' column.
-            low(pandas.Series): dataset 'Low' column.
-            close(pandas.Series): dataset 'Close' column.
-            n(int): n period.
-            fillna(bool): if True, fill nan values.
-        """
         self._high = high
         self._low = low
         self._close = close
@@ -155,16 +158,14 @@ class DonchianChannel(IndicatorMixin):
 
     https://www.investopedia.com/terms/d/donchianchannels.asp
 
+    Args:
+        close(pandas.Series): dataset 'Close' column.
+        n(int): n period.
+        ndev(int): n factor standard deviation
+        fillna(bool): if True, fill nan values.
     """
 
     def __init__(self, close: pd.Series, n: int = 20, fillna: bool = False):
-        """
-        Args:
-            close(pandas.Series): dataset 'Close' column.
-            n(int): n period.
-            ndev(int): n factor standard deviation
-            fillna(bool): if True, fill nan values.
-        """
         self._close = close
         self._n = n
         self._fillna = fillna
