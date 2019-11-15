@@ -101,7 +101,7 @@ class MACD(IndicatorMixin):
     def _run(self):
         self._emafast = ema(self._close, self._n_fast, self._fillna)
         self._emaslow = ema(self._close, self._n_slow, self._fillna)
-        self._macd = self._emafast - self._emaslow
+        self._macd = self._emaslow - self._emafast
         self._macd_signal = ema(self._macd, self._n_sign, self._fillna)
         self._macd_diff = self._macd - self._macd_signal
 
@@ -120,8 +120,9 @@ class MACD(IndicatorMixin):
         Returns:
             pandas.Series: New feature generated.
         """
-        macd_diff = self.check_fillna(self._macd_signal, value=0)
-        return pd.Series(macd_diff, name=f'MACD_sign_{self._n_fast}_{self._n_slow}')
+
+        macd_signal = self.check_fillna(self._macd_signal, value=0)
+        return pd.Series(macd_signal, name=f'MACD_sign_{self._n_fast}_{self._n_slow}')
 
     def macd_diff(self) -> pd.Series:
         """MACD Histogram
