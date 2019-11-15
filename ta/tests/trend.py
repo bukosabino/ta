@@ -1,9 +1,9 @@
 import pandas as pd
 
 from ta.tests.utils import TestIndicator
-from ta.trend import (ADXIndicator, CCIIndicator, VortexIndicator, adx,
-                      adx_neg, adx_pos, cci, vortex_indicator_neg,
-                      vortex_indicator_pos)
+from ta.trend import (MACD, ADXIndicator, CCIIndicator, VortexIndicator, adx,
+                      adx_neg, adx_pos, cci, macd, macd_diff, macd_signal,
+                      vortex_indicator_neg, vortex_indicator_pos)
 
 
 class TestADXIndicator(TestIndicator):
@@ -46,6 +46,44 @@ class TestADXIndicator(TestIndicator):
         result = ADXIndicator(
             high=self._df['High'], low=self._df['Low'], close=self._df['Close'], n=14,
             fillna=False).adx_neg()
+        pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
+
+
+class TestMACDIndicator(TestIndicator):
+    """
+    https://school.stockcharts.com/doku.php?id=technical_indicators:moving_average_convergence_divergence_macd
+    """
+
+    _filename = 'ta/tests/data/cs-macd.csv'
+
+    def test_macd(self):
+        target = 'MACD_line'
+        result = macd(close=self._df['Close'], n_slow=12, n_fast=26, fillna=False)
+        pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
+
+    def test_macd2(self):
+        target = 'MACD_line'
+        result = MACD(close=self._df['Close'], n_slow=12, n_fast=26, n_sign=9, fillna=False).macd()
+        pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
+
+    def test_macd_signal(self):
+        target = 'MACD_signal'
+        result = macd_signal(close=self._df['Close'], n_slow=12, n_fast=26, n_sign=9, fillna=False)
+        pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
+
+    def test_macd_signal2(self):
+        target = 'MACD_signal'
+        result = MACD(close=self._df['Close'], n_slow=12, n_fast=26, n_sign=9, fillna=False).macd_signal()
+        pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
+
+    def test_macd_diff(self):
+        target = 'MACD_diff'
+        result = macd_diff(close=self._df['Close'], n_slow=12, n_fast=26, n_sign=9, fillna=False)
+        pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
+
+    def test_macd_diff2(self):
+        target = 'MACD_diff'
+        result = MACD(close=self._df['Close'], n_slow=12, n_fast=26, n_sign=9, fillna=False).macd_diff()
         pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
 
 
