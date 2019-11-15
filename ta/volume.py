@@ -43,6 +43,11 @@ class AccDistIndexIndicator(IndicatorMixin):
         self._ad = ad.cumsum()
 
     def acc_dist_index(self) -> pd.Series:
+        """Accumulation/Distribution Index (ADI)
+
+        Returns:
+            pandas.Series: New feature generated.
+        """
         ad = self.check_fillna(self._ad, value=0)
         return pd.Series(ad, name='adi')
 
@@ -72,6 +77,11 @@ class OnBalanceVolumeIndicator(IndicatorMixin):
         self._obv = pd.Series(obv, index=self._close.index).cumsum()
 
     def on_balance_volume(self) -> pd.Series:
+        """On-balance volume (OBV)
+
+        Returns:
+            pandas.Series: New feature generated.
+        """
         obv = self.check_fillna(self._obv, value=0)
         return pd.Series(obv, name='obv')
 
@@ -109,6 +119,11 @@ class ChaikinMoneyFlowIndicator(IndicatorMixin):
         self._cmf = mfv.rolling(self._n, min_periods=0).sum() / self._volume.rolling(self._n, min_periods=0).sum()
 
     def chaikin_money_flow(self) -> pd.Series:
+        """Chaikin Money Flow (CMF)
+
+        Returns:
+            pandas.Series: New feature generated.
+        """
         cmf = self.check_fillna(self._cmf, value=0)
         return pd.Series(cmf, name='cmf')
 
@@ -143,6 +158,11 @@ class ForceIndexIndicator(IndicatorMixin):
         self._fi = ema(fi, self._n, fillna=self._fillna)
 
     def force_index(self) -> pd.Series:
+        """Force Index (FI)
+
+        Returns:
+            pandas.Series: New feature generated.
+        """
         fi = self.check_fillna(self._fi, value=0)
         return pd.Series(fi, name=f'fi_{self._n}')
 
@@ -176,10 +196,20 @@ class EaseOfMovementIndicator(IndicatorMixin):
         self._emv *= 100000000
 
     def ease_of_movement(self) -> pd.Series:
+        """Ease of movement (EoM, EMV)
+
+        Returns:
+            pandas.Series: New feature generated.
+        """
         emv = self.check_fillna(self._emv, value=0)
         return pd.Series(emv, name=f'eom_{self._n}')
 
     def sma_ease_of_movement(self) -> pd.Series:
+        """Signal Ease of movement (EoM, EMV)
+
+        Returns:
+            pandas.Series: New feature generated.
+        """
         emv = self._emv.rolling(self._n, min_periods=0).mean()
         emv = self.check_fillna(emv, value=0)
         return pd.Series(emv, name=f'sma_eom_{self._n}')
@@ -212,6 +242,11 @@ class VolumePriceTrendIndicator(IndicatorMixin):
         self._vpt = vpt.shift(1, fill_value=vpt.mean()) + vpt
 
     def volume_price_trend(self) -> pd.Series:
+        """Volume-price trend (VPT)
+
+        Returns:
+            pandas.Series: New feature generated.
+        """
         vpt = self.check_fillna(self._vpt, value=0)
         return pd.Series(vpt, name='vpt')
 
@@ -245,6 +280,11 @@ class NegativeVolumeIndexIndicator(IndicatorMixin):
                 self._nvi.iloc[i] = self._nvi.iloc[i - 1]
 
     def negative_volume_index(self) -> pd.Series:
+        """Negative Volume Index (NVI)
+
+        Returns:
+            pandas.Series: New feature generated.
+        """
         # IDEA: There shouldn't be any na; might be better to throw exception
         nvi = self.check_fillna(self._nvi, value=1000)
         return pd.Series(nvi, name='nvi')
