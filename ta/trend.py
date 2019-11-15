@@ -60,7 +60,7 @@ class MACD(IndicatorMixin):
     Is a trend-following momentum indicator that shows the relationship between
     two moving averages of prices.
 
-    https://en.wikipedia.org/wiki/MACD
+    https://school.stockcharts.com/doku.php?id=technical_indicators:moving_average_convergence_divergence_macd
 
     Args:
         close(pandas.Series): dataset 'Close' column.
