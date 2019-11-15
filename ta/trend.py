@@ -94,8 +94,8 @@ class MACD(IndicatorMixin):
         return pd.Series(macd, name=f'MACD_{self._n_fast}_{self._n_slow}')
 
     def macd_signal(self) -> pd.Series:
-        macd_diff = self.check_fillna(self._macd_signal, value=0)
-        return pd.Series(macd_diff, name=f'MACD_sign_{self._n_fast}_{self._n_slow}')
+        macd_signal = self.check_fillna(self._macd_signal, value=0)
+        return pd.Series(macd_signal, name=f'MACD_sign_{self._n_fast}_{self._n_slow}')
 
     def macd_diff(self) -> pd.Series:
         macd_diff = self.check_fillna(self._macd_diff, value=0)
