@@ -1,0 +1,7 @@
+numpy==1.16.2
+pandas==0.24.2
+scikit-learn==0.20.3
+
+# coverage test code
+coverage==4.5.4
+coveralls==1.8.2
