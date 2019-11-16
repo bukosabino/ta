@@ -3,3 +3,4 @@ pandas==0.24.2
 scikit-learn==0.20.3
 
 Sphinx==2.2.1
+sphinx-rtd-theme==0.4.3
