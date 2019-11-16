@@ -791,4 +791,4 @@ def roc(close, n=12, fillna=False):
         pandas.Series: New feature generated.
 
     """
-    return ROCIndicator(close=df[close], n=12, fillna=fillna).roc()
+    return ROCIndicator(close=close, n=12, fillna=fillna).roc()
