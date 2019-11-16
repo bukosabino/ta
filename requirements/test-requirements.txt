@@ -1,7 +1,0 @@
-numpy==1.16.2
-pandas==0.24.2
-scikit-learn==0.20.3
-
-# style code
-flake8==3.7.7
-isort==4.3.16
