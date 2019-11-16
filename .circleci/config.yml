@@ -66,7 +66,7 @@ jobs:
             pip install --upgrade pip
             python3 -m venv venv
             . venv/bin/activate
-            sudo pip install -r Sphinx==2.2.1
+            sudo pip install -r doc-requirements.txt
       - run:
           name: Build documentation
           command: |
