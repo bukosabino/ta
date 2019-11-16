@@ -66,7 +66,7 @@ jobs:
             pip install --upgrade pip
             python3 -m venv venv
             . venv/bin/activate
-            sudo pip install -r requirements.txt
+            sudo pip install -r Sphinx==2.2.1
       - run:
           name: Build documentation
           command: |
@@ -89,3 +89,4 @@ workflows:
 # circleci local execute --job test_py36
 # circleci local execute --job test_py37
 # circleci local execute --job coverage
+# circleci local execute --job doc
