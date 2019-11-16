@@ -1,6 +1,4 @@
-numpy==1.16.2
-pandas==0.24.2
-scikit-learn==0.20.3
+-r basic-requirements.txt
 
 # style code
 flake8==3.7.7
@@ -14,7 +12,3 @@ coveralls==1.8.2
 Sphinx==2.2.1
 sphinx-autobuild==0.7.1
 sphinx-rtd-theme==0.4.3
-
-# examples to use
-jupyterlab==1.2.3
-matplotlib==3.1.1

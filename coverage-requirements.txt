@@ -1,0 +1,5 @@
+-r basic-requirements.txt
+
+# coverage test code
+coverage==4.5.4
+coveralls==1.8.2
