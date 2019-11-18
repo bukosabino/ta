@@ -108,7 +108,7 @@ class BollingerBands(IndicatorMixin):
         return pd.Series(lband, name='lband')
 
     def bollinger_hband_indicator(self) -> pd.Series:
-        """Bollinger Channel Indicator Crossing Low Band
+        """Bollinger Channel Indicator Crossing High Band
 
         Returns:
             pandas.Series: New feature generated.
