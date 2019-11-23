@@ -1,3 +1,10 @@
+"""
+.. module:: wrapper
+   :synopsis: Wrapper of Indicators.
+
+.. moduleauthor:: Dario Lopez Padial (Bukosabino)
+"""
+
 import pandas as pd
 
 from ta.momentum import (AwesomeOscillatorIndicator, KAMAIndicator,
@@ -18,7 +25,7 @@ from ta.volume import (AccDistIndexIndicator, ChaikinMoneyFlowIndicator,
 
 
 def add_volume_ta(df: pd.DataFrame, high: str, low: str, close: str, volume: str,
-                  fillna: bool = False, colprefix: str = ""):
+                  fillna: bool = False, colprefix: str = "") -> pd.DataFrame:
     """Add volume technical analysis features to dataframe.
 
     Args:
@@ -67,7 +74,7 @@ def add_volume_ta(df: pd.DataFrame, high: str, low: str, close: str, volume: str
 
 
 def add_volatility_ta(df: pd.DataFrame, high: str, low: str, close: str,
-                      fillna: bool = False, colprefix: str = ""):
+                      fillna: bool = False, colprefix: str = "") -> pd.DataFrame:
     """Add volatility technical analysis features to dataframe.
 
     Args:
@@ -114,7 +121,7 @@ def add_volatility_ta(df: pd.DataFrame, high: str, low: str, close: str,
 
 
 def add_trend_ta(df: pd.DataFrame, high: str, low: str, close: str, fillna: bool = False,
-                 colprefix: str = ""):
+                 colprefix: str = "") -> pd.DataFrame:
     """Add trend technical analysis features to dataframe.
 
     Args:
@@ -196,7 +203,7 @@ def add_trend_ta(df: pd.DataFrame, high: str, low: str, close: str, fillna: bool
 
 
 def add_momentum_ta(df: pd.DataFrame, high: str, low: str, close: str, volume: str,
-                    fillna: bool = False, colprefix: str = ""):
+                    fillna: bool = False, colprefix: str = "") -> pd.DataFrame:
     """Add trend technical analysis features to dataframe.
 
     Args:
@@ -247,7 +254,7 @@ def add_momentum_ta(df: pd.DataFrame, high: str, low: str, close: str, volume: s
     return df
 
 
-def add_others_ta(df: pd.DataFrame, close: str, fillna: bool = False, colprefix: str = ""):
+def add_others_ta(df: pd.DataFrame, close: str, fillna: bool = False, colprefix: str = "") -> pd.DataFrame:
     """Add others analysis features to dataframe.
 
     Args:
@@ -272,7 +279,7 @@ def add_others_ta(df: pd.DataFrame, close: str, fillna: bool = False, colprefix:
 
 
 def add_all_ta_features(df: pd.DataFrame, open: str, high: str, low: str,
-                        close: str, volume: str, fillna: bool = False, colprefix: str = ""):
+                        close: str, volume: str, fillna: bool = False, colprefix: str = "") -> pd.DataFrame:
     """Add all technical analysis features to dataframe.
 
     Args:
