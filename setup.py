@@ -19,7 +19,12 @@ setup(
     download_url = 'https://github.com/bukosabino/ta/tarball/0.5.8',
     keywords = ['technical analysis', 'python3', 'pandas'],
     license='The MIT License (MIT)',
-    classifiers = [],
+    classifiers = [
+        'Intended Audience :: Financial and Insurance Industry',
+        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
+        'License :: OSI Approved :: MIT License'
+    ],
     project_urls = {
         'Documentation': 'https://technical-analysis-library-in-python.readthedocs.io/en/latest/',
         'Bug Reports': 'https://github.com/bukosabino/ta/issues',
