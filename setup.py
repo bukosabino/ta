@@ -20,4 +20,9 @@ setup(
     keywords = ['technical analysis', 'python3', 'pandas'],
     license='The MIT License (MIT)',
     classifiers = [],
+    project_urls = {
+        'Documentation': 'https://technical-analysis-library-in-python.readthedocs.io/en/latest/',
+        'Bug Reports': 'https://github.com/bukosabino/ta/issues',
+        'Source': 'https://github.com/bukosabino/ta',
+    },
 )
