@@ -133,7 +133,6 @@ df['bb_low_indicator'] = ta.volatility.bollinger_lband_indicator(
 $ git clone https://github.com/bukosabino/ta.git
 $ cd ta
 $ pip install -r play-requirements.txt
-$ make lint
 $ make test
 ```
 
