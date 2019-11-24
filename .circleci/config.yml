@@ -30,6 +30,11 @@ jobs:
     docker:
       - image: circleci/python:3.7
 
+  test_py38:
+    <<: *test-template
+    docker:
+      - image: circleci/python:3.8
+
   coverage:
     docker:
       - image: circleci/python:3.7
@@ -78,6 +83,7 @@ workflows:
   build:
     jobs:
       - test_py36
+      # - test_py38  # not working yet
       # - test_py37
       - coverage
       - doc
@@ -88,5 +94,6 @@ workflows:
 ###########################################
 # circleci local execute --job test_py36
 # circleci local execute --job test_py37
+# circleci local execute --job test_py38
 # circleci local execute --job coverage
 # circleci local execute --job doc
