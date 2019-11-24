@@ -1,4 +1,4 @@
--r basic-requirements.txt
+-r requirements-core.txt
 
 # doc
 Sphinx==2.2.1

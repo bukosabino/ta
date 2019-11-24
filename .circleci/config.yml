@@ -13,7 +13,7 @@ jobs:
             pip install --upgrade pip
             python3 -m venv venv
             . venv/bin/activate
-            pip install -r test-requirements.txt
+            pip install -r requirements-test.txt
       - run:
           name: Run linter
           command: |
@@ -47,7 +47,7 @@ jobs:
             pip install --upgrade pip
             python3 -m venv venv
             . venv/bin/activate
-            sudo pip install -r coverage-requirements.txt
+            sudo pip install -r requirements-coverage.txt
       - run:
           name: Run coverage
           command: |
@@ -71,7 +71,7 @@ jobs:
             pip install --upgrade pip
             python3 -m venv venv
             . venv/bin/activate
-            sudo pip install -r doc-requirements.txt
+            sudo pip install -r requirements-doc.txt
       - run:
           name: Build documentation
           command: |
