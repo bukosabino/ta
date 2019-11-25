@@ -164,3 +164,8 @@ Developed by Darío López Padial (aka Bukosabino) and [other contributors](http
 Please, let me know about any comment or feedback.
 
 Also, I am a software engineer freelance focused on Data Science using Python tools such as Pandas, Scikit-Learn, Backtrader, Zipline or Catalyst. Don't hesitate to contact me if you need something related with this library, Python, Technical Analysis, AlgoTrading, Machine Learning, etc.
+
+
+# Support
+
+Do you want to buy me a beer? You can do it using this [paypal](https://www.paypal.me/guau/3).
