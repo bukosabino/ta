@@ -168,4 +168,4 @@ Also, I am a software engineer freelance focused on Data Science using Python to
 
 # Support
 
-Do you want to buy me a beer? You can do it using this [paypal](https://www.paypal.me/guau/3).
+Do you want to buy me a beer? You can do it using [paypal](https://www.paypal.me/guau/3).
