@@ -3,7 +3,7 @@
 [![Coverage Status](https://coveralls.io/repos/github/bukosabino/ta/badge.svg)](https://coveralls.io/github/bukosabino/ta)
 ![PyPI](https://img.shields.io/pypi/v/ta)
 ![PyPI - Downloads](https://img.shields.io/pypi/dm/ta)
-
+[![Donate PayPal](https://img.shields.io/badge/Donate%20%24-PayPal-brightgreen.svg)](https://www.paypal.me/guau/3)
 
 # Technical Analysis Library in Python
 
