@@ -1,9 +1,11 @@
 import pandas as pd
 
 from ta.tests.utils import TestIndicator
-from ta.trend import (MACD, ADXIndicator, CCIIndicator, VortexIndicator, adx,
-                      adx_neg, adx_pos, cci, macd, macd_diff, macd_signal,
-                      vortex_indicator_neg, vortex_indicator_pos)
+from ta.trend import (MACD, ADXIndicator, CCIIndicator, PSARIndicator,
+                      VortexIndicator, adx, adx_neg, adx_pos, cci, macd,
+                      macd_diff, macd_signal, psar_down, psar_down_indicator,
+                      psar_up, psar_up_indicator, vortex_indicator_neg,
+                      vortex_indicator_pos)
 
 
 class TestADXIndicator(TestIndicator):
@@ -138,4 +140,36 @@ class TestVortexIndicator(TestIndicator):
         result = VortexIndicator(
             high=self._df['High'], low=self._df['Low'], close=self._df['Close'], n=14,
             fillna=False).vortex_indicator_neg()
+        pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
+
+
+class TestPSARIndicator(TestIndicator):
+    """
+    https://school.stockcharts.com/doku.php?id=technical_indicators:parabolic_sar
+    """
+
+    _filename = 'ta/tests/data/cs-psar.csv'
+
+    def test_psar_up(self):
+        target = 'psar_up'
+        result = psar_up(high=self._df['High'], low=self._df['Low'],
+                         close=self._df['Close'])
+        pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
+
+    def test_psar_down(self):
+        target = 'psar_down'
+        result = psar_down(high=self._df['High'], low=self._df['Low'],
+                           close=self._df['Close'])
+        pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
+
+    def test_psar_up_indicator(self):
+        target = 'psar_up_ind'
+        result = psar_up_indicator(high=self._df['High'], low=self._df['Low'],
+                                   close=self._df['Close'])
+        pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
+
+    def test_psar_down_indicator(self):
+        target = 'psar_down_ind'
+        result = psar_down_indicator(high=self._df['High'], low=self._df['Low'],
+                                     close=self._df['Close'])
         pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
