@@ -11,7 +11,7 @@ It is a Technical Analysis library to financial time series datasets (open, clos
 
 ![alt text](https://raw.githubusercontent.com/bukosabino/ta/master/doc/figure.png)
 
-The library has implemented 32 indicators:
+The library has implemented 33 indicators:
 
 #### Volume
 
@@ -41,6 +41,7 @@ The library has implemented 32 indicators:
 * Detrended Price Oscillator (DPO)
 * KST Oscillator (KST)
 * Ichimoku Kinkō Hyō (Ichimoku)
+* Parabolic Stop And Reverse (Parabolic SAR)
 
 #### Momentum
 
