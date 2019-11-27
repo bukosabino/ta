@@ -1,4 +1,4 @@
--r basic-requirements.txt
+-r requirements-core.txt
 
 # coverage test code
 coverage==4.5.4
