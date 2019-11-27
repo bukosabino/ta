@@ -41,6 +41,7 @@ The library has implemented 32 indicators:
 * Detrended Price Oscillator (DPO)
 * KST Oscillator (KST)
 * Ichimoku Kinkō Hyō (Ichimoku)
+* Parabolic Stop And Reverse (Parabolic SAR)
 
 #### Momentum
 
