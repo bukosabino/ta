@@ -34,14 +34,12 @@ class RSIIndicator(IndicatorMixin):
 
     def _run(self):
         diff = self._close.diff(1)
-        which_dn = diff < 0
-
-        up, dn = diff, diff*0
-        up[which_dn], dn[which_dn] = 0, -up[which_dn]
-
-        emaup = up.ewm(com=self._n-1, min_periods=0).mean()
-        emadn = dn.ewm(com=self._n-1, min_periods=0).mean()
-        self._rsi = 100 * emaup / (emaup + emadn)
+        up = diff.where(diff > 0, 0.0)
+        dn = -diff.where(diff < 0, 0.0)
+        emaup = up.ewm(alpha=1/self._n, min_periods=0, adjust=False).mean()
+        emadn = dn.ewm(alpha=1/self._n, min_periods=0, adjust=False).mean()
+        rs = emaup / emadn
+        self._rsi = np.where(emadn == 0, 100, 100-(100/(1+rs)))
 
     def rsi(self) -> pd.Series:
         """Relative Strength Index (RSI)
