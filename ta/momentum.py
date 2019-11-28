@@ -39,7 +39,7 @@ class RSIIndicator(IndicatorMixin):
         emaup = up.ewm(alpha=1/self._n, min_periods=0, adjust=False).mean()
         emadn = dn.ewm(alpha=1/self._n, min_periods=0, adjust=False).mean()
         rs = emaup / emadn
-        self._rsi = np.where(emadn == 0, 100, 100-(100/(1+rs)))
+        self._rsi = pd.Series(np.where(emadn == 0, 100, 100-(100/(1+rs))), index=self._close.index)
 
     def rsi(self) -> pd.Series:
         """Relative Strength Index (RSI)
