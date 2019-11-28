@@ -1,4 +1,4 @@
--r basic-requirements.txt
+-r requirements-core.txt
 
 # style code
 flake8==3.7.7

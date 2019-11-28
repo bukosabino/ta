@@ -15,7 +15,8 @@ from ta.others import (CumulativeReturnIndicator, DailyLogReturnIndicator,
                        DailyReturnIndicator)
 from ta.trend import (MACD, ADXIndicator, AroonIndicator, CCIIndicator,
                       DPOIndicator, EMAIndicator, IchimokuIndicator,
-                      KSTIndicator, MassIndex, TRIXIndicator, VortexIndicator)
+                      KSTIndicator, MassIndex, PSARIndicator, TRIXIndicator,
+                      VortexIndicator)
 from ta.volatility import (AverageTrueRange, BollingerBands, DonchianChannel,
                            KeltnerChannel)
 from ta.volume import (AccDistIndexIndicator, ChaikinMoneyFlowIndicator,
@@ -194,10 +195,18 @@ def add_trend_ta(df: pd.DataFrame, high: str, low: str, close: str, fillna: bool
     df[f'{colprefix}trend_visual_ichimoku_b'] = indicator.ichimoku_b()
 
     # Aroon Indicator
-    indicator = AroonIndicator(df[close], n=25, fillna=fillna)
+    indicator = AroonIndicator(close=df[close], n=25, fillna=fillna)
     df[f'{colprefix}trend_aroon_up'] = indicator.aroon_up()
     df[f'{colprefix}trend_aroon_down'] = indicator.aroon_down()
     df[f'{colprefix}trend_aroon_ind'] = indicator.aroon_indicator()
+
+    # PSAR Indicator
+    indicator = PSARIndicator(high=df[high], low=df[low], close=df[close], step=0.02, max_step=0.20, fillna=fillna)
+    df[f'{colprefix}trend_psar'] = indicator.psar()
+    df[f'{colprefix}trend_psar_up'] = indicator.psar_up()
+    df[f'{colprefix}trend_psar_down'] = indicator.psar_down()
+    df[f'{colprefix}trend_psar_up_indicator'] = indicator.psar_up_indicator()
+    df[f'{colprefix}trend_psar_down_indicator'] = indicator.psar_down_indicator()
 
     return df
 

@@ -3,7 +3,7 @@
 [![Coverage Status](https://coveralls.io/repos/github/bukosabino/ta/badge.svg)](https://coveralls.io/github/bukosabino/ta)
 ![PyPI](https://img.shields.io/pypi/v/ta)
 ![PyPI - Downloads](https://img.shields.io/pypi/dm/ta)
-
+[![Donate PayPal](https://img.shields.io/badge/Donate%20%24-PayPal-brightgreen.svg)](https://www.paypal.me/guau/3)
 
 # Technical Analysis Library in Python
 
@@ -68,8 +68,8 @@ https://technical-analysis-library-in-python.readthedocs.io/en/latest/
 
 # Motivation to use
 
-* English: https://towardsdatascience.com/technical-analysis-library-to-financial-datasets-with-pandas-python-4b2b390d3543
-* Spanish: https://medium.com/datos-y-ciencia/biblioteca-de-an%C3%A1lisis-t%C3%A9cnico-sobre-series-temporales-financieras-para-machine-learning-con-cb28f9427d0
+* [English](https://towardsdatascience.com/technical-analysis-library-to-financial-datasets-with-pandas-python-4b2b390d3543)
+* [Spanish](https://medium.com/datos-y-ciencia/biblioteca-de-an%C3%A1lisis-t%C3%A9cnico-sobre-series-temporales-financieras-para-machine-learning-con-cb28f9427d0)
 
 
 # How to use (python >= v3.6)
@@ -133,7 +133,6 @@ df['bb_low_indicator'] = ta.volatility.bollinger_lband_indicator(
 $ git clone https://github.com/bukosabino/ta.git
 $ cd ta
 $ pip install -r play-requirements.txt
-$ make lint
 $ make test
 ```
 
@@ -160,8 +159,13 @@ $ make test
 
 # Credits:
 
-Developed by Darío López Padial (aka Bukosabino) and other contributors: https://github.com/bukosabino/ta/graphs/contributors
+Developed by Darío López Padial (aka Bukosabino) and [other contributors](https://github.com/bukosabino/ta/graphs/contributors).
 
 Please, let me know about any comment or feedback.
 
 Also, I am a software engineer freelance focused on Data Science using Python tools such as Pandas, Scikit-Learn, Backtrader, Zipline or Catalyst. Don't hesitate to contact me if you need something related with this library, Python, Technical Analysis, AlgoTrading, Machine Learning, etc.
+
+
+# Support
+
+Do you want to buy me a beer? You can do it using [paypal](https://www.paypal.me/guau/3).
