@@ -1,5 +1,5 @@
-from ta.tests.momentum import TestRateOfChangeIndicator
-from ta.tests.pipeline_wrapper import TestTAFeaturesTransform
+from ta.tests.momentum import TestRateOfChangeIndicator, TestRSIIndicator
+# from ta.tests.pipeline_wrapper import TestTAFeaturesTransform
 from ta.tests.trend import (TestADXIndicator, TestCCIIndicator,
                             TestMACDIndicator, TestPSARIndicator,
                             TestVortexIndicator)
