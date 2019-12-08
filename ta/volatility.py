@@ -86,7 +86,7 @@ class BollingerBands(IndicatorMixin):
         Returns:
             pandas.Series: New feature generated.
         """
-        mavg = self.check_fillna(self._mavg, method='backfill')
+        mavg = self.check_fillna(self._mavg, value=-1)
         return pd.Series(mavg, name='mavg')
 
     def bollinger_hband(self) -> pd.Series:
@@ -95,7 +95,7 @@ class BollingerBands(IndicatorMixin):
         Returns:
             pandas.Series: New feature generated.
         """
-        hband = self.check_fillna(self._hband, method='backfill')
+        hband = self.check_fillna(self._hband, value=-1)
         return pd.Series(hband, name='hband')
 
     def bollinger_lband(self) -> pd.Series:
@@ -104,7 +104,7 @@ class BollingerBands(IndicatorMixin):
         Returns:
             pandas.Series: New feature generated.
         """
-        lband = self.check_fillna(self._lband, method='backfill')
+        lband = self.check_fillna(self._lband, value=-1)
         return pd.Series(lband, name='lband')
 
     def bollinger_hband_indicator(self) -> pd.Series:
@@ -166,7 +166,7 @@ class KeltnerChannel(IndicatorMixin):
         Returns:
             pandas.Series: New feature generated.
         """
-        tp = self.check_fillna(self._tp, method='backfill')
+        tp = self.check_fillna(self._tp, value=-1)
         return pd.Series(tp, name='mavg')
 
     def keltner_channel_hband(self) -> pd.Series:
@@ -175,7 +175,7 @@ class KeltnerChannel(IndicatorMixin):
         Returns:
             pandas.Series: New feature generated.
         """
-        tp = self.check_fillna(self._tp, method='backfill')
+        tp = self.check_fillna(self._tp, value=-1)
         return pd.Series(tp, name='kc_hband')
 
     def keltner_channel_lband(self) -> pd.Series:
@@ -184,7 +184,7 @@ class KeltnerChannel(IndicatorMixin):
         Returns:
             pandas.Series: New feature generated.
         """
-        tp_low = self.check_fillna(self._tp_low, method='backfill')
+        tp_low = self.check_fillna(self._tp_low, value=-1)
         return pd.Series(tp_low, name='kc_lband')
 
     def keltner_channel_hband_indicator(self) -> pd.Series:
@@ -236,7 +236,7 @@ class DonchianChannel(IndicatorMixin):
         Returns:
             pandas.Series: New feature generated.
         """
-        hband = self.check_fillna(self._hband, method='backfill')
+        hband = self.check_fillna(self._hband, value=-1)
         return pd.Series(hband, name='dchband')
 
     def donchian_channel_lband(self) -> pd.Series:
@@ -245,7 +245,7 @@ class DonchianChannel(IndicatorMixin):
         Returns:
             pandas.Series: New feature generated.
         """
-        lband = self.check_fillna(self._lband, method='backfill')
+        lband = self.check_fillna(self._lband, value=-1)
         return pd.Series(lband, name='dclband')
 
     def donchian_channel_hband_indicator(self) -> pd.Series:

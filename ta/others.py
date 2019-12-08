@@ -90,7 +90,7 @@ class CumulativeReturnIndicator(IndicatorMixin):
         Returns:
             pandas.Series: New feature generated.
         """
-        cr = self.check_fillna(self._cr, method='backfill')
+        cr = self.check_fillna(self._cr, value=-1)
         return pd.Series(cr, name='cum_ret')
 
 

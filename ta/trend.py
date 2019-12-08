@@ -274,7 +274,7 @@ class IchimokuIndicator(IndicatorMixin):
                       + self._low.rolling(self._n2, min_periods=0).min())
         spana = 0.5 * (conv + base)
         spana = spana.shift(self._n2, fill_value=spana.mean()) if self._visual else spana
-        spana = self.check_fillna(spana, method='backfill')
+        spana = self.check_fillna(spana, value=-1)
         return pd.Series(spana, name=f'ichimoku_a_{self._n1}_{self._n2}')
 
     def ichimoku_b(self) -> pd.Series:
@@ -286,7 +286,7 @@ class IchimokuIndicator(IndicatorMixin):
         spanb = 0.5 * (self._high.rolling(self._n3, min_periods=0).max()
                        + self._low.rolling(self._n3, min_periods=0).min())
         spanb = spanb.shift(self._n2, fill_value=spanb.mean()) if self._visual else spanb
-        spanb = self.check_fillna(spanb, method='backfill')
+        spanb = self.check_fillna(spanb, value=-1)
         return pd.Series(spanb, name=f'ichimoku_b_{self._n1}_{self._n2}')
 
 
@@ -749,7 +749,7 @@ class PSARIndicator(IndicatorMixin):
         Returns:
             pandas.Series: New feature generated.
         """
-        psar = self.check_fillna(self._psar, method='backfill')
+        psar = self.check_fillna(self._psar, value=-1)
         return pd.Series(psar, name='psar')
 
     def psar_up(self) -> pd.Series:
@@ -758,7 +758,7 @@ class PSARIndicator(IndicatorMixin):
         Returns:
             pandas.Series: New feature generated.
         """
-        psar_up = self.check_fillna(self._psar_up, method='backfill')
+        psar_up = self.check_fillna(self._psar_up, value=-1)
         return pd.Series(psar_up, name='psarup')
 
     def psar_down(self) -> pd.Series:
@@ -767,7 +767,7 @@ class PSARIndicator(IndicatorMixin):
         Returns:
             pandas.Series: New feature generated.
         """
-        psar_down = self.check_fillna(self._psar_down, method='backfill')
+        psar_down = self.check_fillna(self._psar_down, value=-1)
         return pd.Series(psar_down, name='psardown')
 
     def psar_up_indicator(self) -> pd.Series:
