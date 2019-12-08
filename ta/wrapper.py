@@ -9,8 +9,8 @@ import pandas as pd
 
 from ta.momentum import (AwesomeOscillatorIndicator, KAMAIndicator,
                          MFIIndicator, ROCIndicator, RSIIndicator,
-                         StochIndicator, TSIIndicator,
-                         UltimateOscillatorIndicator, WilliamsRIndicator)
+                         StochasticOscillator, TSIIndicator,
+                         UltimateOscillator, WilliamsRIndicator)
 from ta.others import (CumulativeReturnIndicator, DailyLogReturnIndicator,
                        DailyReturnIndicator)
 from ta.trend import (MACD, ADXIndicator, AroonIndicator, CCIIndicator,
@@ -238,12 +238,12 @@ def add_momentum_ta(df: pd.DataFrame, high: str, low: str, close: str, volume: s
     df[f'{colprefix}momentum_tsi'] = TSIIndicator(close=df[close], r=25, s=13, fillna=fillna).tsi()
 
     # Ultimate Oscillator
-    df[f'{colprefix}momentum_uo'] = UltimateOscillatorIndicator(
+    df[f'{colprefix}momentum_uo'] = UltimateOscillator(
         high=df[high], low=df[low], close=df[close], s=7, m=14, len=28, ws=4.0, wm=2.0, wl=1.0,
         fillna=fillna).uo()
 
     # Stoch Indicator
-    indicator = StochIndicator(high=df[high], low=df[low], close=df[close], n=14, d_n=3, fillna=fillna)
+    indicator = StochasticOscillator(high=df[high], low=df[low], close=df[close], n=14, d_n=3, fillna=fillna)
     df[f'{colprefix}momentum_stoch'] = indicator.stoch()
     df[f'{colprefix}momentum_stoch_signal'] = indicator.stoch_signal()
 

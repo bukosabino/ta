@@ -152,7 +152,7 @@ class TSIIndicator(IndicatorMixin):
         return pd.Series(tsi, name='tsi')
 
 
-class UltimateOscillatorIndicator(IndicatorMixin):
+class UltimateOscillator(IndicatorMixin):
     """Ultimate Oscillator
 
     Larry Williams' (1976) signal, a momentum oscillator designed to capture
@@ -225,7 +225,7 @@ class UltimateOscillatorIndicator(IndicatorMixin):
         return pd.Series(uo, name='uo')
 
 
-class StochIndicator(IndicatorMixin):
+class StochasticOscillator(IndicatorMixin):
     """Stochastic Oscillator
 
     Developed in the late 1950s by George Lane. The stochastic
@@ -233,7 +233,7 @@ class StochIndicator(IndicatorMixin):
     stock in relation to the high and low range of the price
     of a stock over a period of time, typically a 14-day period.
 
-    https://www.investopedia.com/terms/s/stochasticoscillator.asp
+    https://school.stockcharts.com/doku.php?id=technical_indicators:stochastic_oscillator_fast_slow_and_full
 
     Args:
         close(pandas.Series): dataset 'Close' column.
@@ -605,7 +605,7 @@ def uo(high, low, close, s=7, m=14, len=28, ws=4.0, wm=2.0, wl=1.0, fillna=False
         pandas.Series: New feature generated.
 
     """
-    return UltimateOscillatorIndicator(
+    return UltimateOscillator(
         high=high, low=low, close=close, s=7, m=14, len=28, ws=4.0, wm=2.0, wl=1.0, fillna=fillna).uo()
 
 
@@ -630,7 +630,7 @@ def stoch(high, low, close, n=14, fillna=False):
         pandas.Series: New feature generated.
     """
 
-    return StochIndicator(high=high, low=low, close=close, n=n, d_n=3, fillna=fillna).stoch()
+    return StochasticOscillator(high=high, low=low, close=close, n=n, d_n=3, fillna=fillna).stoch()
 
 
 def stoch_signal(high, low, close, n=14, d_n=3, fillna=False):
@@ -651,7 +651,7 @@ def stoch_signal(high, low, close, n=14, d_n=3, fillna=False):
     Returns:
         pandas.Series: New feature generated.
     """
-    return StochIndicator(high=high, low=low, close=close, n=n, d_n=d_n, fillna=fillna).stoch_signal()
+    return StochasticOscillator(high=high, low=low, close=close, n=n, d_n=d_n, fillna=fillna).stoch_signal()
 
 
 def wr(high, low, close, lbp=14, fillna=False):
