@@ -205,13 +205,13 @@ class UltimateOscillatorIndicator(IndicatorMixin):
         self._run()
 
     def _run(self):
-        min_l_or_pc = self._close.shift(1, fill_value=self._close.mean()).combine(self._low, min)
-        max_h_or_pc = self._close.shift(1, fill_value=self._close.mean()).combine(self._high, max)
+        min_l_or_pc = self._close.shift(1).combine(self._low, min)
+        max_h_or_pc = self._close.shift(1).combine(self._high, max)
         bp = self._close - min_l_or_pc
         tr = max_h_or_pc - min_l_or_pc
-        avg_s = bp.rolling(self._s, min_periods=0).sum() / tr.rolling(self._s, min_periods=0).sum()
-        avg_m = bp.rolling(self._m, min_periods=0).sum() / tr.rolling(self._m, min_periods=0).sum()
-        avg_l = bp.rolling(self._len, min_periods=0).sum() / tr.rolling(self._len, min_periods=0).sum()
+        avg_s = bp.rolling(self._s, min_periods=self._s).sum() / tr.rolling(self._s, min_periods=self._s).sum()
+        avg_m = bp.rolling(self._m, min_periods=self._m).sum() / tr.rolling(self._m, min_periods=self._m).sum()
+        avg_l = bp.rolling(self._len, min_periods=self._len).sum() / tr.rolling(self._len, min_periods=self._len).sum()
         self._uo = (100.0 * ((self._ws * avg_s) + (self._wm * avg_m) + (self._wl * avg_l))
                     / (self._ws + self._wm + self._wl))
 
