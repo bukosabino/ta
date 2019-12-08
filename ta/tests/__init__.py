@@ -1,5 +1,6 @@
 from ta.tests.momentum import (TestMFIIndicator, TestRateOfChangeIndicator,
-                               TestRSIIndicator)
+                               TestRSIIndicator,
+                               TestUltimateOscillatorIndicator)
 # from ta.tests.pipeline_wrapper import TestTAFeaturesTransform
 from ta.tests.trend import (TestADXIndicator, TestCCIIndicator,
                             TestMACDIndicator, TestPSARIndicator,
