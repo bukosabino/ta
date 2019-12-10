@@ -3,7 +3,8 @@ import unittest
 import pandas as pd
 
 from ta.momentum import (MFIIndicator, ROCIndicator, RSIIndicator,
-                         StochasticOscillator, UltimateOscillator, roc)
+                         StochasticOscillator, UltimateOscillator,
+                         WilliamsRIndicator, roc)
 from ta.tests.utils import TestIndicator
 
 
@@ -113,4 +114,25 @@ class TestStochasticOscillator(unittest.TestCase):
     def test_so_signal(self):
         target = 'SO_SIG'
         result = self._indicator.stoch_signal()
+        pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
+
+
+class TestWilliamsRIndicator(unittest.TestCase):
+    """
+    https://school.stockcharts.com/doku.php?id=technical_indicators:williams_r
+    """
+
+    _filename = 'ta/tests/data/cs-percentr.csv'
+
+    def setUp(self):
+        self._df = pd.read_csv(self._filename, sep=',')
+        self._indicator = WilliamsRIndicator(
+            high=self._df['High'], low=self._df['Low'], close=self._df['Close'], lbp=14, fillna=False)
+
+    def tearDown(self):
+        del(self._df)
+
+    def test_wr(self):
+        target = 'Williams_%R'
+        result = self._indicator.wr()
         pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
