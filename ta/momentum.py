@@ -470,7 +470,8 @@ class WilliamsRIndicator(IndicatorMixin):
     Highest High = highest high for the look-back period
     %R is multiplied by -100 correct the inversion and move the decimal.
 
-    From: https://www.investopedia.com/terms/w/williamsr.asp
+    https://school.stockcharts.com/doku.php?id=technical_indicators:williams_r
+
     The Williams %R oscillates from 0 to -100. When the indicator produces
     readings from 0 to -20, this indicates overbought market conditions. When
     readings are -80 to -100, it indicates oversold market conditions.
