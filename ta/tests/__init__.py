@@ -1,10 +1,11 @@
-from ta.tests.momentum import (TestMFIIndicator, TestRateOfChangeIndicator,
-                               TestRSIIndicator, TestStochasticOscillator,
+from ta.tests.momentum import (TestKAMA, TestMFIIndicator,
+                               TestRateOfChangeIndicator, TestRSIIndicator,
+                               TestStochasticOscillator,
                                TestUltimateOscillator, TestWilliamsRIndicator)
 from ta.tests.trend import (TestADXIndicator, TestCCIIndicator,
                             TestMACDIndicator, TestPSARIndicator,
                             TestVortexIndicator)
-from ta.tests.utils import TestGeneral
+# from ta.tests.utils import TestGeneral
 from ta.tests.volatility import TestAverageTrueRange, TestBollingerBands
 from ta.tests.volume import (TestAccDistIndexIndicator,
                              TestEaseOfMovementIndicator,

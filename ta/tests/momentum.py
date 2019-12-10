@@ -2,9 +2,9 @@ import unittest
 
 import pandas as pd
 
-from ta.momentum import (MFIIndicator, ROCIndicator, RSIIndicator,
-                         StochasticOscillator, UltimateOscillator,
-                         WilliamsRIndicator, roc)
+from ta.momentum import (KAMAIndicator, MFIIndicator, ROCIndicator,
+                         RSIIndicator, StochasticOscillator,
+                         UltimateOscillator, WilliamsRIndicator, roc)
 from ta.tests.utils import TestIndicator
 
 
@@ -135,4 +135,24 @@ class TestWilliamsRIndicator(unittest.TestCase):
     def test_wr(self):
         target = 'Williams_%R'
         result = self._indicator.wr()
+        pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
+
+
+class TestKAMA(unittest.TestCase):
+    """
+    https://school.stockcharts.com/doku.php?id=technical_indicators:kaufman_s_adaptive_moving_average
+    """
+
+    _filename = 'ta/tests/data/cs-kama.csv'
+
+    def setUp(self):
+        self._df = pd.read_csv(self._filename, sep=',')
+        self._indicator = KAMAIndicator(close=self._df['Close'], n=10, pow1=2, pow2=30, fillna=False)
+
+    def tearDown(self):
+        del(self._df)
+
+    def test_kama(self):
+        target = 'KAMA'
+        result = self._indicator.kama()
         pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
