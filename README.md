@@ -154,7 +154,6 @@ $ make test
 # In Progress:
 
 * automated tests for indicators.
-* coverage
 
 
 # TODO:
