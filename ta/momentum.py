@@ -49,7 +49,7 @@ class RSIIndicator(IndicatorMixin):
         Returns:
             pandas.Series: New feature generated.
         """
-        rsi = self.check_fillna(self._rsi, value=50)
+        rsi = self._check_fillna(self._rsi, value=50)
         return pd.Series(rsi, name='rsi')
 
 
@@ -112,7 +112,7 @@ class MFIIndicator(IndicatorMixin):
         Returns:
             pandas.Series: New feature generated.
         """
-        mr = self.check_fillna(self._mr, value=50)
+        mr = self._check_fillna(self._mr, value=50)
         return pd.Series(mr, name=f'mfi_{self._n}')
 
 
@@ -150,7 +150,7 @@ class TSIIndicator(IndicatorMixin):
         Returns:
             pandas.Series: New feature generated.
         """
-        tsi = self.check_fillna(self._tsi, value=0)
+        tsi = self._check_fillna(self._tsi, value=0)
         return pd.Series(tsi, name='tsi')
 
 
@@ -223,7 +223,7 @@ class UltimateOscillatorIndicator(IndicatorMixin):
         Returns:
             pandas.Series: New feature generated.
         """
-        uo = self.check_fillna(self._uo, value=50)
+        uo = self._check_fillna(self._uo, value=50)
         return pd.Series(uo, name='uo')
 
 
@@ -272,7 +272,7 @@ class StochIndicator(IndicatorMixin):
         Returns:
             pandas.Series: New feature generated.
         """
-        stoch_k = self.check_fillna(self._stoch_k, value=50)
+        stoch_k = self._check_fillna(self._stoch_k, value=50)
         return pd.Series(stoch_k, name='stoch_k')
 
     def stoch_signal(self) -> pd.Series:
@@ -282,7 +282,7 @@ class StochIndicator(IndicatorMixin):
             pandas.Series: New feature generated.
         """
         stoch_d = self._stoch_k.rolling(self._d_n, min_periods=0).mean()
-        stoch_d = self.check_fillna(stoch_d, value=50)
+        stoch_d = self._check_fillna(stoch_d, value=50)
         return pd.Series(stoch_d, name='stoch_k_signal')
 
 
@@ -345,7 +345,7 @@ class KAMAIndicator(IndicatorMixin):
             pandas.Series: New feature generated.
         """
         kama = pd.Series(self._kama, index=self._close.index)
-        kama = self.check_fillna(kama, value=self._close)
+        kama = self._check_fillna(kama, value=self._close)
         return pd.Series(kama, name='kama')
 
 
@@ -388,7 +388,7 @@ class ROCIndicator(IndicatorMixin):
         Returns:
             pandas.Series: New feature generated.
         """
-        roc = self.check_fillna(self._roc)
+        roc = self._check_fillna(self._roc)
         return pd.Series(roc, name='roc')
 
 
@@ -444,7 +444,7 @@ class AwesomeOscillatorIndicator(IndicatorMixin):
         Returns:
             pandas.Series: New feature generated.
         """
-        ao = self.check_fillna(self._ao, value=0)
+        ao = self._check_fillna(self._ao, value=0)
         return pd.Series(ao, name='ao')
 
 
@@ -504,7 +504,7 @@ class WilliamsRIndicator(IndicatorMixin):
         Returns:
             pandas.Series: New feature generated.
         """
-        wr = self.check_fillna(self._wr, value=-50)
+        wr = self._check_fillna(self._wr, value=-50)
         return pd.Series(wr, name='wr')
 
 

@@ -6,7 +6,7 @@ import pandas as pd
 
 class IndicatorMixin():
 
-    def check_fillna(self, serie: pd.Series, value: int = 0):
+    def _check_fillna(self, serie: pd.Series, value: int = 0):
         """Check if fillna flag is True.
 
         Args:
