@@ -34,14 +34,12 @@ class RSIIndicator(IndicatorMixin):
 
     def _run(self):
         diff = self._close.diff(1)
-        which_dn = diff < 0
-
-        up, dn = diff, diff*0
-        up[which_dn], dn[which_dn] = 0, -up[which_dn]
-
-        emaup = up.ewm(com=self._n-1, min_periods=0).mean()
-        emadn = dn.ewm(com=self._n-1, min_periods=0).mean()
-        self._rsi = 100 * emaup / (emaup + emadn)
+        up = diff.where(diff > 0, 0.0)
+        dn = -diff.where(diff < 0, 0.0)
+        emaup = up.ewm(alpha=1/self._n, min_periods=0, adjust=False).mean()
+        emadn = dn.ewm(alpha=1/self._n, min_periods=0, adjust=False).mean()
+        rs = emaup / emadn
+        self._rsi = pd.Series(np.where(emadn == 0, 100, 100-(100/(1+rs))), index=self._close.index)
 
     def rsi(self) -> pd.Series:
         """Relative Strength Index (RSI)
@@ -121,7 +119,7 @@ class TSIIndicator(IndicatorMixin):
 
     Shows both trend direction and overbought/oversold conditions.
 
-    https://en.wikipedia.org/wiki/True_strength_index
+    https://school.stockcharts.com/doku.php?id=technical_indicators:true_strength_index
 
     Args:
         close(pandas.Series): dataset 'Close' column.
@@ -138,9 +136,11 @@ class TSIIndicator(IndicatorMixin):
         self._run()
 
     def _run(self):
-        m = self._close - self._close.shift(1, fill_value=self._close.mean())
-        m1 = m.ewm(self._r).mean().ewm(self._s).mean()
-        m2 = abs(m).ewm(self._r).mean().ewm(self._s).mean()
+        m = self._close - self._close.shift(1)
+        m1 = m.ewm(span=self._r, min_periods=0, adjust=False).mean().ewm(
+            span=self._s, min_periods=0, adjust=False).mean()
+        m2 = abs(m).ewm(span=self._r, min_periods=0, adjust=False).mean().ewm(
+            span=self._s, min_periods=0, adjust=False).mean()
         self._tsi = m1 / m2
         self._tsi *= 100
 
@@ -154,7 +154,7 @@ class TSIIndicator(IndicatorMixin):
         return pd.Series(tsi, name='tsi')
 
 
-class UltimateOscillatorIndicator(IndicatorMixin):
+class UltimateOscillator(IndicatorMixin):
     """Ultimate Oscillator
 
     Larry Williams' (1976) signal, a momentum oscillator designed to capture
@@ -207,13 +207,13 @@ class UltimateOscillatorIndicator(IndicatorMixin):
         self._run()
 
     def _run(self):
-        min_l_or_pc = self._close.shift(1, fill_value=self._close.mean()).combine(self._low, min)
-        max_h_or_pc = self._close.shift(1, fill_value=self._close.mean()).combine(self._high, max)
+        min_l_or_pc = self._close.shift(1).combine(self._low, min)
+        max_h_or_pc = self._close.shift(1).combine(self._high, max)
         bp = self._close - min_l_or_pc
         tr = max_h_or_pc - min_l_or_pc
-        avg_s = bp.rolling(self._s, min_periods=0).sum() / tr.rolling(self._s, min_periods=0).sum()
-        avg_m = bp.rolling(self._m, min_periods=0).sum() / tr.rolling(self._m, min_periods=0).sum()
-        avg_l = bp.rolling(self._len, min_periods=0).sum() / tr.rolling(self._len, min_periods=0).sum()
+        avg_s = bp.rolling(self._s, min_periods=self._s).sum() / tr.rolling(self._s, min_periods=self._s).sum()
+        avg_m = bp.rolling(self._m, min_periods=self._m).sum() / tr.rolling(self._m, min_periods=self._m).sum()
+        avg_l = bp.rolling(self._len, min_periods=self._len).sum() / tr.rolling(self._len, min_periods=self._len).sum()
         self._uo = (100.0 * ((self._ws * avg_s) + (self._wm * avg_m) + (self._wl * avg_l))
                     / (self._ws + self._wm + self._wl))
 
@@ -227,7 +227,7 @@ class UltimateOscillatorIndicator(IndicatorMixin):
         return pd.Series(uo, name='uo')
 
 
-class StochIndicator(IndicatorMixin):
+class StochasticOscillator(IndicatorMixin):
     """Stochastic Oscillator
 
     Developed in the late 1950s by George Lane. The stochastic
@@ -235,7 +235,7 @@ class StochIndicator(IndicatorMixin):
     stock in relation to the high and low range of the price
     of a stock over a period of time, typically a 14-day period.
 
-    https://www.investopedia.com/terms/s/stochasticoscillator.asp
+    https://school.stockcharts.com/doku.php?id=technical_indicators:stochastic_oscillator_fast_slow_and_full
 
     Args:
         close(pandas.Series): dataset 'Close' column.
@@ -472,7 +472,8 @@ class WilliamsRIndicator(IndicatorMixin):
     Highest High = highest high for the look-back period
     %R is multiplied by -100 correct the inversion and move the decimal.
 
-    From: https://www.investopedia.com/terms/w/williamsr.asp
+    https://school.stockcharts.com/doku.php?id=technical_indicators:williams_r
+
     The Williams %R oscillates from 0 to -100. When the indicator produces
     readings from 0 to -20, this indicates overbought market conditions. When
     readings are -80 to -100, it indicates oversold market conditions.
@@ -607,7 +608,7 @@ def uo(high, low, close, s=7, m=14, len=28, ws=4.0, wm=2.0, wl=1.0, fillna=False
         pandas.Series: New feature generated.
 
     """
-    return UltimateOscillatorIndicator(
+    return UltimateOscillator(
         high=high, low=low, close=close, s=7, m=14, len=28, ws=4.0, wm=2.0, wl=1.0, fillna=fillna).uo()
 
 
@@ -632,7 +633,7 @@ def stoch(high, low, close, n=14, fillna=False):
         pandas.Series: New feature generated.
     """
 
-    return StochIndicator(high=high, low=low, close=close, n=n, d_n=3, fillna=fillna).stoch()
+    return StochasticOscillator(high=high, low=low, close=close, n=n, d_n=3, fillna=fillna).stoch()
 
 
 def stoch_signal(high, low, close, n=14, d_n=3, fillna=False):
@@ -653,7 +654,7 @@ def stoch_signal(high, low, close, n=14, d_n=3, fillna=False):
     Returns:
         pandas.Series: New feature generated.
     """
-    return StochIndicator(high=high, low=low, close=close, n=n, d_n=d_n, fillna=fillna).stoch_signal()
+    return StochasticOscillator(high=high, low=low, close=close, n=n, d_n=d_n, fillna=fillna).stoch_signal()
 
 
 def wr(high, low, close, lbp=14, fillna=False):

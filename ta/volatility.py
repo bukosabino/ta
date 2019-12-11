@@ -107,8 +107,18 @@ class BollingerBands(IndicatorMixin):
         lband = self._check_fillna(self._lband, value=-1)
         return pd.Series(lband, name='lband')
 
+    def bollinger_wband(self) -> pd.Series:
+        """Bollinger Channel Width Band
+
+        Returns:
+            pandas.Series: New feature generated.
+        """
+        wband = self._hband - self._lband
+        wband = self.check_fillna(wband, value=0)
+        return pd.Series(wband, name='bbiwband')
+
     def bollinger_hband_indicator(self) -> pd.Series:
-        """Bollinger Channel Indicator Crossing Low Band
+        """Bollinger Channel Indicator Crossing High Band
 
         Returns:
             pandas.Series: New feature generated.
