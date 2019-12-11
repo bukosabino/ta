@@ -5,7 +5,7 @@ import pandas as pd
 import ta
 
 # Load data
-df = pd.read_csv('../data/datas.csv', sep=',')
+df = pd.read_csv('../ta/tests/data/datas.csv', sep=',')
 
 # Clean nan values
 df = ta.utils.dropna(df)

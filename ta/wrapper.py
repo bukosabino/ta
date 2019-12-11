@@ -1,9 +1,16 @@
+"""
+.. module:: wrapper
+   :synopsis: Wrapper of Indicators.
+
+.. moduleauthor:: Dario Lopez Padial (Bukosabino)
+"""
+
 import pandas as pd
 
 from ta.momentum import (AwesomeOscillatorIndicator, KAMAIndicator,
                          MFIIndicator, ROCIndicator, RSIIndicator,
-                         StochIndicator, TSIIndicator,
-                         UltimateOscillatorIndicator, WilliamsRIndicator)
+                         StochasticOscillator, TSIIndicator,
+                         UltimateOscillator, WilliamsRIndicator)
 from ta.others import (CumulativeReturnIndicator, DailyLogReturnIndicator,
                        DailyReturnIndicator)
 from ta.trend import (MACD, ADXIndicator, AroonIndicator, CCIIndicator,
@@ -19,7 +26,7 @@ from ta.volume import (AccDistIndexIndicator, ChaikinMoneyFlowIndicator,
 
 
 def add_volume_ta(df: pd.DataFrame, high: str, low: str, close: str, volume: str,
-                  fillna: bool = False, colprefix: str = ""):
+                  fillna: bool = False, colprefix: str = "") -> pd.DataFrame:
     """Add volume technical analysis features to dataframe.
 
     Args:
@@ -68,7 +75,7 @@ def add_volume_ta(df: pd.DataFrame, high: str, low: str, close: str, volume: str
 
 
 def add_volatility_ta(df: pd.DataFrame, high: str, low: str, close: str,
-                      fillna: bool = False, colprefix: str = ""):
+                      fillna: bool = False, colprefix: str = "") -> pd.DataFrame:
     """Add volatility technical analysis features to dataframe.
 
     Args:
@@ -89,9 +96,10 @@ def add_volatility_ta(df: pd.DataFrame, high: str, low: str, close: str,
 
     # Bollinger Bands
     indicator_bb = BollingerBands(close=df[close], n=20, ndev=2, fillna=fillna)
+    df[f'{colprefix}volatility_bbm'] = indicator_bb.bollinger_mavg()
     df[f'{colprefix}volatility_bbh'] = indicator_bb.bollinger_hband()
     df[f'{colprefix}volatility_bbl'] = indicator_bb.bollinger_lband()
-    df[f'{colprefix}volatility_bbm'] = indicator_bb.bollinger_mavg()
+    df[f'{colprefix}volatility_bbw'] = indicator_bb.bollinger_wband()
     df[f'{colprefix}volatility_bbhi'] = indicator_bb.bollinger_hband_indicator()
     df[f'{colprefix}volatility_bbli'] = indicator_bb.bollinger_lband_indicator()
 
@@ -114,7 +122,7 @@ def add_volatility_ta(df: pd.DataFrame, high: str, low: str, close: str,
 
 
 def add_trend_ta(df: pd.DataFrame, high: str, low: str, close: str, fillna: bool = False,
-                 colprefix: str = ""):
+                 colprefix: str = "") -> pd.DataFrame:
     """Add trend technical analysis features to dataframe.
 
     Args:
@@ -130,7 +138,7 @@ def add_trend_ta(df: pd.DataFrame, high: str, low: str, close: str, fillna: bool
     """
 
     # MACD
-    indicator_macd = MACD(close=df[close], n_fast=12, n_slow=26, n_sign=9, fillna=fillna)
+    indicator_macd = MACD(close=df[close], n_slow=26, n_fast=12, n_sign=9, fillna=fillna)
     df[f'{colprefix}trend_macd'] = indicator_macd.macd()
     df[f'{colprefix}trend_macd_signal'] = indicator_macd.macd_signal()
     df[f'{colprefix}trend_macd_diff'] = indicator_macd.macd_diff()
@@ -204,7 +212,7 @@ def add_trend_ta(df: pd.DataFrame, high: str, low: str, close: str, fillna: bool
 
 
 def add_momentum_ta(df: pd.DataFrame, high: str, low: str, close: str, volume: str,
-                    fillna: bool = False, colprefix: str = ""):
+                    fillna: bool = False, colprefix: str = "") -> pd.DataFrame:
     """Add trend technical analysis features to dataframe.
 
     Args:
@@ -230,12 +238,12 @@ def add_momentum_ta(df: pd.DataFrame, high: str, low: str, close: str, volume: s
     df[f'{colprefix}momentum_tsi'] = TSIIndicator(close=df[close], r=25, s=13, fillna=fillna).tsi()
 
     # Ultimate Oscillator
-    df[f'{colprefix}momentum_uo'] = UltimateOscillatorIndicator(
+    df[f'{colprefix}momentum_uo'] = UltimateOscillator(
         high=df[high], low=df[low], close=df[close], s=7, m=14, len=28, ws=4.0, wm=2.0, wl=1.0,
         fillna=fillna).uo()
 
     # Stoch Indicator
-    indicator = StochIndicator(high=df[high], low=df[low], close=df[close], n=14, d_n=3, fillna=fillna)
+    indicator = StochasticOscillator(high=df[high], low=df[low], close=df[close], n=14, d_n=3, fillna=fillna)
     df[f'{colprefix}momentum_stoch'] = indicator.stoch()
     df[f'{colprefix}momentum_stoch_signal'] = indicator.stoch_signal()
 
@@ -255,7 +263,7 @@ def add_momentum_ta(df: pd.DataFrame, high: str, low: str, close: str, volume: s
     return df
 
 
-def add_others_ta(df: pd.DataFrame, close: str, fillna: bool = False, colprefix: str = ""):
+def add_others_ta(df: pd.DataFrame, close: str, fillna: bool = False, colprefix: str = "") -> pd.DataFrame:
     """Add others analysis features to dataframe.
 
     Args:
@@ -280,7 +288,7 @@ def add_others_ta(df: pd.DataFrame, close: str, fillna: bool = False, colprefix:
 
 
 def add_all_ta_features(df: pd.DataFrame, open: str, high: str, low: str,
-                        close: str, volume: str, fillna: bool = False, colprefix: str = ""):
+                        close: str, volume: str, fillna: bool = False, colprefix: str = "") -> pd.DataFrame:
     """Add all technical analysis features to dataframe.
 
     Args:
