@@ -1,6 +1,6 @@
-from ta.tests.momentum import (TestKAMA, TestMFIIndicator,
+from ta.tests.momentum import (TestKAMAIndicator, TestMFIIndicator,
                                TestRateOfChangeIndicator, TestRSIIndicator,
-                               TestStochasticOscillator,
+                               TestStochasticOscillator, TestTSIIndicator,
                                TestUltimateOscillator, TestWilliamsRIndicator)
 from ta.tests.trend import (TestADXIndicator, TestCCIIndicator,
                             TestMACDIndicator, TestPSARIndicator,

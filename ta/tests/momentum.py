@@ -3,7 +3,7 @@ import unittest
 import pandas as pd
 
 from ta.momentum import (KAMAIndicator, MFIIndicator, ROCIndicator,
-                         RSIIndicator, StochasticOscillator,
+                         RSIIndicator, StochasticOscillator, TSIIndicator,
                          UltimateOscillator, WilliamsRIndicator, roc)
 from ta.tests.utils import TestIndicator
 
@@ -138,7 +138,7 @@ class TestWilliamsRIndicator(unittest.TestCase):
         pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
 
 
-class TestKAMA(unittest.TestCase):
+class TestKAMAIndicator(unittest.TestCase):
     """
     https://school.stockcharts.com/doku.php?id=technical_indicators:kaufman_s_adaptive_moving_average
     """
@@ -156,3 +156,24 @@ class TestKAMA(unittest.TestCase):
         target = 'KAMA'
         result = self._indicator.kama()
         pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
+
+
+class TestTSIIndicator(unittest.TestCase):
+    """
+    https://school.stockcharts.com/doku.php?id=technical_indicators:true_strength_index
+    """
+
+    _filename = 'ta/tests/data/cs-tsi.csv'
+
+    def setUp(self):
+        self._df = pd.read_csv(self._filename, sep=',')
+        self._indicator = TSIIndicator(close=self._df['Close'], r=25, s=13, fillna=False)
+
+    def tearDown(self):
+        del(self._df)
+
+    def test_kama(self):
+        target = 'TSI'
+        result = self._indicator.tsi()
+        pd.testing.assert_series_equal(
+            self._df[target].tail(), result.tail(), check_names=False, check_less_precise=True)
