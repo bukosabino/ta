@@ -14,7 +14,6 @@ setup(
     install_requires=[
         'numpy',
         'pandas',
-        'scikit-learn'
     ],
     download_url = 'https://github.com/bukosabino/ta/tarball/0.5.9',
     keywords = ['technical analysis', 'python3', 'pandas'],
