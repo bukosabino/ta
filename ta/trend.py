@@ -87,8 +87,8 @@ class MACD(IndicatorMixin):
     """
     def __init__(self,
                  close: pd.Series,
-                 n_slow: int = 12,
-                 n_fast: int = 26,
+                 n_slow: int = 26,
+                 n_fast: int = 12,
                  n_sign: int = 9,
                  fillna: bool = False):
         self._close = close
@@ -101,7 +101,7 @@ class MACD(IndicatorMixin):
     def _run(self):
         self._emafast = ema(self._close, self._n_fast, self._fillna)
         self._emaslow = ema(self._close, self._n_slow, self._fillna)
-        self._macd = self._emaslow - self._emafast
+        self._macd = self._emafast - self._emaslow
         self._macd_signal = ema(self._macd, self._n_sign, self._fillna)
         self._macd_diff = self._macd - self._macd_signal
 
@@ -802,7 +802,7 @@ def ema_indicator(close, n=12, fillna=False):
     return EMAIndicator(close=close, n=n, fillna=fillna).ema_indicator()
 
 
-def macd(close, n_fast=12, n_slow=26, fillna=False):
+def macd(close, n_slow=26, n_fast=12, fillna=False):
     """Moving Average Convergence Divergence (MACD)
 
     Is a trend-following momentum indicator that shows the relationship between
@@ -822,7 +822,7 @@ def macd(close, n_fast=12, n_slow=26, fillna=False):
     return MACD(close=close, n_slow=n_slow, n_fast=n_fast, n_sign=9, fillna=fillna).macd()
 
 
-def macd_signal(close, n_fast=12, n_slow=26, n_sign=9, fillna=False):
+def macd_signal(close, n_slow=26, n_fast=12, n_sign=9, fillna=False):
     """Moving Average Convergence Divergence (MACD Signal)
 
     Shows EMA of MACD.
@@ -842,7 +842,7 @@ def macd_signal(close, n_fast=12, n_slow=26, n_sign=9, fillna=False):
     return MACD(close=close, n_slow=n_slow, n_fast=n_fast, n_sign=n_sign, fillna=fillna).macd_signal()
 
 
-def macd_diff(close, n_fast=12, n_slow=26, n_sign=9, fillna=False):
+def macd_diff(close, n_slow=26, n_fast=12, n_sign=9, fillna=False):
     """Moving Average Convergence Divergence (MACD Diff)
 
     Shows the relationship between MACD and MACD Signal.

@@ -138,7 +138,7 @@ def add_trend_ta(df: pd.DataFrame, high: str, low: str, close: str, fillna: bool
     """
 
     # MACD
-    indicator_macd = MACD(close=df[close], n_fast=12, n_slow=26, n_sign=9, fillna=fillna)
+    indicator_macd = MACD(close=df[close], n_slow=26, n_fast=12, n_sign=9, fillna=fillna)
     df[f'{colprefix}trend_macd'] = indicator_macd.macd()
     df[f'{colprefix}trend_macd_signal'] = indicator_macd.macd_signal()
     df[f'{colprefix}trend_macd_diff'] = indicator_macd.macd_diff()

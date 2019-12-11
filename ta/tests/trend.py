@@ -62,32 +62,32 @@ class TestMACDIndicator(TestIndicator):
 
     def test_macd(self):
         target = 'MACD_line'
-        result = macd(close=self._df['Close'], n_slow=12, n_fast=26, fillna=False)
+        result = macd(close=self._df['Close'], n_slow=26, n_fast=12, fillna=False)
         pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
 
     def test_macd2(self):
         target = 'MACD_line'
-        result = MACD(close=self._df['Close'], n_slow=12, n_fast=26, n_sign=9, fillna=False).macd()
+        result = MACD(close=self._df['Close'], n_slow=26, n_fast=12, n_sign=9, fillna=False).macd()
         pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
 
     def test_macd_signal(self):
         target = 'MACD_signal'
-        result = macd_signal(close=self._df['Close'], n_slow=12, n_fast=26, n_sign=9, fillna=False)
+        result = macd_signal(close=self._df['Close'], n_slow=26, n_fast=12, n_sign=9, fillna=False)
         pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
 
     def test_macd_signal2(self):
         target = 'MACD_signal'
-        result = MACD(close=self._df['Close'], n_slow=12, n_fast=26, n_sign=9, fillna=False).macd_signal()
+        result = MACD(close=self._df['Close'], n_slow=26, n_fast=12, n_sign=9, fillna=False).macd_signal()
         pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
 
     def test_macd_diff(self):
         target = 'MACD_diff'
-        result = macd_diff(close=self._df['Close'], n_slow=12, n_fast=26, n_sign=9, fillna=False)
+        result = macd_diff(close=self._df['Close'], n_slow=26, n_fast=12, n_sign=9, fillna=False)
         pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
 
     def test_macd_diff2(self):
         target = 'MACD_diff'
-        result = MACD(close=self._df['Close'], n_slow=12, n_fast=26, n_sign=9, fillna=False).macd_diff()
+        result = MACD(close=self._df['Close'], n_slow=26, n_fast=12, n_sign=9, fillna=False).macd_diff()
         pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
 
 
