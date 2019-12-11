@@ -119,7 +119,7 @@ class TSIIndicator(IndicatorMixin):
 
     Shows both trend direction and overbought/oversold conditions.
 
-    https://en.wikipedia.org/wiki/True_strength_index
+    https://school.stockcharts.com/doku.php?id=technical_indicators:true_strength_index
 
     Args:
         close(pandas.Series): dataset 'Close' column.
@@ -136,9 +136,11 @@ class TSIIndicator(IndicatorMixin):
         self._run()
 
     def _run(self):
-        m = self._close - self._close.shift(1, fill_value=self._close.mean())
-        m1 = m.ewm(self._r).mean().ewm(self._s).mean()
-        m2 = abs(m).ewm(self._r).mean().ewm(self._s).mean()
+        m = self._close - self._close.shift(1)
+        m1 = m.ewm(span=self._r, min_periods=0, adjust=False).mean().ewm(
+            span=self._s, min_periods=0, adjust=False).mean()
+        m2 = abs(m).ewm(span=self._r, min_periods=0, adjust=False).mean().ewm(
+            span=self._s, min_periods=0, adjust=False).mean()
         self._tsi = m1 / m2
         self._tsi *= 100
 
