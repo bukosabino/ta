@@ -114,7 +114,7 @@ class BollingerBands(IndicatorMixin):
             pandas.Series: New feature generated.
         """
         wband = self._hband - self._lband
-        wband = self.check_fillna(wband, value=0)
+        wband = self._check_fillna(wband, value=0)
         return pd.Series(wband, name='bbiwband')
 
     def bollinger_hband_indicator(self) -> pd.Series:
