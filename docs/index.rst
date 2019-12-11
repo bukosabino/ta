@@ -20,7 +20,25 @@ Installation (python >= v3.6)
 Examples
 ==================
 
-Adding all features:
+Example adding all features:
+
+.. code-block:: python
+
+    import pandas as pd
+    import ta
+
+    # Load datas
+    df = pd.read_csv('ta/tests/data/datas.csv', sep=',')
+
+    # Clean NaN values
+    df = ta.utils.dropna(df)
+
+    # Add ta features filling NaN values
+    df = ta.add_all_ta_features(
+        df, open="Open", high="High", low="Low", close="Close", volume="Volume_BTC", fillna=True)
+
+
+Example adding a particular feature:
 
 .. code-block:: python
 
@@ -28,34 +46,24 @@ Adding all features:
    import ta
 
    # Load datas
-   df = pd.read_csv('your-file.csv', sep=',')
+   df = pd.read_csv('ta/tests/data/datas.csv', sep=',')
 
-   # Clean nan values
+   # Clean NaN values
    df = ta.utils.dropna(df)
 
-   # Add ta features filling Nans values
-   df = ta.add_all_ta_features(df=df, open="Open", high="High", low="Low", close="Close", volume="Volume_BTC", fillna=True)
+   # Initialize Bollinger Bands Indicator
+   indicator_bb = ta.volatility.BollingerBands(close=df["Close"], n=20, ndev=2)
 
+   # Add Bollinger Bands features
+   df['bb_bbm'] = indicator_bb.bollinger_mavg()
+   df['bb_bbh'] = indicator_bb.bollinger_hband()
+   df['bb_bbl'] = indicator_bb.bollinger_lband()
 
-Adding individual features:
+   # Add Bollinger Band high indicator
+   df['bb_bbhi'] = indicator_bb.bollinger_hband_indicator()
 
-.. code-block:: python
-
-   import pandas as pd
-   import ta
-
-   # Load datas
-   df = pd.read_csv('your-file.csv', sep=',')
-
-   # Clean nan values
-   df = ta.utils.dropna(df)
-
-   # Add bollinger band high indicator filling Nans values
-   df['bb_high_indicator'] = ta.volatility.bollinger_hband_indicator(df["Close"], n=20, ndev=2, fillna=True)
-
-   # Add bollinger band low indicator filling Nans values
-   df['bb_low_indicator'] = ta.volatility.bollinger_lband_indicator(df["Close"], n=20, ndev=2, fillna=True)
-
+   # Add Bollinger Band low indicator
+   df['bb_bbli'] = indicator_bb.bollinger_lband_indicator()
 
 Motivation
 ==================

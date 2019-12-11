@@ -105,7 +105,7 @@ df = ta.add_all_ta_features(
 ```
 
 
-#### Example adding individual features
+#### Example adding particular feature
 
 ```python
 import pandas as pd
