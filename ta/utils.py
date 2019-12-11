@@ -6,14 +6,23 @@ import pandas as pd
 
 class IndicatorMixin():
 
-    def check_fillna(self, serie: pd.Series, method: str = '', value: int = 0):
-        """
+    def _check_fillna(self, serie: pd.Series, value: int = 0):
+        """Check if fillna flag is True.
+
+        Args:
+            serie(pandas.Series): dataset 'Close' column.
+            value(int): value to fill gaps; if -1 fill values using 'backfill' mode.
+
+        Returns:
+            pandas.Series: New feature generated.
         """
         if self._fillna:
             serie_output = serie.copy(deep=False)
             serie_output = serie.replace([np.inf, -np.inf], np.nan)
-            serie_output = serie_output.fillna(method='backfill') if method else serie_output.fillna(value)
-            return serie_output
+            if isinstance(value, int) and value == -1:
+                return serie_output.fillna(method='ffill').fillna(value=-1)
+            else:
+                return serie_output.fillna(method='ffill').fillna(value)
         else:
             return serie
 
@@ -21,8 +30,9 @@ class IndicatorMixin():
 def dropna(df):
     """Drop rows with "Nans" values
     """
-    df = df[df < math.exp(709)]  # big number
-    df = df[df != 0.0]
+    number_cols = df.select_dtypes('number').columns.to_list()
+    df[number_cols] = df[number_cols][df[number_cols] < math.exp(709)]  # big number
+    df[number_cols] = df[number_cols][df[number_cols] != 0.0]
     df = df.dropna()
     return df
 

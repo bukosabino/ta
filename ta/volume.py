@@ -47,7 +47,7 @@ class AccDistIndexIndicator(IndicatorMixin):
         Returns:
             pandas.Series: New feature generated.
         """
-        ad = self.check_fillna(self._ad, value=0)
+        ad = self._check_fillna(self._ad, value=0)
         return pd.Series(ad, name='adi')
 
 
@@ -81,7 +81,7 @@ class OnBalanceVolumeIndicator(IndicatorMixin):
         Returns:
             pandas.Series: New feature generated.
         """
-        obv = self.check_fillna(self._obv, value=0)
+        obv = self._check_fillna(self._obv, value=0)
         return pd.Series(obv, name='obv')
 
 
@@ -123,7 +123,7 @@ class ChaikinMoneyFlowIndicator(IndicatorMixin):
         Returns:
             pandas.Series: New feature generated.
         """
-        cmf = self.check_fillna(self._cmf, value=0)
+        cmf = self._check_fillna(self._cmf, value=0)
         return pd.Series(cmf, name='cmf')
 
 
@@ -162,7 +162,7 @@ class ForceIndexIndicator(IndicatorMixin):
         Returns:
             pandas.Series: New feature generated.
         """
-        fi = self.check_fillna(self._fi, value=0)
+        fi = self._check_fillna(self._fi, value=0)
         return pd.Series(fi, name=f'fi_{self._n}')
 
 
@@ -200,7 +200,7 @@ class EaseOfMovementIndicator(IndicatorMixin):
         Returns:
             pandas.Series: New feature generated.
         """
-        emv = self.check_fillna(self._emv, value=0)
+        emv = self._check_fillna(self._emv, value=0)
         return pd.Series(emv, name=f'eom_{self._n}')
 
     def sma_ease_of_movement(self) -> pd.Series:
@@ -210,7 +210,7 @@ class EaseOfMovementIndicator(IndicatorMixin):
             pandas.Series: New feature generated.
         """
         emv = self._emv.rolling(self._n, min_periods=0).mean()
-        emv = self.check_fillna(emv, value=0)
+        emv = self._check_fillna(emv, value=0)
         return pd.Series(emv, name=f'sma_eom_{self._n}')
 
 
@@ -246,7 +246,7 @@ class VolumePriceTrendIndicator(IndicatorMixin):
         Returns:
             pandas.Series: New feature generated.
         """
-        vpt = self.check_fillna(self._vpt, value=0)
+        vpt = self._check_fillna(self._vpt, value=0)
         return pd.Series(vpt, name='vpt')
 
 
@@ -285,7 +285,7 @@ class NegativeVolumeIndexIndicator(IndicatorMixin):
             pandas.Series: New feature generated.
         """
         # IDEA: There shouldn't be any na; might be better to throw exception
-        nvi = self.check_fillna(self._nvi, value=1000)
+        nvi = self._check_fillna(self._nvi, value=1000)
         return pd.Series(nvi, name='nvi')
 
 

@@ -47,7 +47,7 @@ class AroonIndicator(IndicatorMixin):
         Returns:
             pandas.Series: New feature generated.
         """
-        aroon_up = self.check_fillna(self._aroon_up, value=0)
+        aroon_up = self._check_fillna(self._aroon_up, value=0)
         return pd.Series(aroon_up, name=f'aroon_up_{self._n}')
 
     def aroon_down(self) -> pd.Series:
@@ -56,7 +56,7 @@ class AroonIndicator(IndicatorMixin):
         Returns:
             pandas.Series: New feature generated.
         """
-        aroon_down = self.check_fillna(self._aroon_down, value=0)
+        aroon_down = self._check_fillna(self._aroon_down, value=0)
         return pd.Series(aroon_down, name=f'aroon_down_{self._n}')
 
     def aroon_indicator(self) -> pd.Series:
@@ -66,7 +66,7 @@ class AroonIndicator(IndicatorMixin):
             pandas.Series: New feature generated.
         """
         aroon_diff = self._aroon_up - self._aroon_down
-        aroon_diff = self.check_fillna(aroon_diff, value=0)
+        aroon_diff = self._check_fillna(aroon_diff, value=0)
         return pd.Series(aroon_diff, name=f'aroon_ind_{self._n}')
 
 
@@ -111,7 +111,7 @@ class MACD(IndicatorMixin):
         Returns:
             pandas.Series: New feature generated.
         """
-        macd = self.check_fillna(self._macd, value=0)
+        macd = self._check_fillna(self._macd, value=0)
         return pd.Series(macd, name=f'MACD_{self._n_fast}_{self._n_slow}')
 
     def macd_signal(self) -> pd.Series:
@@ -121,7 +121,7 @@ class MACD(IndicatorMixin):
             pandas.Series: New feature generated.
         """
 
-        macd_signal = self.check_fillna(self._macd_signal, value=0)
+        macd_signal = self._check_fillna(self._macd_signal, value=0)
         return pd.Series(macd_signal, name=f'MACD_sign_{self._n_fast}_{self._n_slow}')
 
     def macd_diff(self) -> pd.Series:
@@ -130,7 +130,7 @@ class MACD(IndicatorMixin):
         Returns:
             pandas.Series: New feature generated.
         """
-        macd_diff = self.check_fillna(self._macd_diff, value=0)
+        macd_diff = self._check_fillna(self._macd_diff, value=0)
         return pd.Series(macd_diff, name=f'MACD_diff_{self._n_fast}_{self._n_slow}')
 
 
@@ -191,7 +191,7 @@ class TRIXIndicator(IndicatorMixin):
         Returns:
             pandas.Series: New feature generated.
         """
-        trix = self.check_fillna(self._trix, value=0)
+        trix = self._check_fillna(self._trix, value=0)
         return pd.Series(trix, name=f'trix_{self._n}')
 
 
@@ -233,7 +233,7 @@ class MassIndex(IndicatorMixin):
         Returns:
             pandas.Series: New feature generated.
         """
-        mass = self.check_fillna(self._mass, value=0)
+        mass = self._check_fillna(self._mass, value=0)
         return pd.Series(mass, name=f'mass_index_{self._n}_{self._n2}')
 
 
@@ -274,7 +274,7 @@ class IchimokuIndicator(IndicatorMixin):
                       + self._low.rolling(self._n2, min_periods=0).min())
         spana = 0.5 * (conv + base)
         spana = spana.shift(self._n2, fill_value=spana.mean()) if self._visual else spana
-        spana = self.check_fillna(spana, method='backfill')
+        spana = self._check_fillna(spana, value=-1)
         return pd.Series(spana, name=f'ichimoku_a_{self._n1}_{self._n2}')
 
     def ichimoku_b(self) -> pd.Series:
@@ -286,7 +286,7 @@ class IchimokuIndicator(IndicatorMixin):
         spanb = 0.5 * (self._high.rolling(self._n3, min_periods=0).max()
                        + self._low.rolling(self._n3, min_periods=0).min())
         spanb = spanb.shift(self._n2, fill_value=spanb.mean()) if self._visual else spanb
-        spanb = self.check_fillna(spanb, method='backfill')
+        spanb = self._check_fillna(spanb, value=-1)
         return pd.Series(spanb, name=f'ichimoku_b_{self._n1}_{self._n2}')
 
 
@@ -348,7 +348,7 @@ class KSTIndicator(IndicatorMixin):
         Returns:
             pandas.Series: New feature generated.
         """
-        kst = self.check_fillna(self._kst, value=0)
+        kst = self._check_fillna(self._kst, value=0)
         return pd.Series(kst, name='kst')
 
     def kst_sig(self) -> pd.Series:
@@ -359,7 +359,7 @@ class KSTIndicator(IndicatorMixin):
         Returns:
             pandas.Series: New feature generated.
         """
-        kst_sig = self.check_fillna(self._kst_sig, value=0)
+        kst_sig = self._check_fillna(self._kst_sig, value=0)
         return pd.Series(kst_sig, name='kst_sig')
 
     def kst_diff(self) -> pd.Series:
@@ -371,7 +371,7 @@ class KSTIndicator(IndicatorMixin):
             pandas.Series: New feature generated.
         """
         kst_diff = self._kst - self._kst_sig
-        kst_diff = self.check_fillna(kst_diff, value=0)
+        kst_diff = self._check_fillna(kst_diff, value=0)
         return pd.Series(kst_diff, name='kst_diff')
 
 
@@ -404,7 +404,7 @@ class DPOIndicator(IndicatorMixin):
         Returns:
             pandas.Series: New feature generated.
         """
-        dpo = self.check_fillna(self._dpo, value=0)
+        dpo = self._check_fillna(self._dpo, value=0)
         return pd.Series(dpo, name='dpo_'+str(self._n))
 
 
@@ -458,7 +458,7 @@ class CCIIndicator(IndicatorMixin):
         Returns:
             pandas.Series: New feature generated.
         """
-        cci = self.check_fillna(self._cci, value=0)
+        cci = self._check_fillna(self._cci, value=0)
         return pd.Series(cci, name='cci')
 
 
@@ -557,7 +557,7 @@ class ADXIndicator(IndicatorMixin):
         adx = np.concatenate((self._trs_initial, adx), axis=0)
         self._adx = pd.Series(data=adx, index=self._close.index)
 
-        adx = self.check_fillna(self._adx, value=20)
+        adx = self._check_fillna(self._adx, value=20)
         return pd.Series(adx, name='adx')
 
     def adx_pos(self) -> pd.Series:
@@ -570,7 +570,7 @@ class ADXIndicator(IndicatorMixin):
         for i in range(1, len(self._trs)-1):
             dip[i+self._n] = 100 * (self._dip[i]/self._trs[i])
 
-        adx_pos = self.check_fillna(pd.Series(dip, index=self._close.index), value=20)
+        adx_pos = self._check_fillna(pd.Series(dip, index=self._close.index), value=20)
         return pd.Series(adx_pos, name='adx_pos')
 
     def adx_neg(self) -> pd.Series:
@@ -583,7 +583,7 @@ class ADXIndicator(IndicatorMixin):
         for i in range(1, len(self._trs)-1):
             din[i+self._n] = 100 * (self._din[i]/self._trs[i])
 
-        adx_neg = self.check_fillna(pd.Series(din, index=self._close.index), value=20)
+        adx_neg = self._check_fillna(pd.Series(din, index=self._close.index), value=20)
         return pd.Series(adx_neg, name='adx_neg')
 
 
@@ -627,7 +627,7 @@ class VortexIndicator(IndicatorMixin):
         Returns:
             pandas.Series: New feature generated.
         """
-        vip = self.check_fillna(self._vip, value=1)
+        vip = self._check_fillna(self._vip, value=1)
         return pd.Series(vip, name='vip')
 
     def vortex_indicator_neg(self):
@@ -636,7 +636,7 @@ class VortexIndicator(IndicatorMixin):
         Returns:
             pandas.Series: New feature generated.
         """
-        vin = self.check_fillna(self._vin, value=1)
+        vin = self._check_fillna(self._vin, value=1)
         return pd.Series(vin, name='vin')
 
     def vortex_indicator_diff(self):
@@ -646,7 +646,7 @@ class VortexIndicator(IndicatorMixin):
             pandas.Series: New feature generated.
         """
         vid = self._vip - self._vin
-        vid = self.check_fillna(vid, value=0)
+        vid = self._check_fillna(vid, value=0)
         return pd.Series(vid, name='vid')
 
 
@@ -749,7 +749,7 @@ class PSARIndicator(IndicatorMixin):
         Returns:
             pandas.Series: New feature generated.
         """
-        psar = self.check_fillna(self._psar, method='backfill')
+        psar = self._check_fillna(self._psar, value=-1)
         return pd.Series(psar, name='psar')
 
     def psar_up(self) -> pd.Series:
@@ -758,7 +758,7 @@ class PSARIndicator(IndicatorMixin):
         Returns:
             pandas.Series: New feature generated.
         """
-        psar_up = self.check_fillna(self._psar_up, method='backfill')
+        psar_up = self._check_fillna(self._psar_up, value=-1)
         return pd.Series(psar_up, name='psarup')
 
     def psar_down(self) -> pd.Series:
@@ -767,7 +767,7 @@ class PSARIndicator(IndicatorMixin):
         Returns:
             pandas.Series: New feature generated.
         """
-        psar_down = self.check_fillna(self._psar_down, method='backfill')
+        psar_down = self._check_fillna(self._psar_down, value=-1)
         return pd.Series(psar_down, name='psardown')
 
     def psar_up_indicator(self) -> pd.Series:
