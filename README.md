@@ -79,7 +79,7 @@ https://technical-analysis-library-in-python.readthedocs.io/en/latest/
 $ pip install --upgrade ta
 ```
 
-To use this library you should have a financial time series dataset including “Timestamp”, “Open”, “High”, “Low”, “Close” and “Volume” columns.
+To use this library you should have a financial time series dataset including `Timestamp`, `Open`, `High`, `Low`, `Close` and `Volume` columns.
 
 You should clean or fill NaN values in your dataset before add technical analysis features.
 
