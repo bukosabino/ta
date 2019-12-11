@@ -4,7 +4,6 @@ setup.py
 ta/__init__.py
 ta/momentum.py
 ta/others.py
-ta/pipeline_wrapper.py
 ta/trend.py
 ta/utils.py
 ta/volatility.py
