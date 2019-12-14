@@ -131,6 +131,9 @@ df['bb_bbhi'] = indicator_bb.bollinger_hband_indicator()
 
 # Add Bollinger Band low indicator
 df['bb_bbli'] = indicator_bb.bollinger_lband_indicator()
+
+# Add width size Bollinger Bands
+df['bb_bbw'] = indicator_bb.bollinger_wband()
 ```
 
 
