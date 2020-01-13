@@ -286,6 +286,21 @@ class StochasticOscillator(IndicatorMixin):
         return pd.Series(stoch_d, name='stoch_k_signal')
 
 
+# preallocate empty array and assign slice by chrisaycock
+# https://stackoverflow.com/questions/30399534/shift-elements-in-a-numpy-array
+def shift(arr, num, fill_value=np.nan):
+    result = np.empty_like(arr)
+    if num > 0:
+        result[:num] = fill_value
+        result[num:] = arr[:-num]
+    elif num < 0:
+        result[num:] = fill_value
+        result[:num] = arr[-num:]
+    else:
+        result[:] = arr
+    return result
+
+
 class KAMAIndicator(IndicatorMixin):
     """Kaufman's Adaptive Moving Average (KAMA)
 
@@ -315,28 +330,21 @@ class KAMAIndicator(IndicatorMixin):
         self._run()
 
     def _run(self):
-        close_values = self._close.values
-        vol = pd.Series(abs(self._close - np.roll(self._close, 1)))
-
-        ER_num = abs(close_values - np.roll(close_values, self._n))
-        ER_den = vol.rolling(self._n).sum()
-        ER = ER_num / ER_den
-
-        sc = ((ER*(2.0/(self._pow1+1)-2.0/(self._pow2+1.0))+2/(self._pow2+1.0)) ** 2.0).values
+        np.seterr(divide='ignore', invalid='ignore')
+        fast = 2.0/(self._pow1+1.0)
+        slow = 2.0/(self._pow2+1.0)
+        price = self._close.values
+        direction = abs(price - shift(price, self._n, fill_value=price[0]))
+        volatility = pd.Series(abs(price - shift(price, 1, fill_value=price[0]))).rolling(self._n, min_periods=0).sum().values
+        sc = np.where(volatility==0, slow, slow + direction * (fast-slow) / volatility)
+        ssc = sc ** 2.0
 
         self._kama = np.zeros(sc.size)
         n = len(self._kama)
-        first_value = True
+        self._kama[0] = price[0]
 
-        for i in range(n):
-            if np.isnan(sc[i]):
-                self._kama[i] = np.nan
-            else:
-                if first_value:
-                    self._kama[i] = close_values[i]
-                    first_value = False
-                else:
-                    self._kama[i] = self._kama[i-1] + sc[i] * (close_values[i] - self._kama[i-1])
+        for i in range(1, n):
+            self._kama[i] = self._kama[i-1] + sc[i] * (price[i] - self._kama[i-1])
 
     def kama(self) -> pd.Series:
         """Kaufman's Adaptive Moving Average (KAMA)
