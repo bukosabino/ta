@@ -344,7 +344,7 @@ class KAMAIndicator(IndicatorMixin):
         self._kama[0] = price[0]
 
         for i in range(1, n):
-            self._kama[i] = self._kama[i-1] + sc[i] * (price[i] - self._kama[i-1])
+            self._kama[i] = self._kama[i-1] + ssc[i] * (price[i] - self._kama[i-1])
 
     def kama(self) -> pd.Series:
         """Kaufman's Adaptive Moving Average (KAMA)
