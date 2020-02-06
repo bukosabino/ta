@@ -120,6 +120,8 @@ class BollingerBands(IndicatorMixin):
     def bollinger_hband_indicator(self) -> pd.Series:
         """Bollinger Channel Indicator Crossing High Band (binary).
 
+        It returns 1, if close is higher than bollinger_hband. Else, it returns 0.
+
         Returns:
             pandas.Series: New feature generated.
         """
@@ -129,6 +131,8 @@ class BollingerBands(IndicatorMixin):
 
     def bollinger_lband_indicator(self) -> pd.Series:
         """Bollinger Channel Indicator Crossing Low Band (binary).
+
+        It returns 1, if close is lower than bollinger_lband. Else, it returns 0.
 
         Returns:
             pandas.Series: New feature generated.
@@ -198,7 +202,9 @@ class KeltnerChannel(IndicatorMixin):
         return pd.Series(tp_low, name='kc_lband')
 
     def keltner_channel_hband_indicator(self) -> pd.Series:
-        """Keltner Channel Indicator Crossing High Band
+        """Keltner Channel Indicator Crossing High Band (binary)
+
+        It returns 1, if close is higher than keltner_channel_hband. Else, it returns 0.
 
         Returns:
             pandas.Series: New feature generated.
@@ -208,7 +214,9 @@ class KeltnerChannel(IndicatorMixin):
         return pd.Series(hband, name='dcihband')
 
     def keltner_channel_lband_indicator(self) -> pd.Series:
-        """Keltner Channel Indicator Crossing Low Band
+        """Keltner Channel Indicator Crossing Low Band (binary)
+
+        It returns 1, if close is lower than keltner_channel_lband. Else, it returns 0.
 
         Returns:
             pandas.Series: New feature generated.
@@ -259,7 +267,9 @@ class DonchianChannel(IndicatorMixin):
         return pd.Series(lband, name='dclband')
 
     def donchian_channel_hband_indicator(self) -> pd.Series:
-        """Donchian Channel Indicator Crossing High Band
+        """Donchian Channel Indicator Crossing High Band (binary)
+
+        It returns 1, if close is higher than donchian_channel_hband. Else, it returns 0.
 
         Returns:
             pandas.Series: New feature generated.
@@ -269,7 +279,9 @@ class DonchianChannel(IndicatorMixin):
         return pd.Series(hband, name='dcihband')
 
     def donchian_channel_lband_indicator(self) -> pd.Series:
-        """Donchian Channel Indicator Crossing Low Band
+        """Donchian Channel Indicator Crossing Low Band (binary)
+
+        It returns 1, if close is lower than donchian_channel_lband. Else, it returns 0.
 
         Returns:
             pandas.Series: New feature generated.
