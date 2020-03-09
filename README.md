@@ -149,11 +149,9 @@ $ make test
 
 # Sponsor
 
-Thank you to [OpenSistemas](https://opensistemas.com)! It is because of your contribution that I am able to continue the development of this open source library.
-
-
 ![Logo OpenSistemas](doc/logo_neuroons_byOS_blue.png)
 
+Thank you to [OpenSistemas](https://opensistemas.com)! It is because of your contribution that I am able to continue the development of this open source library.
 
 
 # Based on:
