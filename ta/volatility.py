@@ -108,14 +108,28 @@ class BollingerBands(IndicatorMixin):
         return pd.Series(lband, name='lband')
 
     def bollinger_wband(self) -> pd.Series:
-        """Bollinger Channel Width Band
+        """Bollinger Channel Band Width
+
+        From: https://school.stockcharts.com/doku.php?id=technical_indicators:bollinger_band_width
 
         Returns:
             pandas.Series: New feature generated.
         """
-        wband = self._hband - self._lband
+        wband = ((self._hband - self._lband) / self._mavg) * 100
         wband = self._check_fillna(wband, value=0)
         return pd.Series(wband, name='bbiwband')
+
+    def bollinger_pband(self) -> pd.Series:
+        """Bollinger Channel Percentage Band
+
+        From: https://school.stockcharts.com/doku.php?id=technical_indicators:bollinger_band_perce
+
+        Returns:
+            pandas.Series: New feature generated.
+        """
+        pband = (self._close - self._lband) / (self._hband - self._lband)
+        pband = self._check_fillna(pband, value=0)
+        return pd.Series(pband, name='bbipband')
 
     def bollinger_hband_indicator(self) -> pd.Series:
         """Bollinger Channel Indicator Crossing High Band (binary).

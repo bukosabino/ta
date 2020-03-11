@@ -100,6 +100,7 @@ def add_volatility_ta(df: pd.DataFrame, high: str, low: str, close: str,
     df[f'{colprefix}volatility_bbh'] = indicator_bb.bollinger_hband()
     df[f'{colprefix}volatility_bbl'] = indicator_bb.bollinger_lband()
     df[f'{colprefix}volatility_bbw'] = indicator_bb.bollinger_wband()
+    df[f'{colprefix}volatility_bbp'] = indicator_bb.bollinger_pband()
     df[f'{colprefix}volatility_bbhi'] = indicator_bb.bollinger_hband_indicator()
     df[f'{colprefix}volatility_bbli'] = indicator_bb.bollinger_lband_indicator()
 
