@@ -9,7 +9,7 @@
 
 It is a Technical Analysis library to financial time series datasets (open, close, high, low, volume). You can use it to do feature engineering from financial datasets. It is builded on Pandas and Numpy.
 
-![alt text](https://raw.githubusercontent.com/bukosabino/ta/master/doc/figure.png)
+![Bollinger Bands graph example](https://raw.githubusercontent.com/bukosabino/ta/master/doc/figure.png)
 
 The library has implemented 33 indicators:
 
@@ -131,6 +131,9 @@ df['bb_bbhi'] = indicator_bb.bollinger_hband_indicator()
 
 # Add Bollinger Band low indicator
 df['bb_bbli'] = indicator_bb.bollinger_lband_indicator()
+
+# Add width size Bollinger Bands
+df['bb_bbw'] = indicator_bb.bollinger_wband()
 ```
 
 
@@ -144,6 +147,13 @@ $ make test
 ```
 
 
+# Sponsor
+
+Thank you to [OpenSistemas](https://opensistemas.com)! It is because of your contribution that I am able to continue the development of this library for open source.
+
+![Logo OpenSistemas](https://raw.githubusercontent.com/bukosabino/ta/master/doc/logo_neuroons_byOS_blue.png)
+
+
 # Based on:
 
 * https://en.wikipedia.org/wiki/Technical_analysis
@@ -154,13 +164,15 @@ $ make test
 
 # In Progress:
 
-* automated tests for indicators.
+* Automated tests for all the indicators.
 
 
 # TODO:
 
-* add [more technical analysis features](https://en.wikipedia.org/wiki/Technical_analysis).
-* use Dash/Streamlit to visualize features
+* Add [more technical analysis features](https://en.wikipedia.org/wiki/Technical_analysis).
+* Wrapper to get financial data.
+* Use of the Pandas multi-indexing techniques to calculate several indicators at the same time.
+* use Plotly/Streamlit to visualize features
 
 
 # Credits:
@@ -170,8 +182,3 @@ Developed by Darío López Padial (aka Bukosabino) and [other contributors](http
 Please, let me know about any comment or feedback.
 
 Also, I am a software engineer freelance focused on Data Science using Python tools such as Pandas, Scikit-Learn, Backtrader, Zipline or Catalyst. Don't hesitate to contact me if you need something related with this library, Python, Technical Analysis, AlgoTrading, Machine Learning, etc.
-
-
-# Support
-
-Do you want to buy me a beer? You can do it using [paypal](https://www.paypal.me/guau/3).
