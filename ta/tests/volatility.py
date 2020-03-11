@@ -61,6 +61,11 @@ class TestBollingerBands(unittest.TestCase):
         result = self._indicator.bollinger_wband()
         pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
 
+    def test_pband(self):
+        target = 'PercentageBand'
+        result = self._indicator.bollinger_pband()
+        pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
+
     def test_hband_indicator(self):
         target = 'CrossUp'
         result = self._indicator.bollinger_hband_indicator()
