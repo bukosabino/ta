@@ -609,10 +609,10 @@ def uo(high, low, close, s=7, m=14, len=28, ws=4.0, wm=2.0, wl=1.0, fillna=False
 
     """
     return UltimateOscillator(
-        high=high, low=low, close=close, s=7, m=14, len=28, ws=4.0, wm=2.0, wl=1.0, fillna=fillna).uo()
+        high=high, low=low, close=close, s=s, m=m, len=len, ws=ws, wm=wm, wl=wl, fillna=fillna).uo()
 
 
-def stoch(high, low, close, n=14, fillna=False):
+def stoch(high, low, close, n=14, d_n=3, fillna=False):
     """Stochastic Oscillator
 
     Developed in the late 1950s by George Lane. The stochastic
@@ -627,13 +627,14 @@ def stoch(high, low, close, n=14, fillna=False):
         low(pandas.Series): dataset 'Low' column.
         close(pandas.Series): dataset 'Close' column.
         n(int): n period.
+        d_n(int): sma period over stoch_k
         fillna(bool): if True, fill nan values.
 
     Returns:
         pandas.Series: New feature generated.
     """
 
-    return StochasticOscillator(high=high, low=low, close=close, n=n, d_n=3, fillna=fillna).stoch()
+    return StochasticOscillator(high=high, low=low, close=close, n=n, d_n=d_n, fillna=fillna).stoch()
 
 
 def stoch_signal(high, low, close, n=14, d_n=3, fillna=False):
@@ -737,7 +738,7 @@ def ao(high, low, s=5, len=34, fillna=False):
     Returns:
         pandas.Series: New feature generated.
     """
-    return AwesomeOscillatorIndicator(high=high, low=low, s=s, len=34, fillna=fillna).ao()
+    return AwesomeOscillatorIndicator(high=high, low=low, s=s, len=len, fillna=fillna).ao()
 
 
 def kama(close, n=10, pow1=2, pow2=30, fillna=False):
@@ -792,4 +793,4 @@ def roc(close, n=12, fillna=False):
         pandas.Series: New feature generated.
 
     """
-    return ROCIndicator(close=close, n=12, fillna=fillna).roc()
+    return ROCIndicator(close=close, n=n, fillna=fillna).roc()
