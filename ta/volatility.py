@@ -446,7 +446,7 @@ def keltner_channel_central(high, low, close, n=10, fillna=False):
     Returns:
         pandas.Series: New feature generated.
     """
-    indicator = KeltnerChannel(high=high, low=low, close=close, n=10, fillna=False)
+    indicator = KeltnerChannel(high=high, low=low, close=close, n=n, fillna=False)
     return indicator.keltner_channel_central()
 
 
@@ -467,7 +467,7 @@ def keltner_channel_hband(high, low, close, n=10, fillna=False):
     Returns:
         pandas.Series: New feature generated.
     """
-    indicator = KeltnerChannel(high=high, low=low, close=close, n=10, fillna=False)
+    indicator = KeltnerChannel(high=high, low=low, close=close, n=n, fillna=False)
     return indicator.keltner_channel_hband()
 
 
@@ -488,7 +488,7 @@ def keltner_channel_lband(high, low, close, n=10, fillna=False):
     Returns:
         pandas.Series: New feature generated.
     """
-    indicator = KeltnerChannel(high=high, low=low, close=close, n=10, fillna=False)
+    indicator = KeltnerChannel(high=high, low=low, close=close, n=n, fillna=False)
     return indicator.keltner_channel_lband()
 
 
@@ -510,7 +510,7 @@ def keltner_channel_hband_indicator(high, low, close, n=10, fillna=False):
     Returns:
         pandas.Series: New feature generated.
     """
-    indicator = KeltnerChannel(high=high, low=low, close=close, n=10, fillna=False)
+    indicator = KeltnerChannel(high=high, low=low, close=close, n=n, fillna=False)
     return indicator.keltner_channel_hband_indicator()
 
 
@@ -531,7 +531,7 @@ def keltner_channel_lband_indicator(high, low, close, n=10, fillna=False):
     Returns:
         pandas.Series: New feature generated.
     """
-    indicator = KeltnerChannel(high=high, low=low, close=close, n=10, fillna=False)
+    indicator = KeltnerChannel(high=high, low=low, close=close, n=n, fillna=False)
     return indicator.keltner_channel_lband_indicator()
 
 
