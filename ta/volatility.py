@@ -171,24 +171,38 @@ class KeltnerChannel(IndicatorMixin):
         close(pandas.Series): dataset 'Close' column.
         n(int): n period.
         fillna(bool): if True, fill nan values.
+        ov(bool): if True, use original version as the centerline (SMA of typical price)
+            if False, use EMA of close as the centerline. More info:
+            https://school.stockcharts.com/doku.php?id=technical_indicators:keltner_channels
     """
 
-    def __init__(self, high: pd.Series, low: pd.Series, close: pd.Series, n: int = 14, fillna: bool = False):
+    def __init__(
+            self, high: pd.Series, low: pd.Series, close: pd.Series, n: int = 14, fillna: bool = False,
+            ov: bool = True):
         self._high = high
         self._low = low
         self._close = close
         self._n = n
         self._fillna = fillna
+        self._ov = ov
         self._run()
 
     def _run(self):
-        self._tp = ((self._high + self._low + self._close) / 3.0).rolling(self._n, min_periods=0).mean()
-        self._tp_high = (((4 * self._high) - (2 * self._low) + self._close) / 3.0).rolling(
-            self._n, min_periods=0).mean()
-        self._tp_low = (((-2 * self._high) + (4 * self._low) + self._close) / 3.0).rolling(
-            self._n, min_periods=0).mean()
+        if self._ov:
+            self._tp = ((self._high + self._low + self._close) / 3.0).rolling(self._n, min_periods=0).mean()
+            self._tp_high = (((4 * self._high) - (2 * self._low) + self._close) / 3.0).rolling(
+                self._n, min_periods=0).mean()
+            self._tp_low = (((-2 * self._high) + (4 * self._low) + self._close) / 3.0).rolling(
+                self._n, min_periods=0).mean()
+        else:
+            self._tp = self._close.ewm(span=self._n, min_periods=0, adjust=False).mean()
+            atr = AverageTrueRange(
+                close=self._close, high=self._high, low=self._high, n=10, fillna=self._fillna
+            ).average_true_range()
+            self._tp_high = self._tp + (2*atr)
+            self._tp_low = self._tp - (2*atr)
 
-    def keltner_channel_central(self) -> pd.Series:
+    def keltner_channel_mband(self) -> pd.Series:
         """Keltner Channel Middle Band
 
         Returns:
@@ -203,7 +217,7 @@ class KeltnerChannel(IndicatorMixin):
         Returns:
             pandas.Series: New feature generated.
         """
-        tp = self._check_fillna(self._tp, value=-1)
+        tp = self._check_fillna(self._tp_high, value=-1)
         return pd.Series(tp, name='kc_hband')
 
     def keltner_channel_lband(self) -> pd.Series:
@@ -214,6 +228,26 @@ class KeltnerChannel(IndicatorMixin):
         """
         tp_low = self._check_fillna(self._tp_low, value=-1)
         return pd.Series(tp_low, name='kc_lband')
+
+    def keltner_channel_wband(self) -> pd.Series:
+        """Keltner Channel Band Width
+
+        Returns:
+            pandas.Series: New feature generated.
+        """
+        wband = ((self._tp_high - self._tp_low) / self._tp) * 100
+        wband = self._check_fillna(wband, value=0)
+        return pd.Series(wband, name='bbiwband')
+
+    def keltner_channel_pband(self) -> pd.Series:
+        """Keltner Channel Percentage Band
+
+        Returns:
+            pandas.Series: New feature generated.
+        """
+        pband = (self._close - self._tp_low) / (self._tp_high - self._tp_low)
+        pband = self._check_fillna(pband, value=0)
+        return pd.Series(pband, name='bbipband')
 
     def keltner_channel_hband_indicator(self) -> pd.Series:
         """Keltner Channel Indicator Crossing High Band (binary)
@@ -429,7 +463,7 @@ def bollinger_lband_indicator(close, n=20, ndev=2, fillna=False):
     return indicator.bollinger_hband_indicator()
 
 
-def keltner_channel_central(high, low, close, n=10, fillna=False):
+def keltner_channel_mband(high, low, close, n=10, fillna=False):
     """Keltner channel (KC)
 
     Showing a simple moving average line (central) of typical price.
@@ -447,7 +481,7 @@ def keltner_channel_central(high, low, close, n=10, fillna=False):
         pandas.Series: New feature generated.
     """
     indicator = KeltnerChannel(high=high, low=low, close=close, n=n, fillna=False)
-    return indicator.keltner_channel_central()
+    return indicator.keltner_channel_mband()
 
 
 def keltner_channel_hband(high, low, close, n=10, fillna=False):

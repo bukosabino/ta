@@ -109,9 +109,11 @@ def add_volatility_ta(df: pd.DataFrame, high: str, low: str, close: str,
 
     # Keltner Channel
     indicator_kc = KeltnerChannel(close=df[close], high=df[high], low=df[low], n=10, fillna=fillna)
-    df[f'{colprefix}volatility_kcc'] = indicator_kc.keltner_channel_central()
+    df[f'{colprefix}volatility_kcc'] = indicator_kc.keltner_channel_mband()
     df[f'{colprefix}volatility_kch'] = indicator_kc.keltner_channel_hband()
     df[f'{colprefix}volatility_kcl'] = indicator_kc.keltner_channel_lband()
+    df[f'{colprefix}volatility_kcw'] = indicator_kc.keltner_channel_wband()
+    df[f'{colprefix}volatility_kcp'] = indicator_kc.keltner_channel_pband()
     df[f'{colprefix}volatility_kchi'] = indicator_kc.keltner_channel_hband_indicator()
     df[f'{colprefix}volatility_kcli'] = indicator_kc.keltner_channel_lband_indicator()
 
