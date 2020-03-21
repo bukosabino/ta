@@ -23,7 +23,7 @@ class TestGeneral(TestIndicator):
         df = ta.utils.dropna(self._df)
 
         # Add all ta features filling nans values
-        ta.add_all_ta_features(self._df, "Open", "High", "Low", "Close", "Volume_BTC", fillna=True)
+        ta.add_all_ta_features(df, "Open", "High", "Low", "Close", "Volume_BTC", fillna=True)
 
         # Add all ta features not filling nans values
-        df = ta.add_all_ta_features(self._df, "Open", "High", "Low", "Close", "Volume_BTC", fillna=False)
+        df = ta.add_all_ta_features(df, "Open", "High", "Low", "Close", "Volume_BTC", fillna=False)
