@@ -30,6 +30,7 @@ class IndicatorMixin():
 def dropna(df):
     """Drop rows with "Nans" values
     """
+    df = df.copy()
     number_cols = df.select_dtypes('number').columns.to_list()
     df[number_cols] = df[number_cols][df[number_cols] < math.exp(709)]  # big number
     df[number_cols] = df[number_cols][df[number_cols] != 0.0]
