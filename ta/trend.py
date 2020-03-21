@@ -496,7 +496,7 @@ class ADXIndicator(IndicatorMixin):
         self._run()
 
     def _run(self):
-        assert self._n is not 0, "N may not be 0 and is %r" % n
+        assert self._n != 0, "N may not be 0 and is %r" % n
 
         cs = self._close.shift(1)
         pdm = get_min_max(self._high, cs, 'max')

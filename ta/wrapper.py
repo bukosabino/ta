@@ -8,9 +8,8 @@
 import pandas as pd
 
 from ta.momentum import (AwesomeOscillatorIndicator, KAMAIndicator,
-                         MFIIndicator, ROCIndicator, RSIIndicator,
-                         StochasticOscillator, TSIIndicator,
-                         UltimateOscillator, WilliamsRIndicator)
+                         ROCIndicator, RSIIndicator, StochasticOscillator,
+                         TSIIndicator, UltimateOscillator, WilliamsRIndicator)
 from ta.others import (CumulativeReturnIndicator, DailyLogReturnIndicator,
                        DailyReturnIndicator)
 from ta.trend import (MACD, ADXIndicator, AroonIndicator, CCIIndicator,
@@ -21,8 +20,8 @@ from ta.volatility import (AverageTrueRange, BollingerBands, DonchianChannel,
                            KeltnerChannel)
 from ta.volume import (AccDistIndexIndicator, ChaikinMoneyFlowIndicator,
                        EaseOfMovementIndicator, ForceIndexIndicator,
-                       NegativeVolumeIndexIndicator, OnBalanceVolumeIndicator,
-                       VolumePriceTrendIndicator)
+                       MFIIndicator, NegativeVolumeIndexIndicator,
+                       OnBalanceVolumeIndicator, VolumePriceTrendIndicator)
 
 
 def add_volume_ta(df: pd.DataFrame, high: str, low: str, close: str, volume: str,
@@ -57,6 +56,10 @@ def add_volume_ta(df: pd.DataFrame, high: str, low: str, close: str, volume: str
     # Force Index
     df[f'{colprefix}volume_fi'] = ForceIndexIndicator(
         close=df[close], volume=df[volume], n=13, fillna=fillna).force_index()
+
+    # Money Flow Indicator
+    df[f'{colprefix}momentum_mfi'] = MFIIndicator(
+        high=df[high], low=df[low], close=df[close], volume=df[volume], n=14, fillna=fillna).money_flow_index()
 
     # Ease of Movement
     indicator = EaseOfMovementIndicator(high=df[high], low=df[low], volume=df[volume], n=14, fillna=fillna)
@@ -106,9 +109,11 @@ def add_volatility_ta(df: pd.DataFrame, high: str, low: str, close: str,
 
     # Keltner Channel
     indicator_kc = KeltnerChannel(close=df[close], high=df[high], low=df[low], n=10, fillna=fillna)
-    df[f'{colprefix}volatility_kcc'] = indicator_kc.keltner_channel_central()
+    df[f'{colprefix}volatility_kcc'] = indicator_kc.keltner_channel_mband()
     df[f'{colprefix}volatility_kch'] = indicator_kc.keltner_channel_hband()
     df[f'{colprefix}volatility_kcl'] = indicator_kc.keltner_channel_lband()
+    df[f'{colprefix}volatility_kcw'] = indicator_kc.keltner_channel_wband()
+    df[f'{colprefix}volatility_kcp'] = indicator_kc.keltner_channel_pband()
     df[f'{colprefix}volatility_kchi'] = indicator_kc.keltner_channel_hband_indicator()
     df[f'{colprefix}volatility_kcli'] = indicator_kc.keltner_channel_lband_indicator()
 
@@ -230,10 +235,6 @@ def add_momentum_ta(df: pd.DataFrame, high: str, low: str, close: str, volume: s
 
     # Relative Strength Index (RSI)
     df[f'{colprefix}momentum_rsi'] = RSIIndicator(close=df[close], n=14, fillna=fillna).rsi()
-
-    # Money Flow Indicator
-    df[f'{colprefix}momentum_mfi'] = MFIIndicator(
-        high=df[high], low=df[low], close=df[close], volume=df[volume], n=14, fillna=fillna).money_flow_index()
 
     # TSI Indicator
     df[f'{colprefix}momentum_tsi'] = TSIIndicator(close=df[close], r=25, s=13, fillna=fillna).tsi()

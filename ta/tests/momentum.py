@@ -2,8 +2,8 @@ import unittest
 
 import pandas as pd
 
-from ta.momentum import (KAMAIndicator, MFIIndicator, ROCIndicator,
-                         RSIIndicator, StochasticOscillator, TSIIndicator,
+from ta.momentum import (KAMAIndicator, ROCIndicator, RSIIndicator,
+                         StochasticOscillator, TSIIndicator,
                          UltimateOscillator, WilliamsRIndicator, roc)
 from ta.tests.utils import TestIndicator
 
@@ -44,28 +44,6 @@ class TestRSIIndicator(unittest.TestCase):
     def test_rsi(self):
         target = 'RSI'
         result = self._indicator.rsi()
-        pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
-
-
-class TestMFIIndicator(unittest.TestCase):
-    """
-    https://school.stockcharts.com/doku.php?id=technical_indicators:money_flow_index_mfi
-    """
-
-    _filename = 'ta/tests/data/cs-mfi.csv'
-
-    def setUp(self):
-        self._df = pd.read_csv(self._filename, sep=',')
-        self._indicator = MFIIndicator(
-            high=self._df['High'], low=self._df['Low'], close=self._df['Close'], volume=self._df['Volume'], n=14,
-            fillna=False)
-
-    def tearDown(self):
-        del(self._df)
-
-    def test_mfi(self):
-        target = 'MFI'
-        result = self._indicator.money_flow_index()
         pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
 
 

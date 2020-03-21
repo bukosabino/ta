@@ -1,9 +1,12 @@
+import unittest
+
 import pandas as pd
 
 from ta.tests.utils import TestIndicator
 from ta.volume import (AccDistIndexIndicator, EaseOfMovementIndicator,
-                       ForceIndexIndicator, OnBalanceVolumeIndicator,
-                       acc_dist_index, ease_of_movement, force_index,
+                       ForceIndexIndicator, MFIIndicator,
+                       OnBalanceVolumeIndicator, acc_dist_index,
+                       ease_of_movement, force_index, money_flow_index,
                        on_balance_volume, sma_ease_of_movement)
 
 
@@ -98,4 +101,33 @@ class TestAccDistIndexIndicator(TestIndicator):
         result = AccDistIndexIndicator(
             high=self._df['High'], low=self._df['Low'], close=self._df['Close'], volume=self._df['Volume'],
             fillna=False).acc_dist_index()
+        pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
+
+
+class TestMFIIndicator(unittest.TestCase):
+    """
+    https://school.stockcharts.com/doku.php?id=technical_indicators:money_flow_index_mfi
+    """
+
+    _filename = 'ta/tests/data/cs-mfi.csv'
+
+    def setUp(self):
+        self._df = pd.read_csv(self._filename, sep=',')
+        self._indicator = MFIIndicator(
+            high=self._df['High'], low=self._df['Low'], close=self._df['Close'], volume=self._df['Volume'], n=14,
+            fillna=False)
+
+    def tearDown(self):
+        del(self._df)
+
+    def test_mfi(self):
+        target = 'MFI'
+        result = self._indicator.money_flow_index()
+        pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
+
+    def test_mfi2(self):
+        target = 'MFI'
+        result = money_flow_index(
+            high=self._df['High'], low=self._df['Low'], close=self._df['Close'], volume=self._df['Volume'], n=14,
+            fillna=False)
         pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
