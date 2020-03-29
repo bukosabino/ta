@@ -8,7 +8,7 @@
 import numpy as np
 import pandas as pd
 
-from ta.utils import IndicatorMixin, ema, get_min_max
+from ta.utils import IndicatorMixin, ema, get_min_max, sma
 
 
 class AroonIndicator(IndicatorMixin):
@@ -156,6 +156,30 @@ class EMAIndicator(IndicatorMixin):
         """
         ema_ = ema(self._close, self._n, self._fillna)
         return pd.Series(ema_, name=f'ema_{self._n}')
+
+
+class SMAIndicator(IndicatorMixin):
+    """SMA - Simple Moving Average
+
+    Args:
+        close(pandas.Series): dataset 'Close' column.
+        n(int): n period.
+        fillna(bool): if True, fill nan values.
+    """
+
+    def __init__(self, close: pd.Series, n: int, fillna: bool = False):
+        self._close = close
+        self._n = n
+        self._fillna = fillna
+
+    def sma_indicator(self) -> pd.Series:
+        """Simple Moving Average (SMA)
+
+        Returns:
+            pandas.Series: New feature generated.
+        """
+        sma_ = sma(self._close, self._n, self._fillna)
+        return pd.Series(sma_, name=f'sma_{self._n}')
 
 
 class TRIXIndicator(IndicatorMixin):
@@ -800,6 +824,15 @@ def ema_indicator(close, n=12, fillna=False):
         pandas.Series: New feature generated.
     """
     return EMAIndicator(close=close, n=n, fillna=fillna).ema_indicator()
+
+
+def sma_indicator(close, n=12, fillna=False):
+    """Simple Moving Average (SMA)
+
+    Returns:
+        pandas.Series: New feature generated.
+    """
+    return SMAIndicator(close=close, n=n, fillna=fillna).sma_indicator()
 
 
 def macd(close, n_slow=26, n_fast=12, fillna=False):
