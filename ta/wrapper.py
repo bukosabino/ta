@@ -14,8 +14,8 @@ from ta.others import (CumulativeReturnIndicator, DailyLogReturnIndicator,
                        DailyReturnIndicator)
 from ta.trend import (MACD, ADXIndicator, AroonIndicator, CCIIndicator,
                       DPOIndicator, EMAIndicator, IchimokuIndicator,
-                      KSTIndicator, MassIndex, PSARIndicator, TRIXIndicator,
-                      VortexIndicator)
+                      KSTIndicator, MassIndex, PSARIndicator, SMAIndicator,
+                      TRIXIndicator, VortexIndicator)
 from ta.volatility import (AverageTrueRange, BollingerBands, DonchianChannel,
                            KeltnerChannel)
 from ta.volume import (AccDistIndexIndicator, ChaikinMoneyFlowIndicator,
@@ -148,6 +148,12 @@ def add_trend_ta(df: pd.DataFrame, high: str, low: str, close: str, fillna: bool
     df[f'{colprefix}trend_macd'] = indicator_macd.macd()
     df[f'{colprefix}trend_macd_signal'] = indicator_macd.macd_signal()
     df[f'{colprefix}trend_macd_diff'] = indicator_macd.macd_diff()
+
+    # SMAs
+    df[f'{colprefix}trend_sma_fast'] = SMAIndicator(
+        close=df[close], n=12, fillna=fillna).sma_indicator()
+    df[f'{colprefix}trend_sma_slow'] = SMAIndicator(
+        close=df[close], n=26, fillna=fillna).sma_indicator()
 
     # EMAs
     df[f'{colprefix}trend_ema_fast'] = EMAIndicator(
