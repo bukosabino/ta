@@ -423,6 +423,42 @@ def bollinger_lband(close, n=20, ndev=2, fillna=False):
     return indicator.bollinger_lband()
 
 
+def bollinger_wband(close, n=20, ndev=2, fillna=False):
+    """Bollinger Channel Band Width
+
+    From: https://school.stockcharts.com/doku.php?id=technical_indicators:bollinger_band_width
+
+    Args:
+        close(pandas.Series): dataset 'Close' column.
+        n(int): n period.
+        ndev(int): n factor standard deviation
+        fillna(bool): if True, fill nan values.
+
+    Returns:
+        pandas.Series: New feature generated.
+    """
+    indicator = BollingerBands(close=close, n=n, ndev=ndev, fillna=fillna)
+    return indicator.bollinger_wband()
+
+
+def bollinger_pband(close, n=20, ndev=2, fillna=False):
+    """Bollinger Channel Percentage Band
+
+    From: https://school.stockcharts.com/doku.php?id=technical_indicators:bollinger_band_perce
+
+    Args:
+        close(pandas.Series): dataset 'Close' column.
+        n(int): n period.
+        ndev(int): n factor standard deviation
+        fillna(bool): if True, fill nan values.
+
+    Returns:
+        pandas.Series: New feature generated.
+    """
+    indicator = BollingerBands(close=close, n=n, ndev=ndev, fillna=fillna)
+    return indicator.bollinger_pband()
+
+
 def bollinger_hband_indicator(close, n=20, ndev=2, fillna=False):
     """Bollinger High Band Indicator
 
@@ -524,6 +560,44 @@ def keltner_channel_lband(high, low, close, n=10, fillna=False):
     """
     indicator = KeltnerChannel(high=high, low=low, close=close, n=n, fillna=False)
     return indicator.keltner_channel_lband()
+
+
+def keltner_channel_wband(high, low, close, n=10, fillna=False):
+    """Keltner Channel Band Width
+
+    https://en.wikipedia.org/wiki/Keltner_channel
+
+    Args:
+        high(pandas.Series): dataset 'High' column.
+        low(pandas.Series): dataset 'Low' column.
+        close(pandas.Series): dataset 'Close' column.
+        n(int): n period.
+        fillna(bool): if True, fill nan values.
+
+    Returns:
+        pandas.Series: New feature generated.
+    """
+    indicator = KeltnerChannel(high=high, low=low, close=close, n=n, fillna=False)
+    return indicator.keltner_channel_wband()
+
+
+def keltner_channel_pband(high, low, close, n=10, fillna=False):
+    """Keltner Channel Percentage Band
+
+    https://en.wikipedia.org/wiki/Keltner_channel
+
+    Args:
+        high(pandas.Series): dataset 'High' column.
+        low(pandas.Series): dataset 'Low' column.
+        close(pandas.Series): dataset 'Close' column.
+        n(int): n period.
+        fillna(bool): if True, fill nan values.
+
+    Returns:
+        pandas.Series: New feature generated.
+    """
+    indicator = KeltnerChannel(high=high, low=low, close=close, n=n, fillna=False)
+    return indicator.keltner_channel_pband()
 
 
 def keltner_channel_hband_indicator(high, low, close, n=10, fillna=False):
