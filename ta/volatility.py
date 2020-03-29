@@ -499,7 +499,7 @@ def bollinger_lband_indicator(close, n=20, ndev=2, fillna=False):
     return indicator.bollinger_lband_indicator()
 
 
-def keltner_channel_mband(high, low, close, n=10, fillna=False):
+def keltner_channel_mband(high, low, close, n=10, fillna=False, ov=True):
     """Keltner channel (KC)
 
     Showing a simple moving average line (central) of typical price.
@@ -516,11 +516,11 @@ def keltner_channel_mband(high, low, close, n=10, fillna=False):
     Returns:
         pandas.Series: New feature generated.
     """
-    indicator = KeltnerChannel(high=high, low=low, close=close, n=n, fillna=False)
+    indicator = KeltnerChannel(high=high, low=low, close=close, n=n, fillna=False, ov=ov)
     return indicator.keltner_channel_mband()
 
 
-def keltner_channel_hband(high, low, close, n=10, fillna=False):
+def keltner_channel_hband(high, low, close, n=10, fillna=False, ov=True):
     """Keltner channel (KC)
 
     Showing a simple moving average line (high) of typical price.
@@ -537,11 +537,11 @@ def keltner_channel_hband(high, low, close, n=10, fillna=False):
     Returns:
         pandas.Series: New feature generated.
     """
-    indicator = KeltnerChannel(high=high, low=low, close=close, n=n, fillna=False)
+    indicator = KeltnerChannel(high=high, low=low, close=close, n=n, fillna=False, ov=ov)
     return indicator.keltner_channel_hband()
 
 
-def keltner_channel_lband(high, low, close, n=10, fillna=False):
+def keltner_channel_lband(high, low, close, n=10, fillna=False, ov=True):
     """Keltner channel (KC)
 
     Showing a simple moving average line (low) of typical price.
@@ -558,11 +558,11 @@ def keltner_channel_lband(high, low, close, n=10, fillna=False):
     Returns:
         pandas.Series: New feature generated.
     """
-    indicator = KeltnerChannel(high=high, low=low, close=close, n=n, fillna=False)
+    indicator = KeltnerChannel(high=high, low=low, close=close, n=n, fillna=False, ov=ov)
     return indicator.keltner_channel_lband()
 
 
-def keltner_channel_wband(high, low, close, n=10, fillna=False):
+def keltner_channel_wband(high, low, close, n=10, fillna=False, ov=True):
     """Keltner Channel Band Width
 
     https://en.wikipedia.org/wiki/Keltner_channel
@@ -577,11 +577,11 @@ def keltner_channel_wband(high, low, close, n=10, fillna=False):
     Returns:
         pandas.Series: New feature generated.
     """
-    indicator = KeltnerChannel(high=high, low=low, close=close, n=n, fillna=False)
+    indicator = KeltnerChannel(high=high, low=low, close=close, n=n, fillna=False, ov=ov)
     return indicator.keltner_channel_wband()
 
 
-def keltner_channel_pband(high, low, close, n=10, fillna=False):
+def keltner_channel_pband(high, low, close, n=10, fillna=False, ov=True):
     """Keltner Channel Percentage Band
 
     https://en.wikipedia.org/wiki/Keltner_channel
@@ -596,11 +596,11 @@ def keltner_channel_pband(high, low, close, n=10, fillna=False):
     Returns:
         pandas.Series: New feature generated.
     """
-    indicator = KeltnerChannel(high=high, low=low, close=close, n=n, fillna=False)
+    indicator = KeltnerChannel(high=high, low=low, close=close, n=n, fillna=False, ov=ov)
     return indicator.keltner_channel_pband()
 
 
-def keltner_channel_hband_indicator(high, low, close, n=10, fillna=False):
+def keltner_channel_hband_indicator(high, low, close, n=10, fillna=False, ov=True):
     """Keltner Channel High Band Indicator (KC)
 
     Returns 1, if close is higher than keltner high band channel. Else,
@@ -618,11 +618,11 @@ def keltner_channel_hband_indicator(high, low, close, n=10, fillna=False):
     Returns:
         pandas.Series: New feature generated.
     """
-    indicator = KeltnerChannel(high=high, low=low, close=close, n=n, fillna=False)
+    indicator = KeltnerChannel(high=high, low=low, close=close, n=n, fillna=False, ov=ov)
     return indicator.keltner_channel_hband_indicator()
 
 
-def keltner_channel_lband_indicator(high, low, close, n=10, fillna=False):
+def keltner_channel_lband_indicator(high, low, close, n=10, fillna=False, ov=True):
     """Keltner Channel Low Band Indicator (KC)
 
     Returns 1, if close is lower than keltner low band channel. Else, return 0.
@@ -639,7 +639,7 @@ def keltner_channel_lband_indicator(high, low, close, n=10, fillna=False):
     Returns:
         pandas.Series: New feature generated.
     """
-    indicator = KeltnerChannel(high=high, low=low, close=close, n=n, fillna=False)
+    indicator = KeltnerChannel(high=high, low=low, close=close, n=n, fillna=False, ov=ov)
     return indicator.keltner_channel_lband_indicator()
 
 
