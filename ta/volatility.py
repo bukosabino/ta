@@ -460,7 +460,7 @@ def bollinger_lband_indicator(close, n=20, ndev=2, fillna=False):
         pandas.Series: New feature generated.
     """
     indicator = BollingerBands(close=close, n=n, ndev=ndev, fillna=fillna)
-    return indicator.bollinger_hband_indicator()
+    return indicator.bollinger_lband_indicator()
 
 
 def keltner_channel_mband(high, low, close, n=10, fillna=False):
