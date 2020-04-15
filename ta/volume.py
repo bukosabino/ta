@@ -616,6 +616,34 @@ def money_flow_index(high, low, close, volume, n=14, fillna=False):
     return indicator.money_flow_index()
 
 
+def volume_weighted_average_price(
+        high: pd.Series, low: pd.Series, close: pd.Series, volume: pd.Series, n: int = 14, fillna: bool = False):
+    """Volume Weighted Average Price (VWAP)
+
+    VWAP equals the dollar value of all trading periods divided
+    by the total trading volume for the current day.
+    The calculation starts when trading opens and ends when it closes.
+    Because it is good for the current trading day only,
+    intraday periods and data are used in the calculation.
+
+    https://school.stockcharts.com/doku.php?id=technical_indicators:vwap_intraday
+
+    Args:
+        high(pandas.Series): dataset 'High' column.
+        low(pandas.Series): dataset 'Low' column.
+        close(pandas.Series): dataset 'Close' column.
+        volume(pandas.Series): dataset 'Volume' column.
+        n(int): n period.
+        fillna(bool): if True, fill nan values.
+
+    Returns:
+        pandas.Series: New feature generated.
+    """
+
+    indicator = VolumeWeightedAveragePrice(high=high, low=low, close=close, volume=volume, n=n, fillna=fillna)
+    return indicator.volume_weighted_average_price()
+
+
 # TODO
 def put_call_ratio():
     """Put/Call ratio (PCR)
