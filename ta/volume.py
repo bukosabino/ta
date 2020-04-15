@@ -356,8 +356,26 @@ class MFIIndicator(IndicatorMixin):
 
 
 class VolumeWeightedAveragePrice(IndicatorMixin):
-    """
+    """Volume Weighted Average Price (VWAP)
 
+    VWAP equals the dollar value of all trading periods divided
+    by the total trading volume for the current day.
+    The calculation starts when trading opens and ends when it closes.
+    Because it is good for the current trading day only,
+    intraday periods and data are used in the calculation.
+
+    https://school.stockcharts.com/doku.php?id=technical_indicators:vwap_intraday
+
+    Args:
+        high(pandas.Series): dataset 'High' column.
+        low(pandas.Series): dataset 'Low' column.
+        close(pandas.Series): dataset 'Close' column.
+        volume(pandas.Series): dataset 'Volume' column.
+        n(int): n period.
+        fillna(bool): if True, fill nan values.
+
+    Returns:
+        pandas.Series: New feature generated.
     """
 
     def __init__(self,
@@ -390,8 +408,8 @@ class VolumeWeightedAveragePrice(IndicatorMixin):
 
         self.vwap = total_pv / total_volume
 
-    def money_flow_index(self) -> pd.Series:
-        """Money Flow Index (MFI)
+    def volume_weighted_average_price(self) -> pd.Series:
+        """Volume Weighted Average Price (VWAP)
 
         Returns:
             pandas.Series: New feature generated.
