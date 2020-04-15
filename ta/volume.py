@@ -355,6 +355,51 @@ class MFIIndicator(IndicatorMixin):
         return pd.Series(mr, name=f'mfi_{self._n}')
 
 
+class VolumeWeightedAveragePrice(IndicatorMixin):
+    """
+
+    """
+
+    def __init__(self,
+                 high: pd.Series,
+                 low: pd.Series,
+                 close: pd.Series,
+                 volume: pd.Series,
+                 n: int = 14,
+                 fillna: bool = False):
+        self._high = high
+        self._low = low
+        self._close = close
+        self._volume = volume
+        self._n = n
+        self._fillna = fillna
+        self._run()
+
+    def _run(self):
+        # 1 typical price
+        tp = (self._high + self._low + self._close) / 3.0
+
+        # 2 typical price * volume
+        pv = (tp * self._volume)
+
+        # 3 total price * volume
+        total_pv = pv.rolling(self._n, min_periods=self._n).sum()
+
+        # 4 total volume
+        total_volume = self._volume.rolling(self._n, min_periods=self._n).sum()
+
+        self.vwap = total_pv / total_volume
+
+    def money_flow_index(self) -> pd.Series:
+        """Money Flow Index (MFI)
+
+        Returns:
+            pandas.Series: New feature generated.
+        """
+        vwap = self._check_fillna(self.vwap)
+        return pd.Series(vwap, name=f'vwap_{self._n}')
+
+
 def acc_dist_index(high, low, close, volume, fillna=False):
     """Accumulation/Distribution Index (ADI)
 
