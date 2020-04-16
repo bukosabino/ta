@@ -11,7 +11,7 @@ It is a Technical Analysis library to financial time series datasets (open, clos
 
 ![Bollinger Bands graph example](doc/figure.png)
 
-The library has implemented 33 indicators:
+The library has implemented 34 indicators:
 
 #### Volume
 
@@ -22,6 +22,7 @@ The library has implemented 33 indicators:
 * Ease of Movement (EoM, EMV)
 * Volume-price Trend (VPT)
 * Negative Volume Index (NVI)
+* Volume Weighted Average Price (VWAP)
 
 #### Volatility
 
