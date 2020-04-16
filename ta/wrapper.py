@@ -21,7 +21,8 @@ from ta.volatility import (AverageTrueRange, BollingerBands, DonchianChannel,
 from ta.volume import (AccDistIndexIndicator, ChaikinMoneyFlowIndicator,
                        EaseOfMovementIndicator, ForceIndexIndicator,
                        MFIIndicator, NegativeVolumeIndexIndicator,
-                       OnBalanceVolumeIndicator, VolumePriceTrendIndicator)
+                       OnBalanceVolumeIndicator, VolumePriceTrendIndicator,
+                       VolumeWeightedAveragePrice)
 
 
 def add_volume_ta(df: pd.DataFrame, high: str, low: str, close: str, volume: str,
@@ -73,6 +74,11 @@ def add_volume_ta(df: pd.DataFrame, high: str, low: str, close: str, volume: str
     # Negative Volume Index
     df[f'{colprefix}volume_nvi'] = NegativeVolumeIndexIndicator(
         close=df[close], volume=df[volume], fillna=fillna).negative_volume_index()
+
+    # Volume Weighted Average Price
+    df[f'{colprefix}volume_vwap'] = VolumeWeightedAveragePrice(
+        high=df[high], low=df[low], close=df[close], volume=df[volume], n=14, fillna=fillna
+    ).volume_weighted_average_price()
 
     return df
 
