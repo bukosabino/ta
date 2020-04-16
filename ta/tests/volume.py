@@ -146,6 +146,5 @@ class TestVolumeWeightedAveragePrice(TestIndicator):
         result = volume_weighted_average_price(
             high=self._df['High'], low=self._df['Low'], close=self._df['Close'], volume=self._df['Volume'],
             fillna=False)
-        # print(result)
         self._df["vwap"] = result
         pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
