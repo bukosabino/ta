@@ -10,4 +10,5 @@ from ta.tests.volatility import TestAverageTrueRange, TestBollingerBands
 from ta.tests.volume import (TestAccDistIndexIndicator,
                              TestEaseOfMovementIndicator,
                              TestForceIndexIndicator, TestMFIIndicator,
-                             TestOnBalanceVolumeIndicator)
+                             TestOnBalanceVolumeIndicator,
+                             TestVolumeWeightedAveragePrice)

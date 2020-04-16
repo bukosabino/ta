@@ -7,7 +7,8 @@ from ta.volume import (AccDistIndexIndicator, EaseOfMovementIndicator,
                        ForceIndexIndicator, MFIIndicator,
                        OnBalanceVolumeIndicator, acc_dist_index,
                        ease_of_movement, force_index, money_flow_index,
-                       on_balance_volume, sma_ease_of_movement)
+                       on_balance_volume, sma_ease_of_movement,
+                       volume_weighted_average_price)
 
 
 class TestOnBalanceVolumeIndicator(TestIndicator):
@@ -130,4 +131,20 @@ class TestMFIIndicator(unittest.TestCase):
         result = money_flow_index(
             high=self._df['High'], low=self._df['Low'], close=self._df['Close'], volume=self._df['Volume'], n=14,
             fillna=False)
+        pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
+
+
+class TestVolumeWeightedAveragePrice(TestIndicator):
+    """
+    https://school.stockcharts.com/doku.php?id=technical_indicators:vwap_intraday
+    """
+
+    _filename = 'ta/tests/data/cs-vwap.csv'
+
+    def test_vwap(self):
+        target = 'vwap'
+        result = volume_weighted_average_price(
+            high=self._df['High'], low=self._df['Low'], close=self._df['Close'], volume=self._df['Volume'],
+            fillna=False)
+        self._df["vwap"] = result
         pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
