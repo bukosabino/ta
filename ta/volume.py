@@ -401,10 +401,10 @@ class VolumeWeightedAveragePrice(IndicatorMixin):
         pv = (tp * self._volume)
 
         # 3 total price * volume
-        total_pv = pv.rolling(self._n, min_periods=self._n).sum()
+        total_pv = pv.rolling(self._n, min_periods=1).sum()
 
         # 4 total volume
-        total_volume = self._volume.rolling(self._n, min_periods=self._n).sum()
+        total_volume = self._volume.rolling(self._n, min_periods=1).sum()
 
         self.vwap = total_pv / total_volume
 
