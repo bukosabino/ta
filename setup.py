@@ -14,6 +14,7 @@ setup(
     install_requires=[
         'numpy',
         'pandas',
+        "future-fstrings;python_version<'3.6'",
     ],
     download_url = 'https://github.com/bukosabino/ta/tarball/0.5.18',
     keywords = ['technical analysis', 'python3', 'pandas'],
