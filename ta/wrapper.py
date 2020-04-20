@@ -1,4 +1,3 @@
-# -*- coding: future_fstrings -*-
 """
 .. module:: wrapper
    :synopsis: Wrapper of Indicators.

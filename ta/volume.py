@@ -1,4 +1,3 @@
-# -*- coding: future_fstrings -*-
 """
 .. module:: volume
    :synopsis: Volume Indicators.

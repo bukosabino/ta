@@ -1,3 +1,2 @@
 numpy==1.17.4
 pandas==0.25.3
-future-fstrings==1.2.0

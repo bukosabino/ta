@@ -1,4 +1,3 @@
-# -*- coding: future_fstrings -*-
 """
 .. module:: momentum
    :synopsis: Momentum Indicators.
