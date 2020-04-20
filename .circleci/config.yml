@@ -25,6 +25,11 @@ jobs:
             . venv/bin/activate
             python -m unittest discover
 
+  test_py35:
+    <<: *test-template
+    docker:
+      - image: circleci/python:3.5
+
   test_py37:
     <<: *test-template
     docker:
@@ -85,6 +90,7 @@ workflows:
       - test_py36
       # - test_py38  # not working yet
       # - test_py37
+      - test_py35
       - coverage
       - doc
 
@@ -95,5 +101,6 @@ workflows:
 # circleci local execute --job test_py36
 # circleci local execute --job test_py37
 # circleci local execute --job test_py38
+# circleci local execute --job test_py35
 # circleci local execute --job coverage
 # circleci local execute --job doc
