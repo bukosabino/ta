@@ -1,3 +1,4 @@
+# -*- coding: future_fstrings -*-
 """
 .. module:: others
    :synopsis: Others Indicators.

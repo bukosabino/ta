@@ -271,7 +271,8 @@ def add_momentum_ta(df: pd.DataFrame, high: str, low: str, close: str, volume: s
         high=df[high], low=df[low], s=5, len=34, fillna=fillna).ao()
 
     # KAMA
-    df[f'{colprefix}momentum_kama'] = KAMAIndicator(close=df[close], n=10, pow1=2, pow2=30, fillna=fillna).kama()
+    df[f'{colprefix}momentum_kama'] = KAMAIndicator(
+        close=df[close], n=10, pow1=2, pow2=30, fillna=fillna).kama()
 
     # Rate Of Change
     df[f'{colprefix}momentum_roc'] = ROCIndicator(close=df[close], n=12, fillna=fillna).roc()
@@ -297,7 +298,8 @@ def add_others_ta(df: pd.DataFrame, close: str, fillna: bool = False, colprefix:
     df[f'{colprefix}others_dlr'] = DailyLogReturnIndicator(close=df[close], fillna=fillna).daily_log_return()
 
     # Cumulative Return
-    df[f'{colprefix}others_cr'] = CumulativeReturnIndicator(close=df[close], fillna=fillna).cumulative_return()
+    df[f'{colprefix}others_cr'] = CumulativeReturnIndicator(
+        close=df[close], fillna=fillna).cumulative_return()
 
     return df
 
