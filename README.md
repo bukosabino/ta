@@ -74,7 +74,7 @@ https://technical-analysis-library-in-python.readthedocs.io/en/latest/
 * [Spanish](https://medium.com/datos-y-ciencia/biblioteca-de-an%C3%A1lisis-t%C3%A9cnico-sobre-series-temporales-financieras-para-machine-learning-con-cb28f9427d0)
 
 
-# How to use (python >= v3.6)
+# How to use (Python 3)
 
 ```sh
 $ pip install --upgrade ta
