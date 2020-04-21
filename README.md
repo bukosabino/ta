@@ -93,8 +93,9 @@ You can visualize the features in [this notebook](https://github.com/bukosabino/
 
 ```python
 import pandas as pd
-from ta.utils import dropna
 from ta import add_all_ta_features
+from ta.utils import dropna
+
 
 # Load datas
 df = pd.read_csv('ta/tests/data/datas.csv', sep=',')
@@ -114,6 +115,7 @@ df = add_all_ta_features(
 import pandas as pd
 from ta.utils import dropna
 from ta.volatility import BollingerBands
+
 
 # Load datas
 df = pd.read_csv('ta/tests/data/datas.csv', sep=',')
