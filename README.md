@@ -93,16 +93,17 @@ You can visualize the features in [this notebook](https://github.com/bukosabino/
 
 ```python
 import pandas as pd
-import ta
+from ta.utils import dropna
+from ta import add_all_ta_features
 
 # Load datas
 df = pd.read_csv('ta/tests/data/datas.csv', sep=',')
 
 # Clean NaN values
-df = ta.utils.dropna(df)
+df = dropna(df)
 
 # Add all ta features
-df = ta.add_all_ta_features(
+df = add_all_ta_features(
     df, open="Open", high="High", low="Low", close="Close", volume="Volume_BTC")
 ```
 
@@ -111,16 +112,17 @@ df = ta.add_all_ta_features(
 
 ```python
 import pandas as pd
-import ta
+from ta.utils import dropna
+from ta.volatility import BollingerBands
 
 # Load datas
 df = pd.read_csv('ta/tests/data/datas.csv', sep=',')
 
 # Clean NaN values
-df = ta.utils.dropna(df)
+df = dropna(df)
 
 # Initialize Bollinger Bands Indicator
-indicator_bb = ta.volatility.BollingerBands(close=df["Close"], n=20, ndev=2)
+indicator_bb = BollingerBands(close=df["Close"], n=20, ndev=2)
 
 # Add Bollinger Bands features
 df['bb_bbm'] = indicator_bb.bollinger_mavg()
