@@ -170,6 +170,7 @@ class KeltnerChannel(IndicatorMixin):
         low(pandas.Series): dataset 'Low' column.
         close(pandas.Series): dataset 'Close' column.
         n(int): n period.
+        n_atr(int): n atr period. Only valid if ov param is False.
         fillna(bool): if True, fill nan values.
         ov(bool): if True, use original version as the centerline (SMA of typical price)
             if False, use EMA of close as the centerline. More info:
@@ -177,27 +178,29 @@ class KeltnerChannel(IndicatorMixin):
     """
 
     def __init__(
-            self, high: pd.Series, low: pd.Series, close: pd.Series, n: int = 14, fillna: bool = False,
-            ov: bool = True):
+            self, high: pd.Series, low: pd.Series, close: pd.Series, n: int = 20, n_atr: int = 10,
+            fillna: bool = False, ov: bool = True):
         self._high = high
         self._low = low
         self._close = close
         self._n = n
+        self._n_atr = n_atr
         self._fillna = fillna
         self._ov = ov
         self._run()
 
     def _run(self):
+        min_periods = 1 if self._fillna else self._n
         if self._ov:
-            self._tp = ((self._high + self._low + self._close) / 3.0).rolling(self._n, min_periods=0).mean()
+            self._tp = ((self._high + self._low + self._close) / 3.0).rolling(self._n, min_periods=min_periods).mean()
             self._tp_high = (((4 * self._high) - (2 * self._low) + self._close) / 3.0).rolling(
                 self._n, min_periods=0).mean()
             self._tp_low = (((-2 * self._high) + (4 * self._low) + self._close) / 3.0).rolling(
                 self._n, min_periods=0).mean()
         else:
-            self._tp = self._close.ewm(span=self._n, min_periods=0, adjust=False).mean()
+            self._tp = self._close.ewm(span=self._n, min_periods=min_periods, adjust=False).mean()
             atr = AverageTrueRange(
-                close=self._close, high=self._high, low=self._high, n=10, fillna=self._fillna
+                close=self._close, high=self._high, low=self._low, n=self._n_atr, fillna=self._fillna
             ).average_true_range()
             self._tp_high = self._tp + (2*atr)
             self._tp_low = self._tp - (2*atr)
@@ -533,147 +536,175 @@ def bollinger_lband_indicator(close, n=20, ndev=2, fillna=False):
     return indicator.bollinger_lband_indicator()
 
 
-def keltner_channel_mband(high, low, close, n=10, fillna=False, ov=True):
+def keltner_channel_mband(high, low, close, n=20, n_atr=10, fillna=False, ov=True):
     """Keltner channel (KC)
 
     Showing a simple moving average line (central) of typical price.
 
-    https://en.wikipedia.org/wiki/Keltner_channel
+    https://school.stockcharts.com/doku.php?id=technical_indicators:keltner_channels
 
     Args:
         high(pandas.Series): dataset 'High' column.
         low(pandas.Series): dataset 'Low' column.
         close(pandas.Series): dataset 'Close' column.
         n(int): n period.
+        n_atr(int): n atr period. Only valid if ov param is False.
         fillna(bool): if True, fill nan values.
+        ov(bool): if True, use original version as the centerline (SMA of typical price)
+            if False, use EMA of close as the centerline. More info:
+            https://school.stockcharts.com/doku.php?id=technical_indicators:keltner_channels
 
     Returns:
         pandas.Series: New feature generated.
     """
-    indicator = KeltnerChannel(high=high, low=low, close=close, n=n, fillna=False, ov=ov)
+    indicator = KeltnerChannel(high=high, low=low, close=close, n=n, n_atr=n_atr, fillna=fillna, ov=ov)
     return indicator.keltner_channel_mband()
 
 
-def keltner_channel_hband(high, low, close, n=10, fillna=False, ov=True):
+def keltner_channel_hband(high, low, close, n=20, n_atr=10, fillna=False, ov=True):
     """Keltner channel (KC)
 
     Showing a simple moving average line (high) of typical price.
 
-    https://en.wikipedia.org/wiki/Keltner_channel
+    https://school.stockcharts.com/doku.php?id=technical_indicators:keltner_channels
 
     Args:
         high(pandas.Series): dataset 'High' column.
         low(pandas.Series): dataset 'Low' column.
         close(pandas.Series): dataset 'Close' column.
         n(int): n period.
+        n_atr(int): n atr period. Only valid if ov param is False.
         fillna(bool): if True, fill nan values.
+        ov(bool): if True, use original version as the centerline (SMA of typical price)
+            if False, use EMA of close as the centerline. More info:
+            https://school.stockcharts.com/doku.php?id=technical_indicators:keltner_channels
 
     Returns:
         pandas.Series: New feature generated.
     """
-    indicator = KeltnerChannel(high=high, low=low, close=close, n=n, fillna=False, ov=ov)
+    indicator = KeltnerChannel(high=high, low=low, close=close, n=n, n_atr=n_atr, fillna=fillna, ov=ov)
     return indicator.keltner_channel_hband()
 
 
-def keltner_channel_lband(high, low, close, n=10, fillna=False, ov=True):
+def keltner_channel_lband(high, low, close, n=20, n_atr=10, fillna=False, ov=True):
     """Keltner channel (KC)
 
     Showing a simple moving average line (low) of typical price.
 
-    https://en.wikipedia.org/wiki/Keltner_channel
+    https://school.stockcharts.com/doku.php?id=technical_indicators:keltner_channels
 
     Args:
         high(pandas.Series): dataset 'High' column.
         low(pandas.Series): dataset 'Low' column.
         close(pandas.Series): dataset 'Close' column.
         n(int): n period.
+        n_atr(int): n atr period. Only valid if ov param is False.
         fillna(bool): if True, fill nan values.
+        ov(bool): if True, use original version as the centerline (SMA of typical price)
+            if False, use EMA of close as the centerline. More info:
+            https://school.stockcharts.com/doku.php?id=technical_indicators:keltner_channels
 
     Returns:
         pandas.Series: New feature generated.
     """
-    indicator = KeltnerChannel(high=high, low=low, close=close, n=n, fillna=False, ov=ov)
+    indicator = KeltnerChannel(high=high, low=low, close=close, n=n, n_atr=n_atr, fillna=fillna, ov=ov)
     return indicator.keltner_channel_lband()
 
 
-def keltner_channel_wband(high, low, close, n=10, fillna=False, ov=True):
+def keltner_channel_wband(high, low, close, n=20, n_atr=10, fillna=False, ov=True):
     """Keltner Channel Band Width
 
-    https://en.wikipedia.org/wiki/Keltner_channel
+    https://school.stockcharts.com/doku.php?id=technical_indicators:keltner_channels
 
     Args:
         high(pandas.Series): dataset 'High' column.
         low(pandas.Series): dataset 'Low' column.
         close(pandas.Series): dataset 'Close' column.
         n(int): n period.
+        n_atr(int): n atr period. Only valid if ov param is False.
         fillna(bool): if True, fill nan values.
+        ov(bool): if True, use original version as the centerline (SMA of typical price)
+            if False, use EMA of close as the centerline. More info:
+            https://school.stockcharts.com/doku.php?id=technical_indicators:keltner_channels
 
     Returns:
         pandas.Series: New feature generated.
     """
-    indicator = KeltnerChannel(high=high, low=low, close=close, n=n, fillna=False, ov=ov)
+    indicator = KeltnerChannel(high=high, low=low, close=close, n=n, n_atr=n_atr, fillna=fillna, ov=ov)
     return indicator.keltner_channel_wband()
 
 
-def keltner_channel_pband(high, low, close, n=10, fillna=False, ov=True):
+def keltner_channel_pband(high, low, close, n=20, n_atr=10, fillna=False, ov=True):
     """Keltner Channel Percentage Band
 
-    https://en.wikipedia.org/wiki/Keltner_channel
+    https://school.stockcharts.com/doku.php?id=technical_indicators:keltner_channels
 
     Args:
         high(pandas.Series): dataset 'High' column.
         low(pandas.Series): dataset 'Low' column.
         close(pandas.Series): dataset 'Close' column.
         n(int): n period.
+        n_atr(int): n atr period. Only valid if ov param is False.
         fillna(bool): if True, fill nan values.
+        ov(bool): if True, use original version as the centerline (SMA of typical price)
+            if False, use EMA of close as the centerline. More info:
+            https://school.stockcharts.com/doku.php?id=technical_indicators:keltner_channels
 
     Returns:
         pandas.Series: New feature generated.
     """
-    indicator = KeltnerChannel(high=high, low=low, close=close, n=n, fillna=False, ov=ov)
+    indicator = KeltnerChannel(high=high, low=low, close=close, n=n, n_atr=n_atr, fillna=fillna, ov=ov)
     return indicator.keltner_channel_pband()
 
 
-def keltner_channel_hband_indicator(high, low, close, n=10, fillna=False, ov=True):
+def keltner_channel_hband_indicator(high, low, close, n=20, n_atr=10, fillna=False, ov=True):
     """Keltner Channel High Band Indicator (KC)
 
     Returns 1, if close is higher than keltner high band channel. Else,
     return 0.
 
-    https://en.wikipedia.org/wiki/Keltner_channel
+    https://school.stockcharts.com/doku.php?id=technical_indicators:keltner_channels
 
     Args:
         high(pandas.Series): dataset 'High' column.
         low(pandas.Series): dataset 'Low' column.
         close(pandas.Series): dataset 'Close' column.
         n(int): n period.
+        n_atr(int): n atr period. Only valid if ov param is False.
         fillna(bool): if True, fill nan values.
+        ov(bool): if True, use original version as the centerline (SMA of typical price)
+            if False, use EMA of close as the centerline. More info:
+            https://school.stockcharts.com/doku.php?id=technical_indicators:keltner_channels
 
     Returns:
         pandas.Series: New feature generated.
     """
-    indicator = KeltnerChannel(high=high, low=low, close=close, n=n, fillna=False, ov=ov)
+    indicator = KeltnerChannel(high=high, low=low, close=close, n=n, n_atr=n_atr, fillna=fillna, ov=ov)
     return indicator.keltner_channel_hband_indicator()
 
 
-def keltner_channel_lband_indicator(high, low, close, n=10, fillna=False, ov=True):
+def keltner_channel_lband_indicator(high, low, close, n=20, n_atr=10, fillna=False, ov=True):
     """Keltner Channel Low Band Indicator (KC)
 
     Returns 1, if close is lower than keltner low band channel. Else, return 0.
 
-    https://en.wikipedia.org/wiki/Keltner_channel
+    https://school.stockcharts.com/doku.php?id=technical_indicators:keltner_channels
 
     Args:
         high(pandas.Series): dataset 'High' column.
         low(pandas.Series): dataset 'Low' column.
         close(pandas.Series): dataset 'Close' column.
         n(int): n period.
+        n_atr(int): n atr period. Only valid if ov param is False.
         fillna(bool): if True, fill nan values.
+        ov(bool): if True, use original version as the centerline (SMA of typical price)
+            if False, use EMA of close as the centerline. More info:
+            https://school.stockcharts.com/doku.php?id=technical_indicators:keltner_channels
 
     Returns:
         pandas.Series: New feature generated.
     """
-    indicator = KeltnerChannel(high=high, low=low, close=close, n=n, fillna=False, ov=ov)
+    indicator = KeltnerChannel(high=high, low=low, close=close, n=n, n_atr=n_atr, fillna=fillna, ov=ov)
     return indicator.keltner_channel_lband_indicator()
 
 
