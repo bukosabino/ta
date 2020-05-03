@@ -6,8 +6,9 @@ from ta.tests.trend import (TestADXIndicator, TestCCIIndicator,
                             TestMACDIndicator, TestPSARIndicator,
                             TestVortexIndicator)
 from ta.tests.utils import TestGeneral
-from ta.tests.volatility import (TestAverageTrueRange, TestBollingerBands,
-                                 TestDonchianChannel)
+from ta.tests.volatility import (TestAverageTrueRange, TestAverageTrueRange2,
+                                 TestBollingerBands, TestDonchianChannel,
+                                 TestKeltnerChannel)
 from ta.tests.volume import (TestAccDistIndexIndicator,
                              TestEaseOfMovementIndicator,
                              TestForceIndexIndicator, TestMFIIndicator,
