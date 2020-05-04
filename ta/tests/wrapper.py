@@ -22,7 +22,9 @@ class TestWrapper(unittest.TestCase):
         df = ta.utils.dropna(self._df)
 
         # Add all ta features filling nans values
-        ta.add_all_ta_features(df, "Open", "High", "Low", "Close", "Volume_BTC", fillna=True)
+        ta.add_all_ta_features(
+            df=df, open="Open", high="High", low="Low", close="Close", volume="Volume_BTC", fillna=True)
 
         # Add all ta features not filling nans values
-        ta.add_all_ta_features(df, "Open", "High", "Low", "Close", "Volume_BTC", fillna=False)
+        ta.add_all_ta_features(
+            df=df, open="Open", high="High", low="Low", close="Close", volume="Volume_BTC", fillna=False)

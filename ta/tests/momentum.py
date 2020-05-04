@@ -18,7 +18,8 @@ class TestRateOfChangeIndicator(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls._df = pd.read_csv(cls._filename, sep=',')
-        cls._indicator = ROCIndicator(close=cls._df['Close'], n=12, fillna=False)
+        cls._params = dict(close=cls._df['Close'], n=12, fillna=False)
+        cls._indicator = ROCIndicator(**cls._params)
 
     @classmethod
     def tearDownClass(cls):
@@ -26,7 +27,7 @@ class TestRateOfChangeIndicator(unittest.TestCase):
 
     def test_roc(self):
         target = 'ROC'
-        result = roc(close=self._df['Close'], n=12, fillna=False)
+        result = roc(**self._params)
         pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
 
     def test_roc2(self):
@@ -46,7 +47,8 @@ class TestRSIIndicator(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls._df = pd.read_csv(cls._filename, sep=',')
-        cls._indicator = RSIIndicator(close=cls._df['Close'], n=14, fillna=False)
+        cls._params = dict(close=cls._df['Close'], n=14, fillna=False)
+        cls._indicator = RSIIndicator(**cls._params)
 
     @classmethod
     def tearDownClass(cls):
@@ -59,7 +61,7 @@ class TestRSIIndicator(unittest.TestCase):
 
     def test_rsi2(self):
         target = 'RSI'
-        result = rsi(close=self._df['Close'], n=14, fillna=False)
+        result = rsi(**self._params)
         pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
 
 
@@ -73,9 +75,19 @@ class TestUltimateOscillator(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls._df = pd.read_csv(cls._filename, sep=',')
-        cls._indicator = UltimateOscillator(
-            high=cls._df['High'], low=cls._df['Low'], close=cls._df['Close'],
-            s=7, m=14, len=28, ws=4.0, wm=2.0, wl=1.0, fillna=False)
+        cls._params = dict(
+            high=cls._df['High'],
+            low=cls._df['Low'],
+            close=cls._df['Close'],
+            s=7,
+            m=14,
+            len=28,
+            ws=4.0,
+            wm=2.0,
+            wl=1.0,
+            fillna=False
+        )
+        cls._indicator = UltimateOscillator(**cls._params)
 
     @classmethod
     def tearDownClass(cls):
@@ -88,9 +100,7 @@ class TestUltimateOscillator(unittest.TestCase):
 
     def test_uo2(self):
         target = 'Ult_Osc'
-        result = uo(
-            high=self._df['High'], low=self._df['Low'], close=self._df['Close'],
-            s=7, m=14, len=28, ws=4.0, wm=2.0, wl=1.0, fillna=False)
+        result = uo(**self._params)
         pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
 
 
@@ -104,8 +114,9 @@ class TestStochasticOscillator(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls._df = pd.read_csv(cls._filename, sep=',')
-        cls._indicator = StochasticOscillator(
+        cls._params = dict(
             high=cls._df['High'], low=cls._df['Low'], close=cls._df['Close'], n=14, d_n=3, fillna=False)
+        cls._indicator = StochasticOscillator(**cls._params)
 
     @classmethod
     def tearDownClass(cls):
@@ -123,13 +134,12 @@ class TestStochasticOscillator(unittest.TestCase):
 
     def test_so2(self):
         target = 'SO'
-        result = stoch(high=self._df['High'], low=self._df['Low'], close=self._df['Close'], n=14, d_n=3, fillna=False)
+        result = stoch(**self._params)
         pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
 
     def test_so_signal2(self):
         target = 'SO_SIG'
-        result = stoch_signal(
-            high=self._df['High'], low=self._df['Low'], close=self._df['Close'], n=14, d_n=3, fillna=False)
+        result = stoch_signal(**self._params)
         pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
 
 
@@ -143,8 +153,8 @@ class TestWilliamsRIndicator(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls._df = pd.read_csv(cls._filename, sep=',')
-        cls._indicator = WilliamsRIndicator(
-            high=cls._df['High'], low=cls._df['Low'], close=cls._df['Close'], lbp=14, fillna=False)
+        cls._params = dict(high=cls._df['High'], low=cls._df['Low'], close=cls._df['Close'], lbp=14, fillna=False)
+        cls._indicator = WilliamsRIndicator(**cls._params)
 
     @classmethod
     def tearDownClass(cls):
@@ -157,7 +167,7 @@ class TestWilliamsRIndicator(unittest.TestCase):
 
     def test_wr2(self):
         target = 'Williams_%R'
-        result = wr(high=self._df['High'], low=self._df['Low'], close=self._df['Close'], lbp=14, fillna=False)
+        result = wr(**self._params)
         pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
 
 
@@ -171,7 +181,8 @@ class TestKAMAIndicator(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls._df = pd.read_csv(cls._filename, sep=',')
-        cls._indicator = KAMAIndicator(close=cls._df['Close'], n=10, pow1=2, pow2=30, fillna=False)
+        cls._params = dict(close=cls._df['Close'], n=10, pow1=2, pow2=30, fillna=False)
+        cls._indicator = KAMAIndicator(**cls._params)
 
     @classmethod
     def tearDownClass(cls):
@@ -184,7 +195,7 @@ class TestKAMAIndicator(unittest.TestCase):
 
     def test_kama2(self):
         target = 'KAMA'
-        result = kama(close=self._df['Close'], n=10, pow1=2, pow2=30, fillna=False)
+        result = kama(**self._params)
         pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
 
 
@@ -198,7 +209,8 @@ class TestTSIIndicator(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls._df = pd.read_csv(cls._filename, sep=',')
-        cls._indicator = TSIIndicator(close=cls._df['Close'], r=25, s=13, fillna=False)
+        cls._params = dict(close=cls._df['Close'], r=25, s=13, fillna=False)
+        cls._indicator = TSIIndicator(**cls._params)
 
     @classmethod
     def tearDownClass(cls):
@@ -212,6 +224,6 @@ class TestTSIIndicator(unittest.TestCase):
 
     def test_tsi2(self):
         target = 'TSI'
-        result = tsi(close=self._df['Close'], r=25, s=13, fillna=False)
+        result = tsi(**self._params)
         pd.testing.assert_series_equal(
             self._df[target].tail(), result.tail(), check_names=False, check_less_precise=True)
