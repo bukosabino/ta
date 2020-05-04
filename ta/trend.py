@@ -691,6 +691,7 @@ class PSARIndicator(IndicatorMixin):
         close(pandas.Series): dataset 'Close' column.
         step(float): the Acceleration Factor used to compute the SAR.
         max_step(float): the maximum value allowed for the Acceleration Factor.
+        fillna(bool): if True, fill nan values.
     """
     def __init__(self, high: pd.Series, low: pd.Series, close: pd.Series,
                  step: float = 0.02, max_step: float = 0.20,
@@ -1258,7 +1259,7 @@ def aroon_down(close, n=25, fillna=False):
     return AroonIndicator(close=close, n=n, fillna=fillna).aroon_down()
 
 
-def psar_up(high, low, close, step=0.02, max_step=0.20):
+def psar_up(high, low, close, step=0.02, max_step=0.20, fillna=False):
     """Parabolic Stop and Reverse (Parabolic SAR)
 
     Returns the PSAR series with non-N/A values for upward trends
@@ -1271,16 +1272,17 @@ def psar_up(high, low, close, step=0.02, max_step=0.20):
         close(pandas.Series): dataset 'Close' column.
         step(float): the Acceleration Factor used to compute the SAR.
         max_step(float): the maximum value allowed for the Acceleration Factor.
+        fillna(bool): if True, fill nan values.
 
     Returns:
         pandas.Series: New feature generated.
     """
     indicator = PSARIndicator(high=high, low=low, close=close, step=step,
-                              max_step=max_step)
+                              max_step=max_step, fillna=fillna)
     return indicator.psar_up()
 
 
-def psar_down(high, low, close, step=0.02, max_step=0.20):
+def psar_down(high, low, close, step=0.02, max_step=0.20, fillna=False):
     """Parabolic Stop and Reverse (Parabolic SAR)
 
     Returns the PSAR series with non-N/A values for downward trends
@@ -1293,16 +1295,17 @@ def psar_down(high, low, close, step=0.02, max_step=0.20):
         close(pandas.Series): dataset 'Close' column.
         step(float): the Acceleration Factor used to compute the SAR.
         max_step(float): the maximum value allowed for the Acceleration Factor.
+        fillna(bool): if True, fill nan values.
 
     Returns:
         pandas.Series: New feature generated.
     """
     indicator = PSARIndicator(high=high, low=low, close=close, step=step,
-                              max_step=max_step)
+                              max_step=max_step, fillna=fillna)
     return indicator.psar_down()
 
 
-def psar_up_indicator(high, low, close, step=0.02, max_step=0.20):
+def psar_up_indicator(high, low, close, step=0.02, max_step=0.20, fillna=False):
     """Parabolic Stop and Reverse (Parabolic SAR) Upward Trend Indicator
 
     Returns 1, if there is a reversal towards an upward trend. Else, returns 0.
@@ -1315,16 +1318,17 @@ def psar_up_indicator(high, low, close, step=0.02, max_step=0.20):
         close(pandas.Series): dataset 'Close' column.
         step(float): the Acceleration Factor used to compute the SAR.
         max_step(float): the maximum value allowed for the Acceleration Factor.
+        fillna(bool): if True, fill nan values.
 
     Returns:
         pandas.Series: New feature generated.
     """
     indicator = PSARIndicator(high=high, low=low, close=close, step=step,
-                              max_step=max_step)
+                              max_step=max_step, fillna=fillna)
     return indicator.psar_up_indicator()
 
 
-def psar_down_indicator(high, low, close, step=0.02, max_step=0.20):
+def psar_down_indicator(high, low, close, step=0.02, max_step=0.20, fillna=False):
     """Parabolic Stop and Reverse (Parabolic SAR) Downward Trend Indicator
 
     Returns 1, if there is a reversal towards an downward trend. Else, returns 0.
@@ -1337,10 +1341,11 @@ def psar_down_indicator(high, low, close, step=0.02, max_step=0.20):
         close(pandas.Series): dataset 'Close' column.
         step(float): the Acceleration Factor used to compute the SAR.
         max_step(float): the maximum value allowed for the Acceleration Factor.
+        fillna(bool): if True, fill nan values.
 
     Returns:
         pandas.Series: New feature generated.
     """
     indicator = PSARIndicator(high=high, low=low, close=close, step=step,
-                              max_step=max_step)
+                              max_step=max_step, fillna=fillna)
     return indicator.psar_down_indicator()
