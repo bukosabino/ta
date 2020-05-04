@@ -7,10 +7,7 @@ from ta.volatility import (AverageTrueRange, BollingerBands, DonchianChannel,
                            bollinger_hband_indicator, bollinger_lband,
                            bollinger_lband_indicator, bollinger_mavg,
                            bollinger_pband, bollinger_wband,
-                           donchian_channel_hband,
-                           donchian_channel_hband_indicator,
-                           donchian_channel_lband,
-                           donchian_channel_lband_indicator,
+                           donchian_channel_hband, donchian_channel_lband,
                            donchian_channel_mband, donchian_channel_pband,
                            donchian_channel_wband, keltner_channel_hband,
                            keltner_channel_hband_indicator,
@@ -177,7 +174,8 @@ class TestDonchianChannel(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls._df = pd.read_csv(cls._filename, sep=',')
-        cls._params = dict(close=cls._df['Close'], n=20, fillna=False)
+        cls._params = dict(
+            high=cls._df['high'], low=cls._df['low'], close=cls._df['close'], n=20, offset=0, fillna=False)
         cls._indicator = DonchianChannel(**cls._params)
 
     @classmethod
@@ -209,16 +207,6 @@ class TestDonchianChannel(unittest.TestCase):
         result = self._indicator.donchian_channel_pband()
         pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
 
-    def test_hband_indicator(self):
-        target = 'dc_high_indicator'
-        result = self._indicator.donchian_channel_hband_indicator()
-        pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
-
-    def test_lband_indicator(self):
-        target = 'dc_low_indicator'
-        result = self._indicator.donchian_channel_lband_indicator()
-        pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
-
     def test_mavg2(self):
         target = 'middle_band'
         result = donchian_channel_mband(**self._params)
@@ -244,14 +232,74 @@ class TestDonchianChannel(unittest.TestCase):
         result = donchian_channel_pband(**self._params)
         pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
 
-    def test_hband_indicator2(self):
-        target = 'dc_high_indicator'
-        result = donchian_channel_hband_indicator(**self._params)
+
+class TestDonchianChannel2(unittest.TestCase):
+    """
+    https://www.investopedia.com/terms/d/donchianchannels.asp
+    https://docs.google.com/spreadsheets/d/17JWWsxSiAb24BLzncUpccc8hg-03QjVWVXmoRCJ2lME/edit#gid=0
+    """
+
+    _filename = 'ta/tests/data/cs-dc2.csv'
+
+    @classmethod
+    def setUpClass(cls):
+        cls._df = pd.read_csv(cls._filename, sep=',')
+        cls._params = dict(
+            high=cls._df['high'], low=cls._df['low'], close=cls._df['close'], n=20, offset=1, fillna=False)
+        cls._indicator = DonchianChannel(**cls._params)
+
+    @classmethod
+    def tearDownClass(cls):
+        del(cls._df)
+
+    def test_mavg(self):
+        target = 'middle_band'
+        result = self._indicator.donchian_channel_mband()
         pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
 
-    def test_lband_indicator2(self):
-        target = 'dc_low_indicator'
-        result = donchian_channel_lband_indicator(**self._params)
+    def test_hband(self):
+        target = 'upper_band'
+        result = self._indicator.donchian_channel_hband()
+        pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
+
+    def test_lband(self):
+        target = 'lower_band'
+        result = self._indicator.donchian_channel_lband()
+        pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
+
+    def test_wband(self):
+        target = 'dc_band_width'
+        result = self._indicator.donchian_channel_wband()
+        pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
+
+    def test_pband(self):
+        target = 'dc_percentage'
+        result = self._indicator.donchian_channel_pband()
+        pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
+
+    def test_mavg2(self):
+        target = 'middle_band'
+        result = donchian_channel_mband(**self._params)
+        pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
+
+    def test_hband2(self):
+        target = 'upper_band'
+        result = donchian_channel_hband(**self._params)
+        pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
+
+    def test_lband2(self):
+        target = 'lower_band'
+        result = donchian_channel_lband(**self._params)
+        pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
+
+    def test_wband2(self):
+        target = 'dc_band_width'
+        result = donchian_channel_wband(**self._params)
+        pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
+
+    def test_pband2(self):
+        target = 'dc_percentage'
+        result = donchian_channel_pband(**self._params)
         pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
 
 
