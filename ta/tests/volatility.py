@@ -2,9 +2,11 @@ import unittest
 
 import pandas as pd
 
-from ta.tests.utils import TestIndicator
 from ta.volatility import (AverageTrueRange, BollingerBands, DonchianChannel,
-                           KeltnerChannel, average_true_range,
+                           KeltnerChannel, average_true_range, bollinger_hband,
+                           bollinger_hband_indicator, bollinger_lband,
+                           bollinger_lband_indicator, bollinger_mavg,
+                           bollinger_pband, bollinger_wband,
                            donchian_channel_hband,
                            donchian_channel_hband_indicator,
                            donchian_channel_lband,
@@ -18,13 +20,23 @@ from ta.volatility import (AverageTrueRange, BollingerBands, DonchianChannel,
                            keltner_channel_wband)
 
 
-class TestAverageTrueRange(TestIndicator):
+class TestAverageTrueRange(unittest.TestCase):
     """
     https://school.stockcharts.com/doku.php?id=technical_indicators:average_true_range_atr
     https://docs.google.com/spreadsheets/d/1DYG5NI_1px30aZ6oJkDIkWsyJW5V8jGbBVKIr9NWtec/edit?usp=sharing
     """
 
     _filename = 'ta/tests/data/cs-atr.csv'
+
+    @classmethod
+    def setUpClass(cls):
+        cls._df = pd.read_csv(cls._filename, sep=',')
+        cls._indicator = AverageTrueRange(
+            high=cls._df['High'], low=cls._df['Low'], close=cls._df['Close'], n=14, fillna=False)
+
+    @classmethod
+    def tearDownClass(cls):
+        del(cls._df)
 
     def test_atr(self):
         target = 'ATR'
@@ -34,13 +46,11 @@ class TestAverageTrueRange(TestIndicator):
 
     def test_atr2(self):
         target = 'ATR'
-        result = AverageTrueRange(
-            high=self._df['High'], low=self._df['Low'], close=self._df['Close'], n=14,
-            fillna=False).average_true_range()
+        result = self._indicator.average_true_range()
         pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
 
 
-class TestAverageTrueRange2(TestIndicator):
+class TestAverageTrueRange2(unittest.TestCase):
     """
     https://school.stockcharts.com/doku.php?id=technical_indicators:average_true_range_atr
     https://docs.google.com/spreadsheets/d/1IRlmwVmRLAzjIIt2iXBukZyyaSAYB_0iRyAoOowZaBk/edit?usp=sharing
@@ -48,11 +58,19 @@ class TestAverageTrueRange2(TestIndicator):
 
     _filename = 'ta/tests/data/cs-atr2.csv'
 
+    @classmethod
+    def setUpClass(cls):
+        cls._df = pd.read_csv(cls._filename, sep=',')
+        cls._indicator = AverageTrueRange(
+            high=cls._df['High'], low=cls._df['Low'], close=cls._df['Close'], n=10, fillna=False)
+
+    @classmethod
+    def tearDownClass(cls):
+        del(cls._df)
+
     def test_atr(self):
         target = 'ATR'
-        result = AverageTrueRange(
-            high=self._df['High'], low=self._df['Low'], close=self._df['Close'], n=10,
-            fillna=False).average_true_range()
+        result = self._indicator.average_true_range()
         pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
 
     def test_atr2(self):
@@ -111,6 +129,41 @@ class TestBollingerBands(unittest.TestCase):
     def test_lband_indicator(self):
         target = 'CrossDown'
         result = self._indicator.bollinger_lband_indicator()
+        pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
+
+    def test_mavg2(self):
+        target = 'MiddleBand'
+        result = bollinger_mavg(close=self._df['Close'], n=20, fillna=False)
+        pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
+
+    def test_hband2(self):
+        target = 'HighBand'
+        result = bollinger_hband(close=self._df['Close'], n=20, ndev=2, fillna=False)
+        pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
+
+    def test_lband2(self):
+        target = 'LowBand'
+        result = bollinger_lband(close=self._df['Close'], n=20, ndev=2, fillna=False)
+        pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
+
+    def test_wband2(self):
+        target = 'WidthBand'
+        result = bollinger_wband(close=self._df['Close'], n=20, ndev=2, fillna=False)
+        pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
+
+    def test_pband2(self):
+        target = 'PercentageBand'
+        result = bollinger_pband(close=self._df['Close'], n=20, ndev=2, fillna=False)
+        pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
+
+    def test_hband_indicator2(self):
+        target = 'CrossUp'
+        result = bollinger_hband_indicator(close=self._df['Close'], n=20, ndev=2, fillna=False)
+        pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
+
+    def test_lband_indicator2(self):
+        target = 'CrossDown'
+        result = bollinger_lband_indicator(close=self._df['Close'], n=20, ndev=2, fillna=False)
         pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
 
 
