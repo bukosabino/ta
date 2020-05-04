@@ -5,18 +5,17 @@ import pandas as pd
 import ta
 
 
-class TestIndicator(unittest.TestCase):
-
-    def setUp(self):
-        self._df = pd.read_csv(self._filename, sep=',')
-
-    def tearDown(self):
-        del(self._df)
-
-
-class TestGeneral(TestIndicator):
+class TestWrapper(unittest.TestCase):
 
     _filename = 'ta/tests/data/datas.csv'
+
+    @classmethod
+    def setUpClass(cls):
+        cls._df = pd.read_csv(cls._filename, sep=',')
+
+    @classmethod
+    def tearDownClass(cls):
+        del(cls._df)
 
     def test_general(self):
         # Clean nan values
@@ -26,4 +25,4 @@ class TestGeneral(TestIndicator):
         ta.add_all_ta_features(df, "Open", "High", "Low", "Close", "Volume_BTC", fillna=True)
 
         # Add all ta features not filling nans values
-        df = ta.add_all_ta_features(df, "Open", "High", "Low", "Close", "Volume_BTC", fillna=False)
+        ta.add_all_ta_features(df, "Open", "High", "Low", "Close", "Volume_BTC", fillna=False)
