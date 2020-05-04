@@ -44,9 +44,8 @@ def sma(series, periods: int, fillna: bool = False):
 
 
 def ema(series, periods, fillna=False):
-    if fillna:
-        return series.ewm(span=periods, min_periods=0, adjust=False).mean()
-    return series.ewm(span=periods, min_periods=periods, adjust=False).mean()
+    min_periods = 0 if fillna else periods
+    return series.ewm(span=periods, min_periods=min_periods, adjust=False).mean()
 
 
 def get_min_max(x1, x2, f='min'):
