@@ -31,8 +31,8 @@ class TestAverageTrueRange(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls._df = pd.read_csv(cls._filename, sep=',')
-        cls._indicator = AverageTrueRange(
-            high=cls._df['High'], low=cls._df['Low'], close=cls._df['Close'], n=14, fillna=False)
+        cls._params = dict(high=cls._df['High'], low=cls._df['Low'], close=cls._df['Close'], n=14, fillna=False)
+        cls._indicator = AverageTrueRange(**cls._params)
 
     @classmethod
     def tearDownClass(cls):
@@ -40,8 +40,7 @@ class TestAverageTrueRange(unittest.TestCase):
 
     def test_atr(self):
         target = 'ATR'
-        result = average_true_range(
-            high=self._df['High'], low=self._df['Low'], close=self._df['Close'], n=14, fillna=False)
+        result = average_true_range(**self._params)
         pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
 
     def test_atr2(self):
@@ -61,8 +60,8 @@ class TestAverageTrueRange2(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls._df = pd.read_csv(cls._filename, sep=',')
-        cls._indicator = AverageTrueRange(
-            high=cls._df['High'], low=cls._df['Low'], close=cls._df['Close'], n=10, fillna=False)
+        cls._params = dict(high=cls._df['High'], low=cls._df['Low'], close=cls._df['Close'], n=10, fillna=False)
+        cls._indicator = AverageTrueRange(**cls._params)
 
     @classmethod
     def tearDownClass(cls):
@@ -75,8 +74,7 @@ class TestAverageTrueRange2(unittest.TestCase):
 
     def test_atr2(self):
         target = 'ATR'
-        result = average_true_range(
-            high=self._df['High'], low=self._df['Low'], close=self._df['Close'], n=10, fillna=False)
+        result = average_true_range(**self._params)
         pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
 
 
@@ -90,7 +88,8 @@ class TestBollingerBands(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls._df = pd.read_csv(cls._filename, sep=',')
-        cls._indicator = BollingerBands(close=cls._df['Close'], n=20, ndev=2, fillna=False)
+        cls._params = dict(close=cls._df['Close'], n=20, ndev=2, fillna=False)
+        cls._indicator = BollingerBands(**cls._params)
 
     @classmethod
     def tearDownClass(cls):
@@ -138,32 +137,32 @@ class TestBollingerBands(unittest.TestCase):
 
     def test_hband2(self):
         target = 'HighBand'
-        result = bollinger_hband(close=self._df['Close'], n=20, ndev=2, fillna=False)
+        result = bollinger_hband(**self._params)
         pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
 
     def test_lband2(self):
         target = 'LowBand'
-        result = bollinger_lband(close=self._df['Close'], n=20, ndev=2, fillna=False)
+        result = bollinger_lband(**self._params)
         pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
 
     def test_wband2(self):
         target = 'WidthBand'
-        result = bollinger_wband(close=self._df['Close'], n=20, ndev=2, fillna=False)
+        result = bollinger_wband(**self._params)
         pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
 
     def test_pband2(self):
         target = 'PercentageBand'
-        result = bollinger_pband(close=self._df['Close'], n=20, ndev=2, fillna=False)
+        result = bollinger_pband(**self._params)
         pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
 
     def test_hband_indicator2(self):
         target = 'CrossUp'
-        result = bollinger_hband_indicator(close=self._df['Close'], n=20, ndev=2, fillna=False)
+        result = bollinger_hband_indicator(**self._params)
         pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
 
     def test_lband_indicator2(self):
         target = 'CrossDown'
-        result = bollinger_lband_indicator(close=self._df['Close'], n=20, ndev=2, fillna=False)
+        result = bollinger_lband_indicator(**self._params)
         pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
 
 
@@ -178,7 +177,8 @@ class TestDonchianChannel(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls._df = pd.read_csv(cls._filename, sep=',')
-        cls._indicator = DonchianChannel(close=cls._df['Close'], n=20, fillna=False)
+        cls._params = dict(close=cls._df['Close'], n=20, fillna=False)
+        cls._indicator = DonchianChannel(**cls._params)
 
     @classmethod
     def tearDownClass(cls):
@@ -221,37 +221,37 @@ class TestDonchianChannel(unittest.TestCase):
 
     def test_mavg2(self):
         target = 'middle_band'
-        result = donchian_channel_mband(close=self._df['Close'], n=20, fillna=False)
+        result = donchian_channel_mband(**self._params)
         pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
 
     def test_hband2(self):
         target = 'upper_band'
-        result = donchian_channel_hband(close=self._df['Close'], n=20, fillna=False)
+        result = donchian_channel_hband(**self._params)
         pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
 
     def test_lband2(self):
         target = 'lower_band'
-        result = donchian_channel_lband(close=self._df['Close'], n=20, fillna=False)
+        result = donchian_channel_lband(**self._params)
         pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
 
     def test_wband2(self):
         target = 'dc_band_width'
-        result = donchian_channel_wband(close=self._df['Close'], n=20, fillna=False)
+        result = donchian_channel_wband(**self._params)
         pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
 
     def test_pband2(self):
         target = 'dc_percentage'
-        result = donchian_channel_pband(close=self._df['Close'], n=20, fillna=False)
+        result = donchian_channel_pband(**self._params)
         pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
 
     def test_hband_indicator2(self):
         target = 'dc_high_indicator'
-        result = donchian_channel_hband_indicator(close=self._df['Close'], n=20, fillna=False)
+        result = donchian_channel_hband_indicator(**self._params)
         pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
 
     def test_lband_indicator2(self):
         target = 'dc_low_indicator'
-        result = donchian_channel_lband_indicator(close=self._df['Close'], n=20, fillna=False)
+        result = donchian_channel_lband_indicator(**self._params)
         pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
 
 
@@ -266,8 +266,9 @@ class TestKeltnerChannel(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls._df = pd.read_csv(cls._filename, sep=',')
-        cls._indicator = KeltnerChannel(
+        cls._params = dict(
             high=cls._df['High'], low=cls._df['Low'], close=cls._df['Close'], n=20, n_atr=10, fillna=False, ov=False)
+        cls._indicator = KeltnerChannel(**cls._params)
 
     @classmethod
     def tearDownClass(cls):
@@ -310,91 +311,35 @@ class TestKeltnerChannel(unittest.TestCase):
 
     def test_mavg2(self):
         target = 'middle_band'
-        result = keltner_channel_mband(
-            high=self._df['High'],
-            low=self._df['Low'],
-            close=self._df['Close'],
-            n=20,
-            n_atr=10,
-            fillna=False,
-            ov=False
-        )
+        result = keltner_channel_mband(**self._params)
         pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
 
     def test_hband2(self):
         target = 'upper_band'
-        result = keltner_channel_hband(
-            high=self._df['High'],
-            low=self._df['Low'],
-            close=self._df['Close'],
-            n=20,
-            n_atr=10,
-            fillna=False,
-            ov=False
-        )
+        result = keltner_channel_hband(**self._params)
         pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
 
     def test_lband2(self):
         target = 'lower_band'
-        result = keltner_channel_lband(
-            high=self._df['High'],
-            low=self._df['Low'],
-            close=self._df['Close'],
-            n=20,
-            n_atr=10,
-            fillna=False,
-            ov=False
-        )
+        result = keltner_channel_lband(**self._params)
         pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
 
     def test_wband2(self):
         target = 'kc_band_width'
-        result = keltner_channel_wband(
-            high=self._df['High'],
-            low=self._df['Low'],
-            close=self._df['Close'],
-            n=20,
-            n_atr=10,
-            fillna=False,
-            ov=False
-        )
+        result = keltner_channel_wband(**self._params)
         pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
 
     def test_pband2(self):
         target = 'kc_percentage'
-        result = keltner_channel_pband(
-            high=self._df['High'],
-            low=self._df['Low'],
-            close=self._df['Close'],
-            n=20,
-            n_atr=10,
-            fillna=False,
-            ov=False
-        )
+        result = keltner_channel_pband(**self._params)
         pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
 
     def test_hband_indicator2(self):
         target = 'kc_high_indicator'
-        result = keltner_channel_hband_indicator(
-            high=self._df['High'],
-            low=self._df['Low'],
-            close=self._df['Close'],
-            n=20,
-            n_atr=10,
-            fillna=False,
-            ov=False
-        )
+        result = keltner_channel_hband_indicator(**self._params)
         pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
 
     def test_lband_indicator2(self):
         target = 'kc_low_indicator'
-        result = keltner_channel_lband_indicator(
-            high=self._df['High'],
-            low=self._df['Low'],
-            close=self._df['Close'],
-            n=20,
-            n_atr=10,
-            fillna=False,
-            ov=False
-        )
+        result = keltner_channel_lband_indicator(**self._params)
         pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)

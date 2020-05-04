@@ -20,8 +20,8 @@ class TestOnBalanceVolumeIndicator(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls._df = pd.read_csv(cls._filename, sep=',')
-        cls._indicator = OnBalanceVolumeIndicator(
-            close=cls._df['Close'], volume=cls._df['Volume'], fillna=False)
+        cls._params = dict(close=cls._df['Close'], volume=cls._df['Volume'], fillna=False)
+        cls._indicator = OnBalanceVolumeIndicator(**cls._params)
 
     @classmethod
     def tearDownClass(cls):
@@ -29,7 +29,7 @@ class TestOnBalanceVolumeIndicator(unittest.TestCase):
 
     def test_obv(self):
         target = 'OBV'
-        result = on_balance_volume(close=self._df['Close'], volume=self._df['Volume'], fillna=False)
+        result = on_balance_volume(**self._params)
         pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
 
     def test_obv2(self):
@@ -48,8 +48,8 @@ class TestForceIndexIndicator(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls._df = pd.read_csv(cls._filename, sep=',')
-        cls._indicator = ForceIndexIndicator(
-            close=cls._df['Close'], volume=cls._df['Volume'], n=13, fillna=False)
+        cls._params = dict(close=cls._df['Close'], volume=cls._df['Volume'], n=13, fillna=False)
+        cls._indicator = ForceIndexIndicator(**cls._params)
 
     @classmethod
     def tearDownClass(cls):
@@ -57,7 +57,7 @@ class TestForceIndexIndicator(unittest.TestCase):
 
     def test_fi(self):
         target = 'FI'
-        result = force_index(close=self._df['Close'], volume=self._df['Volume'], n=13, fillna=False)
+        result = force_index(**self._params)
         pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
 
     def test_fi2(self):
@@ -76,9 +76,8 @@ class TestEaseOfMovementIndicator(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls._df = pd.read_csv(cls._filename, sep=',')
-        cls._indicator = EaseOfMovementIndicator(
-            high=cls._df['High'], low=cls._df['Low'], volume=cls._df['Volume'], n=14, fillna=False
-        )
+        cls._params = dict(high=cls._df['High'], low=cls._df['Low'], volume=cls._df['Volume'], n=14, fillna=False)
+        cls._indicator = EaseOfMovementIndicator(**cls._params)
 
     @classmethod
     def tearDownClass(cls):
@@ -86,8 +85,7 @@ class TestEaseOfMovementIndicator(unittest.TestCase):
 
     def test_ease_of_movement(self):
         target = 'EMV'
-        result = ease_of_movement(
-            high=self._df['High'], low=self._df['Low'], volume=self._df['Volume'], n=14, fillna=False)
+        result = ease_of_movement(**self._params)
         pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
 
     def test_ease_of_movement2(self):
@@ -97,8 +95,7 @@ class TestEaseOfMovementIndicator(unittest.TestCase):
 
     def test_sma_ease_of_movement(self):
         target = 'SMA_EMV'
-        result = sma_ease_of_movement(
-            high=self._df['High'], low=self._df['Low'], volume=self._df['Volume'], n=14, fillna=False)
+        result = sma_ease_of_movement(**self._params)
         pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
 
     def test_sma_ease_of_movement2(self):
@@ -117,9 +114,9 @@ class TestAccDistIndexIndicator(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls._df = pd.read_csv(cls._filename, sep=',')
-        cls._indicator = AccDistIndexIndicator(
-            high=cls._df['High'], low=cls._df['Low'], close=cls._df['Close'], volume=cls._df['Volume'],
-            fillna=False)
+        cls._params = dict(
+            high=cls._df['High'], low=cls._df['Low'], close=cls._df['Close'], volume=cls._df['Volume'], fillna=False)
+        cls._indicator = AccDistIndexIndicator(**cls._params)
 
     @classmethod
     def tearDownClass(cls):
@@ -127,9 +124,7 @@ class TestAccDistIndexIndicator(unittest.TestCase):
 
     def test_adl(self):
         target = 'ADLine'
-        result = acc_dist_index(
-            high=self._df['High'], low=self._df['Low'], close=self._df['Close'], volume=self._df['Volume'],
-            fillna=False)
+        result = acc_dist_index(**self._params)
         pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
 
     def test_adl2(self):
@@ -148,9 +143,10 @@ class TestMFIIndicator(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls._df = pd.read_csv(cls._filename, sep=',')
-        cls._indicator = MFIIndicator(
+        cls._params = dict(
             high=cls._df['High'], low=cls._df['Low'], close=cls._df['Close'], volume=cls._df['Volume'], n=14,
             fillna=False)
+        cls._indicator = MFIIndicator(**cls._params)
 
     @classmethod
     def tearDownClass(cls):
@@ -163,9 +159,7 @@ class TestMFIIndicator(unittest.TestCase):
 
     def test_mfi2(self):
         target = 'MFI'
-        result = money_flow_index(
-            high=self._df['High'], low=self._df['Low'], close=self._df['Close'], volume=self._df['Volume'], n=14,
-            fillna=False)
+        result = money_flow_index(**self._params)
         pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
 
 
@@ -179,9 +173,9 @@ class TestVolumeWeightedAveragePrice(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls._df = pd.read_csv(cls._filename, sep=',')
-        cls._indicator = VolumeWeightedAveragePrice(
-            high=cls._df['High'], low=cls._df['Low'], close=cls._df['Close'], volume=cls._df['Volume'],
-            fillna=False)
+        cls._params = dict(
+            high=cls._df['High'], low=cls._df['Low'], close=cls._df['Close'], volume=cls._df['Volume'], fillna=False)
+        cls._indicator = VolumeWeightedAveragePrice(**cls._params)
 
     @classmethod
     def tearDownClass(cls):
@@ -189,9 +183,7 @@ class TestVolumeWeightedAveragePrice(unittest.TestCase):
 
     def test_vwap(self):
         target = 'vwap'
-        result = volume_weighted_average_price(
-            high=self._df['High'], low=self._df['Low'], close=self._df['Close'], volume=self._df['Volume'],
-            fillna=False)
+        result = volume_weighted_average_price(**self._params)
         pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
 
     def test_vwap2(self):

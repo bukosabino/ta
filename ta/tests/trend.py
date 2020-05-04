@@ -19,8 +19,8 @@ class TestADXIndicator(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls._df = pd.read_csv(cls._filename, sep=',')
-        cls._indicator = ADXIndicator(
-            high=cls._df['High'], low=cls._df['Low'], close=cls._df['Close'], n=14, fillna=False)
+        cls._params = dict(high=cls._df['High'], low=cls._df['Low'], close=cls._df['Close'], n=14, fillna=False)
+        cls._indicator = ADXIndicator(**cls._params)
 
     @classmethod
     def tearDownClass(cls):
@@ -28,7 +28,7 @@ class TestADXIndicator(unittest.TestCase):
 
     def test_adx(self):
         target = 'ADX'
-        result = adx(high=self._df['High'], low=self._df['Low'], close=self._df['Close'], n=14, fillna=False)
+        result = adx(**self._params)
         pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
 
     def test_adx2(self):
@@ -38,8 +38,7 @@ class TestADXIndicator(unittest.TestCase):
 
     def test_adx_pos(self):
         target = '+DI14'
-        result = adx_pos(
-            high=self._df['High'], low=self._df['Low'], close=self._df['Close'], n=14, fillna=False)
+        result = adx_pos(**self._params)
         pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
 
     def test_adx_pos2(self):
@@ -49,7 +48,7 @@ class TestADXIndicator(unittest.TestCase):
 
     def test_adx_neg(self):
         target = '-DI14'
-        result = adx_neg(high=self._df['High'], low=self._df['Low'], close=self._df['Close'], n=14, fillna=False)
+        result = adx_neg(**self._params)
         pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
 
     def test_adx_neg2(self):
@@ -68,7 +67,8 @@ class TestMACDIndicator(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls._df = pd.read_csv(cls._filename, sep=',')
-        cls._indicator = MACD(close=cls._df['Close'], n_slow=26, n_fast=12, n_sign=9, fillna=False)
+        cls._params = dict(close=cls._df['Close'], n_slow=26, n_fast=12, n_sign=9, fillna=False)
+        cls._indicator = MACD(**cls._params)
 
     @classmethod
     def tearDownClass(cls):
@@ -86,22 +86,22 @@ class TestMACDIndicator(unittest.TestCase):
 
     def test_macd_signal(self):
         target = 'MACD_signal'
-        result = macd_signal(close=self._df['Close'], n_slow=26, n_fast=12, n_sign=9, fillna=False)
+        result = macd_signal(**self._params)
         pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
 
     def test_macd_signal2(self):
         target = 'MACD_signal'
-        result = MACD(close=self._df['Close'], n_slow=26, n_fast=12, n_sign=9, fillna=False).macd_signal()
+        result = MACD(**self._params).macd_signal()
         pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
 
     def test_macd_diff(self):
         target = 'MACD_diff'
-        result = macd_diff(close=self._df['Close'], n_slow=26, n_fast=12, n_sign=9, fillna=False)
+        result = macd_diff(**self._params)
         pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
 
     def test_macd_diff2(self):
         target = 'MACD_diff'
-        result = MACD(close=self._df['Close'], n_slow=26, n_fast=12, n_sign=9, fillna=False).macd_diff()
+        result = MACD(**self._params).macd_diff()
         pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
 
 
@@ -115,8 +115,9 @@ class TestCCIIndicator(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls._df = pd.read_csv(cls._filename, sep=',')
-        cls._indicator = CCIIndicator(
+        cls._params = dict(
             high=cls._df['High'], low=cls._df['Low'], close=cls._df['Close'], n=20, c=0.015, fillna=False)
+        cls._indicator = CCIIndicator(**cls._params)
 
     @classmethod
     def tearDownClass(cls):
@@ -124,7 +125,7 @@ class TestCCIIndicator(unittest.TestCase):
 
     def test_cci(self):
         target = 'CCI'
-        result = cci(high=self._df['High'], low=self._df['Low'], close=self._df['Close'], n=20, c=0.015, fillna=False)
+        result = cci(**self._params)
         pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
 
     def test_cci2(self):
@@ -143,8 +144,8 @@ class TestVortexIndicator(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls._df = pd.read_csv(cls._filename, sep=',')
-        cls._indicator = VortexIndicator(
-            high=cls._df['High'], low=cls._df['Low'], close=cls._df['Close'], n=14, fillna=False)
+        cls._params = dict(high=cls._df['High'], low=cls._df['Low'], close=cls._df['Close'], n=14, fillna=False)
+        cls._indicator = VortexIndicator(**cls._params)
 
     @classmethod
     def tearDownClass(cls):
@@ -152,8 +153,7 @@ class TestVortexIndicator(unittest.TestCase):
 
     def test_vortex_indicator_pos(self):
         target = '+VI14'
-        result = vortex_indicator_pos(
-            high=self._df['High'], low=self._df['Low'], close=self._df['Close'], n=14, fillna=False)
+        result = vortex_indicator_pos(**self._params)
         pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
 
     def test_vortex_indicator_pos2(self):
@@ -163,8 +163,7 @@ class TestVortexIndicator(unittest.TestCase):
 
     def test_vortex_indicator_neg(self):
         target = '-VI14'
-        result = vortex_indicator_neg(
-            high=self._df['High'], low=self._df['Low'], close=self._df['Close'], n=14, fillna=False)
+        result = vortex_indicator_neg(**self._params)
         pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
 
     def test_vortex_indicator_neg2(self):
@@ -183,8 +182,8 @@ class TestPSARIndicator(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls._df = pd.read_csv(cls._filename, sep=',')
-        cls._indicator = PSARIndicator(
-            high=cls._df['High'], low=cls._df['Low'], close=cls._df['Close'], fillna=False)
+        cls._params = dict(high=cls._df['High'], low=cls._df['Low'], close=cls._df['Close'], fillna=False)
+        cls._indicator = PSARIndicator(**cls._params)
 
     @classmethod
     def tearDownClass(cls):
@@ -212,20 +211,20 @@ class TestPSARIndicator(unittest.TestCase):
 
     def test_psar_up2(self):
         target = 'psar_up'
-        result = psar_up(high=self._df['High'], low=self._df['Low'], close=self._df['Close'], fillna=False)
+        result = psar_up(**self._params)
         pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
 
     def test_psar_down2(self):
         target = 'psar_down'
-        result = psar_down(high=self._df['High'], low=self._df['Low'], close=self._df['Close'], fillna=False)
+        result = psar_down(**self._params)
         pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
 
     def test_psar_up_indicator2(self):
         target = 'psar_up_ind'
-        result = psar_up_indicator(high=self._df['High'], low=self._df['Low'], close=self._df['Close'], fillna=False)
+        result = psar_up_indicator(**self._params)
         pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
 
     def test_psar_down_indicator2(self):
         target = 'psar_down_ind'
-        result = psar_down_indicator(high=self._df['High'], low=self._df['Low'], close=self._df['Close'], fillna=False)
+        result = psar_down_indicator(**self._params)
         pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
