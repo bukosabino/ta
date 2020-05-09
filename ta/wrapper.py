@@ -221,7 +221,7 @@ def add_trend_ta(df: pd.DataFrame, high: str, low: str, close: str, fillna: bool
 
     # PSAR Indicator
     indicator = PSARIndicator(high=df[high], low=df[low], close=df[close], step=0.02, max_step=0.20, fillna=fillna)
-    df[f'{colprefix}trend_psar'] = indicator.psar()
+    # df[f'{colprefix}trend_psar'] = indicator.psar()
     df[f'{colprefix}trend_psar_up'] = indicator.psar_up()
     df[f'{colprefix}trend_psar_down'] = indicator.psar_down()
     df[f'{colprefix}trend_psar_up_indicator'] = indicator.psar_up_indicator()

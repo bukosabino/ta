@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 
 
-class IndicatorMixin():
+class IndicatorMixin:
 
     def _check_fillna(self, serie: pd.Series, value: int = 0):
         """Check if fillna flag is True.
@@ -18,13 +18,20 @@ class IndicatorMixin():
         """
         if self._fillna:
             serie_output = serie.copy(deep=False)
-            serie_output = serie.replace([np.inf, -np.inf], np.nan)
+            serie_output = serie_output.replace([np.inf, -np.inf], np.nan)
             if isinstance(value, int) and value == -1:
                 return serie_output.fillna(method='ffill').fillna(value=-1)
             else:
                 return serie_output.fillna(method='ffill').fillna(value)
         else:
             return serie
+
+    def _true_range(self, high: pd.Series, low: pd.Series, prev_close: pd.Series):
+        tr1 = high - low
+        tr2 = (high - prev_close).abs()
+        tr3 = (low - prev_close).abs()
+        tr = pd.DataFrame(data={'tr1': tr1, 'tr2': tr2, 'tr3': tr3}).max(axis=1)
+        return tr
 
 
 def dropna(df):
