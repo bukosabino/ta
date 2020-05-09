@@ -144,10 +144,9 @@ class UltimateOscillator(IndicatorMixin):
         self._run()
 
     def _run(self):
-        min_l_or_pc = self._close.shift(1).combine(self._low, min)
-        max_h_or_pc = self._close.shift(1).combine(self._high, max)
-        bp = self._close - min_l_or_pc
-        tr = max_h_or_pc - min_l_or_pc
+        cs = self._close.shift(1)
+        tr = self._true_range(self._high, self._low, cs)
+        bp = self._close - pd.DataFrame({'low': self._low, 'close': cs}).min(axis=1, skipna=False)
         avg_s = bp.rolling(self._s, min_periods=self._s).sum() / tr.rolling(self._s, min_periods=self._s).sum()
         avg_m = bp.rolling(self._m, min_periods=self._m).sum() / tr.rolling(self._m, min_periods=self._m).sum()
         avg_l = bp.rolling(self._len, min_periods=self._len).sum() / tr.rolling(self._len, min_periods=self._len).sum()

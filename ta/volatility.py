@@ -38,7 +38,7 @@ class AverageTrueRange(IndicatorMixin):
 
     def _run(self):
         cs = self._close.shift(1)
-        tr = self._high.combine(cs, max) - self._low.combine(cs, min)
+        tr = self._true_range(self._high, self._low, cs)
         atr = np.zeros(len(self._close))
         atr[self._n-1] = tr[0:self._n].mean()
         for i in range(self._n, len(atr)):

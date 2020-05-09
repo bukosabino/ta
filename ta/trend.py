@@ -637,8 +637,8 @@ class VortexIndicator(IndicatorMixin):
         self._run()
 
     def _run(self):
-        tr = (self._high.combine(self._close.shift(1, fill_value=self._close.mean()), max)
-              - self._low.combine(self._close.shift(1, fill_value=self._close.mean()), min))
+        cs = self._close.shift(1, fill_value=self._close.mean())
+        tr = self._true_range(self._high, self._low, cs)
         trn = tr.rolling(self._n).sum()
         vmp = np.abs(self._high - self._low.shift(1))
         vmm = np.abs(self._low - self._high.shift(1))
@@ -761,7 +761,7 @@ class PSARIndicator(IndicatorMixin):
                     elif h1 > self._psar.iloc[i]:
                         self._psar.iloc[i] = h1
 
-            up_trend = up_trend != reversal     # XOR
+            up_trend = up_trend != reversal  # XOR
 
             if up_trend:
                 self._psar_up.iloc[i] = self._psar.iloc[i]
