@@ -1,5 +1,6 @@
 | Date | Version | Comment |
 | ------------- | ------------- | ------------- |
+| 2020/05/10 | 0.5.23 | Fixing bug when dataset with timestamp as index https://github.com/bukosabino/ta/pull/154 |
 | 2020/05/04 | 0.5.22 | 1. Keltner Channel: adding tests; adding n atr input parametr; fixing some minor bug; adding unittests for adx https://github.com/bukosabino/ta/pull/148 |
 |            |        | 2. Refactor tests code and speed up the tests https://github.com/bukosabino/ta/pull/149 |
 |            |        | 3. Refactor tests code https://github.com/bukosabino/ta/pull/150 |
