@@ -285,6 +285,31 @@ class IchimokuIndicator(IndicatorMixin):
         self._n3 = n3
         self._visual = visual
         self._fillna = fillna
+        self._run()
+
+    def _run(self):
+        self._conv = 0.5 * (
+                self._high.rolling(self._n1, min_periods=0).max() + self._low.rolling(self._n1, min_periods=0).min())
+        self._base = 0.5 * (
+                self._high.rolling(self._n2, min_periods=0).max() + self._low.rolling(self._n2, min_periods=0).min())
+
+    def ichimoku_conversion_line(self) -> pd.Series:
+        """Tenkan-sen (Conversion Line)
+
+        Returns:
+            pandas.Series: New feature generated.
+        """
+        conversion = self._check_fillna(self._conv, value=-1)
+        return pd.Series(conversion, name=f'ichimoku_conv_{self._n1}_{self._n2}')
+
+    def ichimoku_base_line(self) -> pd.Series:
+        """Kijun-sen (Base Line)
+
+        Returns:
+            pandas.Series: New feature generated.
+        """
+        base = self._check_fillna(self._base, value=-1)
+        return pd.Series(base, name=f'ichimoku_base_{self._n1}_{self._n2}')
 
     def ichimoku_a(self) -> pd.Series:
         """Senkou Span A (Leading Span A)
@@ -292,11 +317,7 @@ class IchimokuIndicator(IndicatorMixin):
         Returns:
             pandas.Series: New feature generated.
         """
-        conv = 0.5 * (self._high.rolling(self._n1, min_periods=0).max()
-                      + self._low.rolling(self._n1, min_periods=0).min())
-        base = 0.5 * (self._high.rolling(self._n2, min_periods=0).max()
-                      + self._low.rolling(self._n2, min_periods=0).min())
-        spana = 0.5 * (conv + base)
+        spana = 0.5 * (self._conv + self._base)
         spana = spana.shift(self._n2, fill_value=spana.mean()) if self._visual else spana
         spana = self._check_fillna(spana, value=-1)
         return pd.Series(spana, name=f'ichimoku_a_{self._n1}_{self._n2}')
