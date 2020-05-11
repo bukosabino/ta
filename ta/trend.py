@@ -1197,6 +1197,50 @@ def kst_sig(close, r1=10, r2=15, r3=20, r4=30, n1=10, n2=10, n3=10, n4=15, nsig=
         close=close, r1=r1, r2=r2, r3=r3, r4=r4, n1=n1, n2=n2, n3=n3, n4=n4, nsig=nsig, fillna=fillna).kst_sig()
 
 
+def ichimoku_conversion_line(high, low, n1=9, n2=26, visual=False, fillna=False) -> pd.Series:
+    """Tenkan-sen (Conversion Line)
+
+    It identifies the trend and look for potential signals within that trend.
+
+    http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:ichimoku_cloud
+
+    Args:
+        high(pandas.Series): dataset 'High' column.
+        low(pandas.Series): dataset 'Low' column.
+        n1(int): n1 low period.
+        n2(int): n2 medium period.
+        visual(bool): if True, shift n2 values.
+        fillna(bool): if True, fill nan values.
+
+    Returns:
+        pandas.Series: New feature generated.
+    """
+    return IchimokuIndicator(
+        high=high, low=low, n1=n1, n2=n2, n3=52, visual=visual, fillna=fillna).ichimoku_conversion_line()
+
+
+def ichimoku_base_line(high, low, n1=9, n2=26, visual=False, fillna=False) -> pd.Series:
+    """Kijun-sen (Base Line)
+
+    It identifies the trend and look for potential signals within that trend.
+
+    http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:ichimoku_cloud
+
+    Args:
+        high(pandas.Series): dataset 'High' column.
+        low(pandas.Series): dataset 'Low' column.
+        n1(int): n1 low period.
+        n2(int): n2 medium period.
+        visual(bool): if True, shift n2 values.
+        fillna(bool): if True, fill nan values.
+
+    Returns:
+        pandas.Series: New feature generated.
+    """
+    return IchimokuIndicator(
+        high=high, low=low, n1=n1, n2=n2, n3=52, visual=visual, fillna=fillna).ichimoku_base_line()
+
+
 def ichimoku_a(high, low, n1=9, n2=26, visual=False, fillna=False):
     """Ichimoku Kinkō Hyō (Ichimoku)
 
