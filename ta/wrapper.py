@@ -207,6 +207,8 @@ def add_trend_ta(df: pd.DataFrame, high: str, low: str, close: str, fillna: bool
 
     # Ichimoku Indicator
     indicator = IchimokuIndicator(high=df[high], low=df[low], n1=9, n2=26, n3=52, visual=False, fillna=fillna)
+    df[f'{colprefix}trend_ichimoku_conv'] = indicator.ichimoku_conversion_line()
+    df[f'{colprefix}trend_ichimoku_base'] = indicator.ichimoku_base_line()
     df[f'{colprefix}trend_ichimoku_a'] = indicator.ichimoku_a()
     df[f'{colprefix}trend_ichimoku_b'] = indicator.ichimoku_b()
     indicator = IchimokuIndicator(high=df[high], low=df[low], n1=9, n2=26, n3=52, visual=True, fillna=fillna)
