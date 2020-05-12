@@ -75,8 +75,9 @@ class BollingerBands(IndicatorMixin):
         self._run()
 
     def _run(self):
-        self._mavg = self._close.rolling(self._n, min_periods=0).mean()
-        self._mstd = self._close.rolling(self._n, min_periods=0).std(ddof=0)
+        min_periods = 0 if self._fillna else self._n
+        self._mavg = self._close.rolling(self._n, min_periods=min_periods).mean()
+        self._mstd = self._close.rolling(self._n, min_periods=min_periods).std(ddof=0)
         self._hband = self._mavg + self._ndev * self._mstd
         self._lband = self._mavg - self._ndev * self._mstd
 
@@ -307,9 +308,9 @@ class DonchianChannel(IndicatorMixin):
         self._run()
 
     def _run(self):
-        self.min_periods = 1 if self._fillna else self._n
-        self._hband = self._high.rolling(self._n, min_periods=self.min_periods).max()
-        self._lband = self._low.rolling(self._n, min_periods=self.min_periods).min()
+        self._min_periods = 1 if self._fillna else self._n
+        self._hband = self._high.rolling(self._n, min_periods=self._min_periods).max()
+        self._lband = self._low.rolling(self._n, min_periods=self._min_periods).min()
 
     def donchian_channel_hband(self) -> pd.Series:
         """Donchian Channel High Band
@@ -351,7 +352,7 @@ class DonchianChannel(IndicatorMixin):
         Returns:
             pandas.Series: New feature generated.
         """
-        mavg = self._close.rolling(self._n, min_periods=self.min_periods).mean()
+        mavg = self._close.rolling(self._n, min_periods=self._min_periods).mean()
         wband = ((self._hband - self._lband) / mavg) * 100
         wband = self._check_fillna(wband, value=0)
         if self._offset != 0:

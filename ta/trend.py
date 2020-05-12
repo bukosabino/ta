@@ -35,7 +35,8 @@ class AroonIndicator(IndicatorMixin):
         self._run()
 
     def _run(self):
-        rolling_close = self._close.rolling(self._n, min_periods=0)
+        min_periods = 0 if self._fillna else self._n
+        rolling_close = self._close.rolling(self._n, min_periods=min_periods)
         self._aroon_up = rolling_close.apply(
             lambda x: float(np.argmax(x) + 1) / self._n * 100, raw=True)
         self._aroon_down = rolling_close.apply(
@@ -245,11 +246,12 @@ class MassIndex(IndicatorMixin):
         self._run()
 
     def _run(self):
+        min_periods = 0 if self._fillna else self._n2
         amplitude = self._high - self._low
         ema1 = ema(amplitude, self._n, self._fillna)
         ema2 = ema(ema1, self._n, self._fillna)
         mass = ema1 / ema2
-        self._mass = mass.rolling(self._n2, min_periods=0).sum()
+        self._mass = mass.rolling(self._n2, min_periods=min_periods).sum()
 
     def mass_index(self) -> pd.Series:
         """Mass Index (MI)
@@ -288,10 +290,14 @@ class IchimokuIndicator(IndicatorMixin):
         self._run()
 
     def _run(self):
+        min_periods_n1 = 0 if self._fillna else self._n1
+        min_periods_n2 = 0 if self._fillna else self._n2
         self._conv = 0.5 * (
-                self._high.rolling(self._n1, min_periods=0).max() + self._low.rolling(self._n1, min_periods=0).min())
+                self._high.rolling(self._n1, min_periods=min_periods_n1).max() +
+                self._low.rolling(self._n1, min_periods=min_periods_n1).min())
         self._base = 0.5 * (
-                self._high.rolling(self._n2, min_periods=0).max() + self._low.rolling(self._n2, min_periods=0).min())
+                self._high.rolling(self._n2, min_periods=min_periods_n2).max() +
+                self._low.rolling(self._n2, min_periods=min_periods_n2).min())
 
     def ichimoku_conversion_line(self) -> pd.Series:
         """Tenkan-sen (Conversion Line)
@@ -376,14 +382,26 @@ class KSTIndicator(IndicatorMixin):
         self._run()
 
     def _run(self):
-        rocma1 = ((self._close - self._close.shift(self._r1, fill_value=self._close.mean()))
-                  / self._close.shift(self._r1, fill_value=self._close.mean())).rolling(self._n1, min_periods=0).mean()
-        rocma2 = ((self._close - self._close.shift(self._r2, fill_value=self._close.mean()))
-                  / self._close.shift(self._r2, fill_value=self._close.mean())).rolling(self._n2, min_periods=0).mean()
-        rocma3 = ((self._close - self._close.shift(self._r3, fill_value=self._close.mean()))
-                  / self._close.shift(self._r3, fill_value=self._close.mean())).rolling(self._n3, min_periods=0).mean()
-        rocma4 = ((self._close - self._close.shift(self._r4, fill_value=self._close.mean()))
-                  / self._close.shift(self._r4, fill_value=self._close.mean())).rolling(self._n4, min_periods=0).mean()
+        min_periods_n1 = 0 if self._fillna else self._n1
+        min_periods_n2 = 0 if self._fillna else self._n2
+        min_periods_n3 = 0 if self._fillna else self._n3
+        min_periods_n4 = 0 if self._fillna else self._n4
+        rocma1 = (
+            (self._close - self._close.shift(self._r1, fill_value=self._close.mean()))
+            / self._close.shift(self._r1, fill_value=self._close.mean())).rolling(
+                self._n1, min_periods=min_periods_n1).mean()
+        rocma2 = (
+            (self._close - self._close.shift(self._r2, fill_value=self._close.mean()))
+            / self._close.shift(self._r2, fill_value=self._close.mean())).rolling(
+                self._n2, min_periods=min_periods_n2).mean()
+        rocma3 = (
+            (self._close - self._close.shift(self._r3, fill_value=self._close.mean()))
+            / self._close.shift(self._r3, fill_value=self._close.mean())).rolling(
+                self._n3, min_periods=min_periods_n3).mean()
+        rocma4 = (
+            (self._close - self._close.shift(self._r4, fill_value=self._close.mean()))
+            / self._close.shift(self._r4, fill_value=self._close.mean())).rolling(
+                self._n4, min_periods=min_periods_n4).mean()
         self._kst = 100 * (rocma1 + 2 * rocma2 + 3 * rocma3 + 4 * rocma4)
         self._kst_sig = self._kst.rolling(self._nsig, min_periods=0).mean()
 
@@ -440,8 +458,9 @@ class DPOIndicator(IndicatorMixin):
         self._run()
 
     def _run(self):
+        min_periods = 0 if self._fillna else self._n
         self._dpo = (self._close.shift(int((0.5 * self._n) + 1), fill_value=self._close.mean())
-                     - self._close.rolling(self._n, min_periods=0).mean())
+                     - self._close.rolling(self._n, min_periods=min_periods).mean())
 
     def dpo(self) -> pd.Series:
         """Detrended Price Oscillator (DPO)
@@ -493,9 +512,10 @@ class CCIIndicator(IndicatorMixin):
         def _mad(x):
             return np.mean(np.abs(x-np.mean(x)))
 
+        min_periods = 0 if self._fillna else self._n
         pp = (self._high + self._low + self._close) / 3.0
-        self._cci = ((pp - pp.rolling(self._n, min_periods=0).mean())
-                     / (self._c * pp.rolling(self._n, min_periods=0).apply(_mad, True)))
+        self._cci = ((pp - pp.rolling(self._n, min_periods=min_periods).mean())
+                     / (self._c * pp.rolling(self._n, min_periods=min_periods).apply(_mad, True)))
 
     def cci(self) -> pd.Series:
         """Commodity Channel Index (CCI)
@@ -660,11 +680,12 @@ class VortexIndicator(IndicatorMixin):
     def _run(self):
         cs = self._close.shift(1, fill_value=self._close.mean())
         tr = self._true_range(self._high, self._low, cs)
-        trn = tr.rolling(self._n).sum()
+        min_periods = 0 if self._fillna else self._n
+        trn = tr.rolling(self._n, min_periods=min_periods).sum()
         vmp = np.abs(self._high - self._low.shift(1))
         vmm = np.abs(self._low - self._high.shift(1))
-        self._vip = vmp.rolling(self._n, min_periods=0).sum() / trn
-        self._vin = vmm.rolling(self._n, min_periods=0).sum() / trn
+        self._vip = vmp.rolling(self._n, min_periods=min_periods).sum() / trn
+        self._vin = vmm.rolling(self._n, min_periods=min_periods).sum() / trn
 
     def vortex_indicator_pos(self):
         """+VI
@@ -1195,6 +1216,50 @@ def kst_sig(close, r1=10, r2=15, r3=20, r4=30, n1=10, n2=10, n3=10, n4=15, nsig=
     """
     return KSTIndicator(
         close=close, r1=r1, r2=r2, r3=r3, r4=r4, n1=n1, n2=n2, n3=n3, n4=n4, nsig=nsig, fillna=fillna).kst_sig()
+
+
+def ichimoku_conversion_line(high, low, n1=9, n2=26, visual=False, fillna=False) -> pd.Series:
+    """Tenkan-sen (Conversion Line)
+
+    It identifies the trend and look for potential signals within that trend.
+
+    http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:ichimoku_cloud
+
+    Args:
+        high(pandas.Series): dataset 'High' column.
+        low(pandas.Series): dataset 'Low' column.
+        n1(int): n1 low period.
+        n2(int): n2 medium period.
+        visual(bool): if True, shift n2 values.
+        fillna(bool): if True, fill nan values.
+
+    Returns:
+        pandas.Series: New feature generated.
+    """
+    return IchimokuIndicator(
+        high=high, low=low, n1=n1, n2=n2, n3=52, visual=visual, fillna=fillna).ichimoku_conversion_line()
+
+
+def ichimoku_base_line(high, low, n1=9, n2=26, visual=False, fillna=False) -> pd.Series:
+    """Kijun-sen (Base Line)
+
+    It identifies the trend and look for potential signals within that trend.
+
+    http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:ichimoku_cloud
+
+    Args:
+        high(pandas.Series): dataset 'High' column.
+        low(pandas.Series): dataset 'Low' column.
+        n1(int): n1 low period.
+        n2(int): n2 medium period.
+        visual(bool): if True, shift n2 values.
+        fillna(bool): if True, fill nan values.
+
+    Returns:
+        pandas.Series: New feature generated.
+    """
+    return IchimokuIndicator(
+        high=high, low=low, n1=n1, n2=n2, n3=52, visual=visual, fillna=fillna).ichimoku_base_line()
 
 
 def ichimoku_a(high, low, n1=9, n2=26, visual=False, fillna=False):

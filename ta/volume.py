@@ -115,7 +115,10 @@ class ChaikinMoneyFlowIndicator(IndicatorMixin):
         mfv = ((self._close - self._low) - (self._high - self._close)) / (self._high - self._low)
         mfv = mfv.fillna(0.0)  # float division by zero
         mfv *= self._volume
-        self._cmf = mfv.rolling(self._n, min_periods=0).sum() / self._volume.rolling(self._n, min_periods=0).sum()
+        min_periods = 0 if self._fillna else self._n
+        self._cmf = (
+                mfv.rolling(self._n, min_periods=min_periods).sum() /
+                self._volume.rolling(self._n, min_periods=min_periods).sum())
 
     def chaikin_money_flow(self) -> pd.Series:
         """Chaikin Money Flow (CMF)
@@ -209,7 +212,8 @@ class EaseOfMovementIndicator(IndicatorMixin):
         Returns:
             pandas.Series: New feature generated.
         """
-        emv = self._emv.rolling(self._n, min_periods=0).mean()
+        min_periods = 0 if self._fillna else self._n
+        emv = self._emv.rolling(self._n, min_periods=min_periods).mean()
         emv = self._check_fillna(emv, value=0)
         return pd.Series(emv, name=f'sma_eom_{self._n}')
 
@@ -335,8 +339,11 @@ class MFIIndicator(IndicatorMixin):
         mf = tp * self._volume * up_down
 
         # 4 positive and negative money flow with n periods
-        n_positive_mf = mf.rolling(self._n).apply(lambda x: np.sum(np.where(x >= 0.0, x, 0.0)), raw=True)
-        n_negative_mf = abs(mf.rolling(self._n).apply(lambda x: np.sum(np.where(x < 0.0, x, 0.0)), raw=True))
+        min_periods = 0 if self._fillna else self._n
+        n_positive_mf = mf.rolling(
+            self._n, min_periods=min_periods).apply(lambda x: np.sum(np.where(x >= 0.0, x, 0.0)), raw=True)
+        n_negative_mf = abs(
+            mf.rolling(self._n, min_periods=min_periods).apply(lambda x: np.sum(np.where(x < 0.0, x, 0.0)), raw=True))
 
         # n_positive_mf = np.where(mf.rolling(self._n).sum() >= 0.0, mf, 0.0)
         # n_negative_mf = abs(np.where(mf.rolling(self._n).sum() < 0.0, mf, 0.0))
@@ -401,10 +408,11 @@ class VolumeWeightedAveragePrice(IndicatorMixin):
         pv = (tp * self._volume)
 
         # 3 total price * volume
-        total_pv = pv.rolling(self._n, min_periods=1).sum()
+        min_periods = 0 if self._fillna else self._n
+        total_pv = pv.rolling(self._n, min_periods=min_periods).sum()
 
         # 4 total volume
-        total_volume = self._volume.rolling(self._n, min_periods=1).sum()
+        total_volume = self._volume.rolling(self._n, min_periods=min_periods).sum()
 
         self.vwap = total_pv / total_volume
 
