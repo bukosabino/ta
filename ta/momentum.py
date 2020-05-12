@@ -36,8 +36,9 @@ class RSIIndicator(IndicatorMixin):
         diff = self._close.diff(1)
         up = diff.where(diff > 0, 0.0)
         dn = -diff.where(diff < 0, 0.0)
-        emaup = up.ewm(alpha=1/self._n, min_periods=0, adjust=False).mean()
-        emadn = dn.ewm(alpha=1/self._n, min_periods=0, adjust=False).mean()
+        min_periods = 0 if self._fillna else self._n
+        emaup = up.ewm(alpha=1/self._n, min_periods=min_periods, adjust=False).mean()
+        emadn = dn.ewm(alpha=1/self._n, min_periods=min_periods, adjust=False).mean()
         rs = emaup / emadn
         self._rsi = pd.Series(np.where(emadn == 0, 100, 100-(100/(1+rs))), index=self._close.index)
 
