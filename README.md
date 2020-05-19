@@ -1,4 +1,4 @@
-[![star this repo](https://githubbadges.com/star.svg?user=bukosabino&repo=https://github.com/bukosabino/ta&style=flat-square)](https://github.com/https://github.com/bukosabino/https://github.com/bukosabino/ta)
+[![star this repo](https://githubbadges.com/star.svg?user=bukosabino&repo=https://github.com/bukosabino/ta&style=flat-square)](https://github.com/bukosabino/https://github.com/bukosabino/ta)
 ![CircleCI](https://img.shields.io/circleci/build/github/bukosabino/ta/master)
 [![Documentation Status](https://readthedocs.org/projects/technical-analysis-library-in-python/badge/?version=latest)](https://technical-analysis-library-in-python.readthedocs.io/en/latest/?badge=latest)
 [![Coverage Status](https://coveralls.io/repos/github/bukosabino/ta/badge.svg)](https://coveralls.io/github/bukosabino/ta)
