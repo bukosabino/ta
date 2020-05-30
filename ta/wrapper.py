@@ -127,9 +127,9 @@ def add_volatility_ta(df: pd.DataFrame, high: str, low: str, close: str,
     indicator_dc = DonchianChannel(high=df[high], low=df[low], close=df[close], n=20, offset=0, fillna=fillna)
     df[f'{colprefix}volatility_dcl'] = indicator_dc.donchian_channel_lband()
     df[f'{colprefix}volatility_dch'] = indicator_dc.donchian_channel_hband()
-    df[f'{colprefix}volatility_dch'] = indicator_dc.donchian_channel_mband()
-    df[f'{colprefix}volatility_dcl'] = indicator_dc.donchian_channel_wband()
-    df[f'{colprefix}volatility_dch'] = indicator_dc.donchian_channel_pband()
+    df[f'{colprefix}volatility_dcm'] = indicator_dc.donchian_channel_mband()
+    df[f'{colprefix}volatility_dcw'] = indicator_dc.donchian_channel_wband()
+    df[f'{colprefix}volatility_dcp'] = indicator_dc.donchian_channel_pband()
 
     return df
 
