@@ -460,6 +460,40 @@ class WilliamsRIndicator(IndicatorMixin):
         wr = self._check_fillna(self._wr, value=-50)
         return pd.Series(wr, name='wr')
 
+class STOCHRSIIndicator(IndicatorMixin):
+    """Stochastic RSI 
+    The StochRSI oscillator was developed to take advantage of both momentum 
+    indicators in order to create a more sensitive indicator that is attuned to 
+    a specific security's historical performance rather than a generalized analysis 
+    of price change.
+    
+    https://www.investopedia.com/terms/s/stochrsi.asp
+
+    Args:
+        close(pandas.Series): dataset 'Close' column.
+        n(int): n period
+        fillna(bool): if True, fill nan values.
+    """
+    def __init__(self, close: pd.Series, n: int = 14, fillna: bool = False):
+        self._close = close
+        self._n = n
+        self._fillna = fillna
+        self._run()
+
+    def _run(self):
+        self._rsi = momentum.rsi(self._close)
+        self._stochrsi = 100 * (self._rsi - self._rsi.rolling(self._n).min()) / \
+                (_rsi.rolling(self._n).max() - _rsi.rolling(self._n).min())
+    
+    def stochrsi(self):
+        """Stochastic RSI
+
+        Returns:
+            pandas.Series: New feature generated.
+        """
+        stochrsi = self._check_fillna(self._stochrsi)
+        return pd.Series(stochrsi, name='stochrsi')
+    
 
 def rsi(close, n=14, fillna=False):
     """Relative Strength Index (RSI)
@@ -719,3 +753,25 @@ def roc(close, n=12, fillna=False):
 
     """
     return ROCIndicator(close=close, n=n, fillna=fillna).roc()
+
+def stochrsi(close, n=14, fillna=False):
+    """Stochastic RSI 
+    The StochRSI oscillator was developed to take advantage of both momentum 
+    indicators in order to create a more sensitive indicator that is attuned to 
+    a specific security's historical performance rather than a generalized analysis 
+    of price change.
+    
+    https://www.investopedia.com/terms/s/stochrsi.asp
+
+    Args:
+        close(pandas.Series): dataset 'Close' column.
+        n(int): n period
+        fillna(bool): if True, fill nan values.
+    Returns:
+            pandas.Series: New feature generated.
+    """
+    return STOCHRSIIndicator(close=close, n=n, fillna=fillna).stochrsi()
+
+
+
+
