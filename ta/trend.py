@@ -182,6 +182,37 @@ class SMAIndicator(IndicatorMixin):
         sma_ = sma(self._close, self._n, self._fillna)
         return pd.Series(sma_, name=f'sma_{self._n}')
 
+class WMAIndicator(IndicatorMixin):
+    """WMA - Weighted Moving Average
+
+    Args:
+        close(pandas.Series): dataset 'Close' column.
+        n(int): n period.
+        fillna(bool): if True, fill nan values.
+    """
+
+    def __init__(self, close: pd.Series, n: int = 9, fillna: bool = False):
+        self._close = close
+        self._n = n
+        self._fillna = fillna
+        self._run()
+    
+    def _run(self):
+        _weight = pd.Series([i*2/(self._n*(self._n+1)) for i in range(1, self._n+1)])
+        def weighted_average(weight):
+            def _weighted_average(x):
+                return (weight * x).sum()
+            return _weighted_average
+        self._wma = self._close.rolling(self._n).apply(weighted_average(_weight), raw=True)
+
+    def wma(self) -> pd.Series:
+        """Weighted Moving Average (WMA)
+
+        Returns:
+            pandas.Series: New feature generated.
+        """
+        wma = self._check_fillna(self._wma, value=0)
+        return pd.Series(wma, name=f'wma_{self._n}')
 
 class TRIXIndicator(IndicatorMixin):
     """Trix (TRIX)
@@ -937,6 +968,13 @@ def sma_indicator(close, n=12, fillna=False):
     """
     return SMAIndicator(close=close, n=n, fillna=fillna).sma_indicator()
 
+def wma_indicator(close, n=9, fillna=False):
+    """Weighted Moving Average (WMA)
+
+    Returns:
+        pandas.Series: New feature generated.
+    """
+    return WMAIndicator(close=close, n=n, fillna=fillna).wma()
 
 def macd(close, n_slow=26, n_fast=12, fillna=False):
     """Moving Average Convergence Divergence (MACD)
