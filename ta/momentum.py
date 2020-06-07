@@ -8,7 +8,7 @@
 import numpy as np
 import pandas as pd
 
-from ta.utils import IndicatorMixin
+from ta.utils import IndicatorMixin, ema
 
 
 class RSIIndicator(IndicatorMixin):
@@ -518,6 +518,71 @@ class STOCHRSIIndicator(IndicatorMixin):
         stochrsi_D = self._check_fillna(stochrsi_D)
         return pd.Series(stochrsi_D, name='stochrsi_d')
 
+class PercentagePriceOscillator(IndicatorMixin):
+    """
+    The Percentage Price Oscillator (PPO) is a momentum oscillator that measures 
+    the difference between two moving averages as a percentage of the larger moving average.
+    
+    https://school.stockcharts.com/doku.php?id=technical_indicators:price_oscillators_ppo
+
+    Args:
+        price(pandas.Series): dataset 'Price' column.
+        n_slow(int): n period long-term.
+        n_fast(int): n period short-term.
+        n_sign(int): n period to signal.
+        fillna(bool): if True, fill nan values.
+    """
+
+    def __init__(self,
+                 close: pd.Series,
+                 n_slow: int = 26,
+                 n_fast: int = 12,
+                 n_sign: int = 9,
+                 fillna: bool = False):
+        self._close = close
+        self._n_slow = n_slow
+        self._n_fast = n_fast
+        self._n_sign = n_sign
+        self._fillna = fillna
+        self._run()
+    
+    def _run(self):
+        _emafast = ema(self._close, self._n_fast, self._fillna)
+        _emaslow = ema(self._close, self._n_slow, self._fillna)
+        self._ppo = ((_emafast - _emaslow)/_emaslow) * 100
+        self._ppo_signal = ema(self._ppo, self._n_sign, self._fillna)
+        self._ppo_hist = self._ppo - self._ppo_signal
+    
+    def ppo(self):
+        """PPO Line
+
+        Returns:
+            pandas.Series: New feature generated.
+        """
+        ppo = self._check_fillna(self._ppo, value=0)
+        return pd.Series(ppo, name=f'PPO_{self._n_fast}_{self._n_slow}')
+    
+    def ppo_signal(self):
+        """Signal Line
+
+        Returns:
+            pandas.Series: New feature generated.
+        """
+
+        ppo_signal = self._check_fillna(self._ppo_signal, value=0)
+        return pd.Series(ppo_signal, name=f'PPO_sign_{self._n_fast}_{self._n_slow}')
+
+    def ppo_hist(self):
+        """Histgram
+
+        Returns:
+            pandas.Series: New feature generated.
+        """
+
+        ppo_hist = self._check_fillna(self._ppo_hist, value=0)
+        return pd.Series(ppo_hist, name=f'PPO_hist_{self._n_fast}_{self._n_slow}')
+
+
 def rsi(close, n=14, fillna=False):
     """Relative Strength Index (RSI)
 
@@ -836,6 +901,62 @@ def stochrsi_d(close, n=14, d1=3, d2=3, fillna=False):
             pandas.Series: New feature generated.
     """
     return STOCHRSIIndicator(close=close, n=n, d1=d1, d2=d2, fillna=fillna).stochrsi_d()
+
+def ppo(close, n_slow=26, n_fast=12, n_sign=9, fillna=False):
+    """
+    The Percentage Price Oscillator (PPO) is a momentum oscillator that measures 
+    the difference between two moving averages as a percentage of the larger moving average.
+    
+    https://school.stockcharts.com/doku.php?id=technical_indicators:price_oscillators_ppo
+
+    Args:
+        price(pandas.Series): dataset 'Price' column.
+        n_slow(int): n period long-term.
+        n_fast(int): n period short-term.
+        n_sign(int): n period to signal.
+        fillna(bool): if True, fill nan values.
+    Returns:
+        pandas.Series: New feature generated.
+    """
+    return PercentagePriceOscillator(close=close, n_slow=n_slow, n_fast=n_fast, n_sign=n_sign, fillna=fillna).ppo()
+
+def ppo_signal(close, n_slow=26, n_fast=12, n_sign=9, fillna=False):
+    """
+    The Percentage Price Oscillator (PPO) is a momentum oscillator that measures 
+    the difference between two moving averages as a percentage of the larger moving average.
+    
+    https://school.stockcharts.com/doku.php?id=technical_indicators:price_oscillators_ppo
+
+    Args:
+        price(pandas.Series): dataset 'Price' column.
+        n_slow(int): n period long-term.
+        n_fast(int): n period short-term.
+        n_sign(int): n period to signal.
+        fillna(bool): if True, fill nan values.
+    Returns:
+        pandas.Series: New feature generated.
+    """
+    return PercentagePriceOscillator(close=close, n_slow=n_slow, n_fast=n_fast, n_sign=n_sign, fillna=fillna).ppo_signal()
+
+def ppo_hist(close, n_slow=26, n_fast=12, n_sign=9, fillna=False):
+    """
+    The Percentage Price Oscillator (PPO) is a momentum oscillator that measures 
+    the difference between two moving averages as a percentage of the larger moving average.
+    
+    https://school.stockcharts.com/doku.php?id=technical_indicators:price_oscillators_ppo
+
+    Args:
+        price(pandas.Series): dataset 'Price' column.
+        n_slow(int): n period long-term.
+        n_fast(int): n period short-term.
+        n_sign(int): n period to signal.
+        fillna(bool): if True, fill nan values.
+    Returns:
+        pandas.Series: New feature generated.
+    """
+    return PercentagePriceOscillator(close=close, n_slow=n_slow, n_fast=n_fast, n_sign=n_sign, fillna=fillna).ppo_hist()
+
+
 
 
 
