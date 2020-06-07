@@ -371,6 +371,40 @@ class DonchianChannel(IndicatorMixin):
             pband = pband.shift(self._offset)
         return pd.Series(pband, name='dcpband')
 
+class UlcerIndex(IndicatorMixin):
+    """Ulcer Index
+
+    Args:
+        close(pandas.Series): dataset 'Close' column.
+        n(int): n period.
+        fillna(bool): if True, fill nan values.
+    """
+
+    def __init__(self, close: pd.Series, n: int = 14, fillna: bool = False):
+        self._close = close
+        self._n = n
+        self._fillna = fillna
+        self._run()
+
+    def _run(self):
+        _ui_max = self._close.rolling(self._n).max()
+        _r_i= 100 * (self._close - _ui_max) / _ui_max
+        def ui_function():
+            def _ui_function(x):
+                return np.sqrt((x**2/self._n).sum())
+            return _ui_function
+
+        self._ui = _r_i.rolling(self._n).apply(ui_function(), raw=True)
+
+    def ulcer_index(self) -> pd.Series:
+        """Ulcer Index (UI)
+
+        Returns:
+            pandas.Series: New feature generated.
+        """
+        ui = self._check_fillna(self._ui)
+        return pd.Series(ui, name='ui')
+
 
 def average_true_range(high, low, close, n=14, fillna=False):
     """Average True Range (ATR)
@@ -801,3 +835,21 @@ def donchian_channel_pband(high, low, close, n=10, offset=0, fillna=False):
     """
     indicator = DonchianChannel(high=high, low=low, close=close, n=n, offset=offset, fillna=fillna)
     return indicator.donchian_channel_pband()
+
+
+def ulcer_index(close, n=14, fillna=False):
+    """Ulcer Index
+
+    Args:
+        close(pandas.Series): dataset 'Close' column.
+        n(int): n period.
+        fillna(bool): if True, fill nan values.
+
+    Returns:
+            pandas.Series: New feature generated.
+    """
+    indicator = UlcerIndex(close=close, n=n, fillna=fillna)
+    return dicator.ulcer_index()
+
+
+
