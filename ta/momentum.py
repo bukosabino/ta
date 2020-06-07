@@ -472,18 +472,22 @@ class STOCHRSIIndicator(IndicatorMixin):
     Args:
         close(pandas.Series): dataset 'Close' column.
         n(int): n period
+        d1(int): moving average of Stochastic RSI
+        d2(int): moving average of %K
         fillna(bool): if True, fill nan values.
     """
-    def __init__(self, close: pd.Series, n: int = 14, fillna: bool = False):
+    def __init__(self, close: pd.Series, n: int = 14, d1: int = 3, d2: int = 3, fillna: bool = False):
         self._close = close
         self._n = n
+        self._d1 = d1
+        self._d2 = d2
         self._fillna = fillna
         self._run()
 
     def _run(self):
-        self._rsi = momentum.rsi(self._close)
+        self._rsi = RSIIndicator(close=self._close, n=self._n, fillna=self._fillna).rsi()
         self._stochrsi = 100 * (self._rsi - self._rsi.rolling(self._n).min()) / \
-                (_rsi.rolling(self._n).max() - _rsi.rolling(self._n).min())
+                (self._rsi.rolling(self._n).max() - self._rsi.rolling(self._n).min())
     
     def stochrsi(self):
         """Stochastic RSI
@@ -494,6 +498,25 @@ class STOCHRSIIndicator(IndicatorMixin):
         stochrsi = self._check_fillna(self._stochrsi)
         return pd.Series(stochrsi, name='stochrsi')
     
+    def stochrsi_k(self):
+        """Stochastic RSI %k
+
+        Returns:
+            pandas.Series: New feature generated.
+        """
+        self.stochrsi_k = self._stochrsi.rolling(self._d1).mean()
+        stochrsi_K = self._check_fillna(self.stochrsi_k)
+        return pd.Series(stochrsi_K, name='stochrsi_k')
+    
+    def stochrsi_d(self):
+        """Stochastic RSI %d
+
+        Returns:
+            pandas.Series: New feature generated.
+        """
+        stochrsi_D = self.stochrsi_k.rolling(self._d2).mean()
+        stochrsi_D = self._check_fillna(stochrsi_D)
+        return pd.Series(stochrsi_D, name='stochrsi_d')
 
 def rsi(close, n=14, fillna=False):
     """Relative Strength Index (RSI)
@@ -754,7 +777,7 @@ def roc(close, n=12, fillna=False):
     """
     return ROCIndicator(close=close, n=n, fillna=fillna).roc()
 
-def stochrsi(close, n=14, fillna=False):
+def stochrsi(close, n=14, d1=3, d2=3, fillna=False):
     """Stochastic RSI 
     The StochRSI oscillator was developed to take advantage of both momentum 
     indicators in order to create a more sensitive indicator that is attuned to 
@@ -766,11 +789,55 @@ def stochrsi(close, n=14, fillna=False):
     Args:
         close(pandas.Series): dataset 'Close' column.
         n(int): n period
+        d1(int): moving average of Stochastic RSI
+        d2(int): moving average of %K
         fillna(bool): if True, fill nan values.
     Returns:
             pandas.Series: New feature generated.
     """
-    return STOCHRSIIndicator(close=close, n=n, fillna=fillna).stochrsi()
+    return STOCHRSIIndicator(close=close, n=n, d1=d1, d2=d2, fillna=fillna).stochrsi()
+
+def stochrsi_k(close, n=14, d1=3, d2=3, fillna=False):
+    """Stochastic RSI %k
+    The StochRSI oscillator was developed to take advantage of both momentum 
+    indicators in order to create a more sensitive indicator that is attuned to 
+    a specific security's historical performance rather than a generalized analysis 
+    of price change.
+    
+    https://www.investopedia.com/terms/s/stochrsi.asp
+
+    Args:
+        close(pandas.Series): dataset 'Close' column.
+        n(int): n period
+        d1(int): moving average of Stochastic RSI
+        d2(int): moving average of %K
+        fillna(bool): if True, fill nan values.
+    Returns:
+            pandas.Series: New feature generated.
+    """
+    return STOCHRSIIndicator(close=close, n=n, d1=d1, d2=d2, fillna=fillna).stochrsi_k()
+
+def stochrsi_d(close, n=14, d1=3, d2=3, fillna=False):
+    """Stochastic RSI %d
+    The StochRSI oscillator was developed to take advantage of both momentum 
+    indicators in order to create a more sensitive indicator that is attuned to 
+    a specific security's historical performance rather than a generalized analysis 
+    of price change.
+    
+    https://www.investopedia.com/terms/s/stochrsi.asp
+
+    Args:
+        close(pandas.Series): dataset 'Close' column.
+        n(int): n period
+        d1(int): moving average of Stochastic RSI
+        d2(int): moving average of %K
+        fillna(bool): if True, fill nan values.
+    Returns:
+            pandas.Series: New feature generated.
+    """
+    return STOCHRSIIndicator(close=close, n=n, d1=d1, d2=d2, fillna=fillna).stochrsi_d()
+
+
 
 
 
