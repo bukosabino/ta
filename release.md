@@ -1,5 +1,6 @@
 | Date | Version | Comment |
 | ------------- | ------------- | ------------- |
+| ? | 0.5.26 | Update wrapper https://github.com/bukosabino/ta/pull/166 |
 | 2020/05/12 | 0.5.25 | fixing bug: min_periods when fillna=False https://github.com/bukosabino/ta/pull/158 |
 | 2020/05/11 | 0.5.24 | Adding extra methods for IchimokuIndicator https://github.com/bukosabino/ta/pull/156 |
 | 2020/05/10 | 0.5.23 | Fixing bug when dataset with timestamp as index https://github.com/bukosabino/ta/pull/154 |
