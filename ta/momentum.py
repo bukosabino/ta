@@ -582,6 +582,72 @@ class PercentagePriceOscillator(IndicatorMixin):
         ppo_hist = self._check_fillna(self._ppo_hist, value=0)
         return pd.Series(ppo_hist, name=f'PPO_hist_{self._n_fast}_{self._n_slow}')
 
+class PercentageVolumeOscillator(IndicatorMixin):
+    """
+    The Percentage Volume Oscillator (PVO) is a momentum oscillator for volume. 
+    The PVO measures the difference between two volume-based moving averages as a 
+    percentage of the larger moving average.
+    
+    https://school.stockcharts.com/doku.php?id=technical_indicators:percentage_volume_oscillator_pvo
+
+    Args:
+        volume(pandas.Series): dataset 'Volume' column.
+        n_slow(int): n period long-term.
+        n_fast(int): n period short-term.
+        n_sign(int): n period to signal.
+        fillna(bool): if True, fill nan values.
+    """
+
+    def __init__(self,
+                 volume: pd.Series,
+                 n_slow: int = 26,
+                 n_fast: int = 12,
+                 n_sign: int = 9,
+                 fillna: bool = False):
+        self._volume = volume
+        self._n_slow = n_slow
+        self._n_fast = n_fast
+        self._n_sign = n_sign
+        self._fillna = fillna
+        self._run()
+    
+    def _run(self):
+        _emafast = ema(self._volume, self._n_fast, self._fillna)
+        _emaslow = ema(self._volume, self._n_slow, self._fillna)
+        self._pvo = ((_emafast - _emaslow)/_emaslow) * 100
+        self._pvo_signal = ema(self._pvo, self._n_sign, self._fillna)
+        self._pvo_hist = self._pvo - self._pvo_signal
+    
+    def pvo(self):
+        """PVO Line
+
+        Returns:
+            pandas.Series: New feature generated.
+        """
+        pvo = self._check_fillna(self._pvo, value=0)
+        return pd.Series(pvo, name=f'PVO_{self._n_fast}_{self._n_slow}')
+    
+    def pvo_signal(self):
+        """Signal Line
+
+        Returns:
+            pandas.Series: New feature generated.
+        """
+
+        pvo_signal = self._check_fillna(self._pvo_signal, value=0)
+        return pd.Series(pvo_signal, name=f'PVO_sign_{self._n_fast}_{self._n_slow}')
+
+    def pvo_hist(self):
+        """Histgram
+
+        Returns:
+            pandas.Series: New feature generated.
+        """
+
+        pvo_hist = self._check_fillna(self._pvo_hist, value=0)
+        return pd.Series(pvo_hist, name=f'PVO_hist_{self._n_fast}_{self._n_slow}')
+
+
 
 def rsi(close, n=14, fillna=False):
     """Relative Strength Index (RSI)
@@ -955,6 +1021,70 @@ def ppo_hist(close, n_slow=26, n_fast=12, n_sign=9, fillna=False):
         pandas.Series: New feature generated.
     """
     return PercentagePriceOscillator(close=close, n_slow=n_slow, n_fast=n_fast, n_sign=n_sign, fillna=fillna).ppo_hist()
+
+def pvo(volume: pd.Series, n_slow: int = 26, n_fast: int = 12, n_sign: int = 9,fillna: bool = False):
+    """
+    The Percentage Volume Oscillator (PVO) is a momentum oscillator for volume. 
+    The PVO measures the difference between two volume-based moving averages as a 
+    percentage of the larger moving average.
+    
+    https://school.stockcharts.com/doku.php?id=technical_indicators:percentage_volume_oscillator_pvo
+
+    Args:
+        volume(pandas.Series): dataset 'Volume' column.
+        n_slow(int): n period long-term.
+        n_fast(int): n period short-term.
+        n_sign(int): n period to signal.
+        fillna(bool): if True, fill nan values.
+    Returns:
+        pandas.Series: New feature generated.
+    """
+
+    indicator = PercentageVolumeOscillator(volume=volume, n_slow=n_slow, n_fast=n_fast, n_sign=n_sign, fillna=fillna)
+    return indicator.pvo()
+
+def pvo_signal(volume: pd.Series, n_slow: int = 26, n_fast: int = 12, n_sign: int = 9,fillna: bool = False):
+    """
+    The Percentage Volume Oscillator (PVO) is a momentum oscillator for volume. 
+    The PVO measures the difference between two volume-based moving averages as a 
+    percentage of the larger moving average.
+    
+    https://school.stockcharts.com/doku.php?id=technical_indicators:percentage_volume_oscillator_pvo
+
+    Args:
+        volume(pandas.Series): dataset 'Volume' column.
+        n_slow(int): n period long-term.
+        n_fast(int): n period short-term.
+        n_sign(int): n period to signal.
+        fillna(bool): if True, fill nan values.
+    Returns:
+        pandas.Series: New feature generated.
+    """
+
+    indicator = PercentageVolumeOscillator(volume=volume, n_slow=n_slow, n_fast=n_fast, n_sign=n_sign, fillna=fillna)
+    return indicator.pvo_signal()
+
+def pvo_hist(volume: pd.Series, n_slow: int = 26, n_fast: int = 12, n_sign: int = 9,fillna: bool = False):
+    """
+    The Percentage Volume Oscillator (PVO) is a momentum oscillator for volume. 
+    The PVO measures the difference between two volume-based moving averages as a 
+    percentage of the larger moving average.
+    
+    https://school.stockcharts.com/doku.php?id=technical_indicators:percentage_volume_oscillator_pvo
+
+    Args:
+        volume(pandas.Series): dataset 'Volume' column.
+        n_slow(int): n period long-term.
+        n_fast(int): n period short-term.
+        n_sign(int): n period to signal.
+        fillna(bool): if True, fill nan values.
+    Returns:
+        pandas.Series: New feature generated.
+    """
+
+    indicator = PercentageVolumeOscillator(volume=volume, n_slow=n_slow, n_fast=n_fast, n_sign=n_sign, fillna=fillna)
+    return indicator.pvo_hist()
+
 
 
 
