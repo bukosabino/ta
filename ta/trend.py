@@ -859,6 +859,66 @@ class PSARIndicator(IndicatorMixin):
         indicator = indicator.where(indicator == 0, 1)
         return pd.Series(indicator, index=self._close.index, name='psaridown')
 
+class STCIndicator(IndicatorMixin):
+    """Schaff Trend Cycle (STC)
+    The Schaff Trend Cycle (STC) is a charting indicator that 
+    is commonly used to identify market trends and provide buy 
+    and sell signals to traders. Developed in 1999 by noted currency 
+    trader Doug Schaff, STC is a type of oscillator and is based on 
+    the assumption that, regardless of time frame, currency trends 
+    accelerate and decelerate in cyclical patterns.
+
+    https://www.investopedia.com/articles/forex/10/schaff-trend-cycle-indicator.asp
+
+    Args:
+        close(pandas.Series): dataset 'Close' column.
+        n_fast(int): n period short-term.
+        n_slow(int): n period long-term.
+        n(int): n period
+        d1(int): ema period over stoch_k
+        d2(int): ema period over stoch_kd
+        fillna(bool): if True, fill nan values.
+    """
+    def __init__(self,
+                 close: pd.Series,
+                 n_slow: int = 50,
+                 n_fast: int = 23,
+                 n: int = 10,
+                 d1: int = 3,
+                 d2: int = 3,
+                 fillna: bool = False):
+        self._close = close
+        self._n_slow = n_slow
+        self._n_fast = n_fast
+        self._n = n
+        self._d1 = d1
+        self._d2 = d2
+        self._fillna = fillna
+        self._run()
+    
+    def _run(self):
+        _emafast = ema(self._close, self._n_fast, self._fillna)
+        _emaslow = ema(self._close, self._n_slow, self._fillna)
+        _macd = _emafast - _emaslow
+        
+        _macdmin = _macd.rolling(window=self._n).min()
+        _macdmax = _macd.rolling(window=self._n).max()
+        _stoch_k = 100 * (_macd - _macdmin) / (_macdmax - _macdmin)
+        _stoch_d = ema(_stoch_k, self._d1, self._fillna)
+
+        _stoch_d_min = _stoch_d.rolling(window=self._n).min()
+        _stoch_d_max = _stoch_d.rolling(window=self._n).max()
+        _stoch_kd = 100 * (_stoch_d - _stoch_d_min) / (_stoch_d_max - _stoch_d_min)
+        self._stc = ema(_stoch_kd, self._d2, self._fillna)
+    
+    def stc(self):
+        """Schaff Trend Cycle
+
+        Returns:
+            pandas.Series: New feature generated.
+        """
+        stc = self._check_fillna(self._stc)
+        return pd.Series(stc, name='stc')
 
 def ema_indicator(close, n=12, fillna=False):
     """Exponential Moving Average (EMA)
@@ -1187,6 +1247,30 @@ def kst(close, r1=10, r2=15, r3=20, r4=30, n1=10, n2=10, n3=10, n4=15, fillna=Fa
     return KSTIndicator(
         close=close, r1=r1, r2=r2, r3=r3, r4=r4, n1=n1, n2=n2, n3=n3, n4=n4, nsig=9, fillna=fillna).kst()
 
+def stc(close, n_slow=50, n_fast=23, n=10, d1=3, d2=3, fillna=False):
+    """Schaff Trend Cycle (STC)
+    The Schaff Trend Cycle (STC) is a charting indicator that 
+    is commonly used to identify market trends and provide buy 
+    and sell signals to traders. Developed in 1999 by noted currency 
+    trader Doug Schaff, STC is a type of oscillator and is based on 
+    the assumption that, regardless of time frame, currency trends 
+    accelerate and decelerate in cyclical patterns.
+
+    https://www.investopedia.com/articles/forex/10/schaff-trend-cycle-indicator.asp
+
+    Args:
+        close(pandas.Series): dataset 'Close' column.
+        n_fast(int): n period short-term.
+        n_slow(int): n period long-term.
+        n(int): n period
+        d1(int): ema period over stoch_k
+        d2(int): ema period over stoch_kd
+        fillna(bool): if True, fill nan values.
+
+    Returns:
+        pandas.Series: New feature generated.
+    """
+    return STCIndicator(close=close, n_slow=n_slow, n_fast=n_fast, n=n, d1=d1, d2=d2,fillna=fillna).stc()
 
 def kst_sig(close, r1=10, r2=15, r3=20, r4=30, n1=10, n2=10, n3=10, n4=15, nsig=9, fillna=False):
     """KST Oscillator (KST Signal)
