@@ -177,10 +177,11 @@ Thank you to [OpenSistemas](https://opensistemas.com)! It is because of your con
 
 # TODO:
 
+* Use [NumExpr](https://github.com/pydata/numexpr) to speed up the NumPy/Pandas operations? [Article Motivation](https://towardsdatascience.com/speed-up-your-numpy-and-pandas-with-numexpr-package-25bd1ab0836b)
 * Add [more technical analysis features](https://en.wikipedia.org/wiki/Technical_analysis).
 * Wrapper to get financial data.
 * Use of the Pandas multi-indexing techniques to calculate several indicators at the same time.
-* use Plotly/Streamlit to visualize features
+* Use Plotly/Streamlit to visualize features
 
 
 # Credits:
