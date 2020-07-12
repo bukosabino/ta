@@ -127,6 +127,11 @@ class TestBollingerBands(unittest.TestCase):
         result = self._indicator.bollinger_lband_indicator()
         pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
 
+    def test_mavg_indicator(self):
+        target = 'CrossMid'
+        result = self._indicator.bollinger_mavg_indicator()
+        pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
+
     def test_mavg2(self):
         target = 'MiddleBand'
         result = bollinger_mavg(close=self._df['Close'], n=20, fillna=False)
@@ -160,6 +165,11 @@ class TestBollingerBands(unittest.TestCase):
     def test_lband_indicator2(self):
         target = 'CrossDown'
         result = bollinger_lband_indicator(**self._params)
+        pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
+        
+    def test_mavg_indicator2(self):
+        target = 'CrossMid'
+        result = bollinger_mavg_indicator(**self._params)
         pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
 
 

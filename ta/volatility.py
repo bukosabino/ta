@@ -156,6 +156,17 @@ class BollingerBands(IndicatorMixin):
         lband = self._check_fillna(lband, value=0)
         return pd.Series(lband, name='bbilband')
 
+    def bollinger_mavg_indicator(self) -> pd.Series:
+        """Bollinger Channel Indicator Crossing Middle Band (binary).
+
+        It returns 1, if close is higher than bollinger_mavg. Else, it returns 0.
+
+        Returns:
+            pandas.Series: New feature generated.
+        """
+        mavg = pd.Series(np.where(self._close > self._mavg, 1.0, 0.0), index=self._close.index)
+        mavg = self._check_fillna(mavg, value=0)
+        return pd.Series(mavg, index=self._close.index, name='bbimband')
 
 class KeltnerChannel(IndicatorMixin):
     """KeltnerChannel
