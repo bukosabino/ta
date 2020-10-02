@@ -15,6 +15,7 @@ The library has implemented 33 indicators:
 
 #### Volume
 
+* Money Flow Index (MFI)
 * Accumulation/Distribution Index (ADI)
 * On-Balance Volume (OBV)
 * Chaikin Money Flow (CMF)
@@ -45,7 +46,6 @@ The library has implemented 33 indicators:
 
 #### Momentum
 
-* Money Flow Index (MFI)
 * Relative Strength Index (RSI)
 * True strength index (TSI)
 * Ultimate Oscillator (UO)
