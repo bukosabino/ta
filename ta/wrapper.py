@@ -58,7 +58,7 @@ def add_volume_ta(df: pd.DataFrame, high: str, low: str, close: str, volume: str
         close=df[close], volume=df[volume], n=13, fillna=fillna).force_index()
 
     # Money Flow Indicator
-    df[f'{colprefix}momentum_mfi'] = MFIIndicator(
+    df[f'{colprefix}volume_mfi'] = MFIIndicator(
         high=df[high], low=df[low], close=df[close], volume=df[volume], n=14, fillna=fillna).money_flow_index()
 
     # Ease of Movement
