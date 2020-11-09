@@ -7,7 +7,7 @@
 
 # Technical Analysis Library in Python
 
-It is a Technical Analysis library to financial time series datasets (open, close, high, low, volume). You can use it to do feature engineering from financial datasets. It is built on Pandas and Numpy.
+It is a Technical Analysis library useful to do feature engineering from financial time series datasets (Open, Close, High, Low, Volume). It is built on Pandas and Numpy.
 
 ![Bollinger Bands graph example](doc/figure.png)
 
@@ -185,10 +185,11 @@ Thank you to [OpenSistemas](https://opensistemas.com)! It is because of your con
 
 # TODO:
 
+* Use [NumExpr](https://github.com/pydata/numexpr) to speed up the NumPy/Pandas operations? [Article Motivation](https://towardsdatascience.com/speed-up-your-numpy-and-pandas-with-numexpr-package-25bd1ab0836b)
 * Add [more technical analysis features](https://en.wikipedia.org/wiki/Technical_analysis).
 * Wrapper to get financial data.
 * Use of the Pandas multi-indexing techniques to calculate several indicators at the same time.
-* use Plotly/Streamlit to visualize features
+* Use Plotly/Streamlit to visualize features
 
 
 # Credits:
