@@ -3,10 +3,10 @@ import unittest
 import pandas as pd
 
 from ta.volatility import (AverageTrueRange, BollingerBands, DonchianChannel,
-                           KeltnerChannel, average_true_range, bollinger_hband,
-                           bollinger_hband_indicator, bollinger_lband,
-                           bollinger_lband_indicator, bollinger_mavg,
-                           bollinger_pband, bollinger_wband,
+                           KeltnerChannel, UlcerIndex, average_true_range,
+                           bollinger_hband, bollinger_hband_indicator,
+                           bollinger_lband, bollinger_lband_indicator,
+                           bollinger_mavg, bollinger_pband, bollinger_wband,
                            donchian_channel_hband, donchian_channel_lband,
                            donchian_channel_mband, donchian_channel_pband,
                            donchian_channel_wband, keltner_channel_hband,
@@ -14,7 +14,7 @@ from ta.volatility import (AverageTrueRange, BollingerBands, DonchianChannel,
                            keltner_channel_lband,
                            keltner_channel_lband_indicator,
                            keltner_channel_mband, keltner_channel_pband,
-                           keltner_channel_wband)
+                           keltner_channel_wband, ulcer_index)
 
 
 class TestAverageTrueRange(unittest.TestCase):
@@ -391,3 +391,32 @@ class TestKeltnerChannel(unittest.TestCase):
         target = 'kc_low_indicator'
         result = keltner_channel_lband_indicator(**self._params)
         pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
+
+
+class TestUlcerIndex(unittest.TestCase):
+    """
+    https://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:ulcer_index
+    https://docs.google.com/spreadsheets/d/1PpiRxv4Cnjqod9zNTnls4Lfn8lknHFnWk1DmaTZgZC8/edit#gid=0
+    """
+
+    _filename = 'ta/tests/data/cs-ui.csv'
+
+    @classmethod
+    def setUpClass(cls):
+        cls._df = pd.read_csv(cls._filename, sep=',')
+        cls._params = dict(close=cls._df['Close'], n=14, fillna=False)
+        cls._indicator = UlcerIndex(**cls._params)
+
+    @classmethod
+    def tearDownClass(cls):
+        del(cls._df)
+
+    def test_ulcer_index(self):
+        target = 'ulcer_index'
+        result = self._indicator.ulcer_index()
+        pd.testing.assert_series_equal(self._df[target].tail(1), result.tail(1), check_names=False)
+
+    def test_ulcer_index2(self):
+        target = 'ulcer_index'
+        result = ulcer_index(**self._params)
+        pd.testing.assert_series_equal(self._df[target].tail(1), result.tail(1), check_names=False)

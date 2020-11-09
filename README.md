@@ -11,7 +11,7 @@ It is a Technical Analysis library useful to do feature engineering from financi
 
 ![Bollinger Bands graph example](doc/figure.png)
 
-The library has implemented 34 indicators:
+The library has implemented 42 indicators:
 
 #### Volume
 
@@ -31,9 +31,13 @@ The library has implemented 34 indicators:
 * Bollinger Bands (BB)
 * Keltner Channel (KC)
 * Donchian Channel (DC)
+* Ulcer Index (UI)
 
 #### Trend
 
+* Simple Moving Average (SMA)
+* Exponential Moving Average (EMA)
+* Weighted Moving Average (WMA)
 * Moving Average Convergence Divergence (MACD)
 * Average Directional Movement Index (ADX)
 * Vortex Indicator (VI)
@@ -44,10 +48,12 @@ The library has implemented 34 indicators:
 * KST Oscillator (KST)
 * Ichimoku Kinkō Hyō (Ichimoku)
 * Parabolic Stop And Reverse (Parabolic SAR)
+* Schaff Trend Cycle (STC)
 
 #### Momentum
 
 * Relative Strength Index (RSI)
+* Stochastic RSI (SRSI)
 * True strength index (TSI)
 * Ultimate Oscillator (UO)
 * Stochastic Oscillator (SR)
@@ -55,6 +61,8 @@ The library has implemented 34 indicators:
 * Awesome Oscillator (AO)
 * Kaufman's Adaptive Moving Average (KAMA)
 * Rate of Change (ROC)
+* Percentage Price Oscillator (PPO)
+* Percentage Volume Oscillator (PVO)
 
 #### Others
 
