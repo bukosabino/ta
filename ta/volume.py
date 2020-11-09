@@ -425,6 +425,7 @@ class VolumeWeightedAveragePrice(IndicatorMixin):
         vwap = self._check_fillna(self.vwap)
         return pd.Series(vwap, name=f'vwap_{self._n}')
 
+
 def acc_dist_index(high, low, close, volume, fillna=False):
     """Accumulation/Distribution Index (ADI)
 
@@ -667,6 +668,7 @@ def volume_weighted_average_price(
 
     indicator = VolumeWeightedAveragePrice(high=high, low=low, close=close, volume=volume, n=n, fillna=fillna)
     return indicator.volume_weighted_average_price()
+
 
 # TODO
 def put_call_ratio():

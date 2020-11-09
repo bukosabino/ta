@@ -371,8 +371,11 @@ class DonchianChannel(IndicatorMixin):
             pband = pband.shift(self._offset)
         return pd.Series(pband, name='dcpband')
 
+
 class UlcerIndex(IndicatorMixin):
     """Ulcer Index
+
+    https://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:ulcer_index
 
     Args:
         close(pandas.Series): dataset 'Close' column.
@@ -387,8 +390,9 @@ class UlcerIndex(IndicatorMixin):
         self._run()
 
     def _run(self):
-        _ui_max = self._close.rolling(self._n).max()
-        _r_i= 100 * (self._close - _ui_max) / _ui_max
+        _ui_max = self._close.rolling(self._n, min_periods=1).max()
+        _r_i = 100 * (self._close - _ui_max) / _ui_max
+
         def ui_function():
             def _ui_function(x):
                 return np.sqrt((x**2/self._n).sum())
@@ -840,6 +844,8 @@ def donchian_channel_pband(high, low, close, n=10, offset=0, fillna=False):
 def ulcer_index(close, n=14, fillna=False):
     """Ulcer Index
 
+    https://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:ulcer_index
+
     Args:
         close(pandas.Series): dataset 'Close' column.
         n(int): n period.
@@ -849,7 +855,4 @@ def ulcer_index(close, n=14, fillna=False):
             pandas.Series: New feature generated.
     """
     indicator = UlcerIndex(close=close, n=n, fillna=fillna)
-    return dicator.ulcer_index()
-
-
-
+    return indicator.ulcer_index()

@@ -460,13 +460,16 @@ class WilliamsRIndicator(IndicatorMixin):
         wr = self._check_fillna(self._wr, value=-50)
         return pd.Series(wr, name='wr')
 
-class STOCHRSIIndicator(IndicatorMixin):
-    """Stochastic RSI 
-    The StochRSI oscillator was developed to take advantage of both momentum 
-    indicators in order to create a more sensitive indicator that is attuned to 
-    a specific security's historical performance rather than a generalized analysis 
+
+class StochRSIIndicator(IndicatorMixin):
+    """Stochastic RSI
+
+    The StochRSI oscillator was developed to take advantage of both momentum
+    indicators in order to create a more sensitive indicator that is attuned to
+    a specific security's historical performance rather than a generalized analysis
     of price change.
-    
+
+    https://school.stockcharts.com/doku.php?id=technical_indicators:stochrsi
     https://www.investopedia.com/terms/s/stochrsi.asp
 
     Args:
@@ -486,9 +489,9 @@ class STOCHRSIIndicator(IndicatorMixin):
 
     def _run(self):
         self._rsi = RSIIndicator(close=self._close, n=self._n, fillna=self._fillna).rsi()
-        self._stochrsi = 100 * (self._rsi - self._rsi.rolling(self._n).min()) / \
-                (self._rsi.rolling(self._n).max() - self._rsi.rolling(self._n).min())
-    
+        lowest_low_rsi = self._rsi.rolling(self._n).min()
+        self._stochrsi = (self._rsi - lowest_low_rsi) / (self._rsi.rolling(self._n).max() - lowest_low_rsi)
+
     def stochrsi(self):
         """Stochastic RSI
 
@@ -497,7 +500,7 @@ class STOCHRSIIndicator(IndicatorMixin):
         """
         stochrsi = self._check_fillna(self._stochrsi)
         return pd.Series(stochrsi, name='stochrsi')
-    
+
     def stochrsi_k(self):
         """Stochastic RSI %k
 
@@ -507,7 +510,7 @@ class STOCHRSIIndicator(IndicatorMixin):
         self.stochrsi_k = self._stochrsi.rolling(self._d1).mean()
         stochrsi_K = self._check_fillna(self.stochrsi_k)
         return pd.Series(stochrsi_K, name='stochrsi_k')
-    
+
     def stochrsi_d(self):
         """Stochastic RSI %d
 
@@ -518,11 +521,12 @@ class STOCHRSIIndicator(IndicatorMixin):
         stochrsi_D = self._check_fillna(stochrsi_D)
         return pd.Series(stochrsi_D, name='stochrsi_d')
 
+
 class PercentagePriceOscillator(IndicatorMixin):
     """
-    The Percentage Price Oscillator (PPO) is a momentum oscillator that measures 
+    The Percentage Price Oscillator (PPO) is a momentum oscillator that measures
     the difference between two moving averages as a percentage of the larger moving average.
-    
+
     https://school.stockcharts.com/doku.php?id=technical_indicators:price_oscillators_ppo
 
     Args:
@@ -545,25 +549,25 @@ class PercentagePriceOscillator(IndicatorMixin):
         self._n_sign = n_sign
         self._fillna = fillna
         self._run()
-    
+
     def _run(self):
         _emafast = ema(self._close, self._n_fast, self._fillna)
         _emaslow = ema(self._close, self._n_slow, self._fillna)
         self._ppo = ((_emafast - _emaslow)/_emaslow) * 100
         self._ppo_signal = ema(self._ppo, self._n_sign, self._fillna)
         self._ppo_hist = self._ppo - self._ppo_signal
-    
+
     def ppo(self):
-        """PPO Line
+        """Percentage Price Oscillator Line
 
         Returns:
             pandas.Series: New feature generated.
         """
         ppo = self._check_fillna(self._ppo, value=0)
         return pd.Series(ppo, name=f'PPO_{self._n_fast}_{self._n_slow}')
-    
+
     def ppo_signal(self):
-        """Signal Line
+        """Percentage Price Oscillator Signal Line
 
         Returns:
             pandas.Series: New feature generated.
@@ -573,7 +577,7 @@ class PercentagePriceOscillator(IndicatorMixin):
         return pd.Series(ppo_signal, name=f'PPO_sign_{self._n_fast}_{self._n_slow}')
 
     def ppo_hist(self):
-        """Histgram
+        """Percentage Price Oscillator Histogram
 
         Returns:
             pandas.Series: New feature generated.
@@ -582,12 +586,13 @@ class PercentagePriceOscillator(IndicatorMixin):
         ppo_hist = self._check_fillna(self._ppo_hist, value=0)
         return pd.Series(ppo_hist, name=f'PPO_hist_{self._n_fast}_{self._n_slow}')
 
+
 class PercentageVolumeOscillator(IndicatorMixin):
     """
-    The Percentage Volume Oscillator (PVO) is a momentum oscillator for volume. 
-    The PVO measures the difference between two volume-based moving averages as a 
+    The Percentage Volume Oscillator (PVO) is a momentum oscillator for volume.
+    The PVO measures the difference between two volume-based moving averages as a
     percentage of the larger moving average.
-    
+
     https://school.stockcharts.com/doku.php?id=technical_indicators:percentage_volume_oscillator_pvo
 
     Args:
@@ -610,14 +615,14 @@ class PercentageVolumeOscillator(IndicatorMixin):
         self._n_sign = n_sign
         self._fillna = fillna
         self._run()
-    
+
     def _run(self):
         _emafast = ema(self._volume, self._n_fast, self._fillna)
         _emaslow = ema(self._volume, self._n_slow, self._fillna)
         self._pvo = ((_emafast - _emaslow)/_emaslow) * 100
         self._pvo_signal = ema(self._pvo, self._n_sign, self._fillna)
         self._pvo_hist = self._pvo - self._pvo_signal
-    
+
     def pvo(self):
         """PVO Line
 
@@ -626,7 +631,7 @@ class PercentageVolumeOscillator(IndicatorMixin):
         """
         pvo = self._check_fillna(self._pvo, value=0)
         return pd.Series(pvo, name=f'PVO_{self._n_fast}_{self._n_slow}')
-    
+
     def pvo_signal(self):
         """Signal Line
 
@@ -646,7 +651,6 @@ class PercentageVolumeOscillator(IndicatorMixin):
 
         pvo_hist = self._check_fillna(self._pvo_hist, value=0)
         return pd.Series(pvo_hist, name=f'PVO_hist_{self._n_fast}_{self._n_slow}')
-
 
 
 def rsi(close, n=14, fillna=False):
@@ -908,13 +912,15 @@ def roc(close, n=12, fillna=False):
     """
     return ROCIndicator(close=close, n=n, fillna=fillna).roc()
 
+
 def stochrsi(close, n=14, d1=3, d2=3, fillna=False):
-    """Stochastic RSI 
-    The StochRSI oscillator was developed to take advantage of both momentum 
-    indicators in order to create a more sensitive indicator that is attuned to 
-    a specific security's historical performance rather than a generalized analysis 
+    """Stochastic RSI
+
+    The StochRSI oscillator was developed to take advantage of both momentum
+    indicators in order to create a more sensitive indicator that is attuned to
+    a specific security's historical performance rather than a generalized analysis
     of price change.
-    
+
     https://www.investopedia.com/terms/s/stochrsi.asp
 
     Args:
@@ -926,15 +932,17 @@ def stochrsi(close, n=14, d1=3, d2=3, fillna=False):
     Returns:
             pandas.Series: New feature generated.
     """
-    return STOCHRSIIndicator(close=close, n=n, d1=d1, d2=d2, fillna=fillna).stochrsi()
+    return StochRSIIndicator(close=close, n=n, d1=d1, d2=d2, fillna=fillna).stochrsi()
+
 
 def stochrsi_k(close, n=14, d1=3, d2=3, fillna=False):
     """Stochastic RSI %k
-    The StochRSI oscillator was developed to take advantage of both momentum 
-    indicators in order to create a more sensitive indicator that is attuned to 
-    a specific security's historical performance rather than a generalized analysis 
+
+    The StochRSI oscillator was developed to take advantage of both momentum
+    indicators in order to create a more sensitive indicator that is attuned to
+    a specific security's historical performance rather than a generalized analysis
     of price change.
-    
+
     https://www.investopedia.com/terms/s/stochrsi.asp
 
     Args:
@@ -946,15 +954,17 @@ def stochrsi_k(close, n=14, d1=3, d2=3, fillna=False):
     Returns:
             pandas.Series: New feature generated.
     """
-    return STOCHRSIIndicator(close=close, n=n, d1=d1, d2=d2, fillna=fillna).stochrsi_k()
+    return StochRSIIndicator(close=close, n=n, d1=d1, d2=d2, fillna=fillna).stochrsi_k()
+
 
 def stochrsi_d(close, n=14, d1=3, d2=3, fillna=False):
     """Stochastic RSI %d
-    The StochRSI oscillator was developed to take advantage of both momentum 
-    indicators in order to create a more sensitive indicator that is attuned to 
-    a specific security's historical performance rather than a generalized analysis 
+
+    The StochRSI oscillator was developed to take advantage of both momentum
+    indicators in order to create a more sensitive indicator that is attuned to
+    a specific security's historical performance rather than a generalized analysis
     of price change.
-    
+
     https://www.investopedia.com/terms/s/stochrsi.asp
 
     Args:
@@ -966,13 +976,14 @@ def stochrsi_d(close, n=14, d1=3, d2=3, fillna=False):
     Returns:
             pandas.Series: New feature generated.
     """
-    return STOCHRSIIndicator(close=close, n=n, d1=d1, d2=d2, fillna=fillna).stochrsi_d()
+    return StochRSIIndicator(close=close, n=n, d1=d1, d2=d2, fillna=fillna).stochrsi_d()
+
 
 def ppo(close, n_slow=26, n_fast=12, n_sign=9, fillna=False):
     """
-    The Percentage Price Oscillator (PPO) is a momentum oscillator that measures 
+    The Percentage Price Oscillator (PPO) is a momentum oscillator that measures
     the difference between two moving averages as a percentage of the larger moving average.
-    
+
     https://school.stockcharts.com/doku.php?id=technical_indicators:price_oscillators_ppo
 
     Args:
@@ -986,11 +997,12 @@ def ppo(close, n_slow=26, n_fast=12, n_sign=9, fillna=False):
     """
     return PercentagePriceOscillator(close=close, n_slow=n_slow, n_fast=n_fast, n_sign=n_sign, fillna=fillna).ppo()
 
+
 def ppo_signal(close, n_slow=26, n_fast=12, n_sign=9, fillna=False):
     """
-    The Percentage Price Oscillator (PPO) is a momentum oscillator that measures 
+    The Percentage Price Oscillator (PPO) is a momentum oscillator that measures
     the difference between two moving averages as a percentage of the larger moving average.
-    
+
     https://school.stockcharts.com/doku.php?id=technical_indicators:price_oscillators_ppo
 
     Args:
@@ -1002,13 +1014,15 @@ def ppo_signal(close, n_slow=26, n_fast=12, n_sign=9, fillna=False):
     Returns:
         pandas.Series: New feature generated.
     """
-    return PercentagePriceOscillator(close=close, n_slow=n_slow, n_fast=n_fast, n_sign=n_sign, fillna=fillna).ppo_signal()
+    return PercentagePriceOscillator(
+        close=close, n_slow=n_slow, n_fast=n_fast, n_sign=n_sign, fillna=fillna).ppo_signal()
+
 
 def ppo_hist(close, n_slow=26, n_fast=12, n_sign=9, fillna=False):
     """
-    The Percentage Price Oscillator (PPO) is a momentum oscillator that measures 
+    The Percentage Price Oscillator (PPO) is a momentum oscillator that measures
     the difference between two moving averages as a percentage of the larger moving average.
-    
+
     https://school.stockcharts.com/doku.php?id=technical_indicators:price_oscillators_ppo
 
     Args:
@@ -1020,14 +1034,16 @@ def ppo_hist(close, n_slow=26, n_fast=12, n_sign=9, fillna=False):
     Returns:
         pandas.Series: New feature generated.
     """
-    return PercentagePriceOscillator(close=close, n_slow=n_slow, n_fast=n_fast, n_sign=n_sign, fillna=fillna).ppo_hist()
+    return PercentagePriceOscillator(
+        close=close, n_slow=n_slow, n_fast=n_fast, n_sign=n_sign, fillna=fillna).ppo_hist()
 
-def pvo(volume: pd.Series, n_slow: int = 26, n_fast: int = 12, n_sign: int = 9,fillna: bool = False):
+
+def pvo(volume: pd.Series, n_slow: int = 26, n_fast: int = 12, n_sign: int = 9, fillna: bool = False):
     """
-    The Percentage Volume Oscillator (PVO) is a momentum oscillator for volume. 
-    The PVO measures the difference between two volume-based moving averages as a 
+    The Percentage Volume Oscillator (PVO) is a momentum oscillator for volume.
+    The PVO measures the difference between two volume-based moving averages as a
     percentage of the larger moving average.
-    
+
     https://school.stockcharts.com/doku.php?id=technical_indicators:percentage_volume_oscillator_pvo
 
     Args:
@@ -1043,12 +1059,13 @@ def pvo(volume: pd.Series, n_slow: int = 26, n_fast: int = 12, n_sign: int = 9,f
     indicator = PercentageVolumeOscillator(volume=volume, n_slow=n_slow, n_fast=n_fast, n_sign=n_sign, fillna=fillna)
     return indicator.pvo()
 
-def pvo_signal(volume: pd.Series, n_slow: int = 26, n_fast: int = 12, n_sign: int = 9,fillna: bool = False):
+
+def pvo_signal(volume: pd.Series, n_slow: int = 26, n_fast: int = 12, n_sign: int = 9, fillna: bool = False):
     """
-    The Percentage Volume Oscillator (PVO) is a momentum oscillator for volume. 
-    The PVO measures the difference between two volume-based moving averages as a 
+    The Percentage Volume Oscillator (PVO) is a momentum oscillator for volume.
+    The PVO measures the difference between two volume-based moving averages as a
     percentage of the larger moving average.
-    
+
     https://school.stockcharts.com/doku.php?id=technical_indicators:percentage_volume_oscillator_pvo
 
     Args:
@@ -1064,12 +1081,13 @@ def pvo_signal(volume: pd.Series, n_slow: int = 26, n_fast: int = 12, n_sign: in
     indicator = PercentageVolumeOscillator(volume=volume, n_slow=n_slow, n_fast=n_fast, n_sign=n_sign, fillna=fillna)
     return indicator.pvo_signal()
 
-def pvo_hist(volume: pd.Series, n_slow: int = 26, n_fast: int = 12, n_sign: int = 9,fillna: bool = False):
+
+def pvo_hist(volume: pd.Series, n_slow: int = 26, n_fast: int = 12, n_sign: int = 9, fillna: bool = False):
     """
-    The Percentage Volume Oscillator (PVO) is a momentum oscillator for volume. 
-    The PVO measures the difference between two volume-based moving averages as a 
+    The Percentage Volume Oscillator (PVO) is a momentum oscillator for volume.
+    The PVO measures the difference between two volume-based moving averages as a
     percentage of the larger moving average.
-    
+
     https://school.stockcharts.com/doku.php?id=technical_indicators:percentage_volume_oscillator_pvo
 
     Args:
@@ -1084,12 +1102,3 @@ def pvo_hist(volume: pd.Series, n_slow: int = 26, n_fast: int = 12, n_sign: int 
 
     indicator = PercentageVolumeOscillator(volume=volume, n_slow=n_slow, n_fast=n_fast, n_sign=n_sign, fillna=fillna)
     return indicator.pvo_hist()
-
-
-
-
-
-
-
-
-

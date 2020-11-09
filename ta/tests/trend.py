@@ -3,10 +3,11 @@ import unittest
 import pandas as pd
 
 from ta.trend import (MACD, ADXIndicator, CCIIndicator, PSARIndicator,
-                      VortexIndicator, adx, adx_neg, adx_pos, cci, macd,
-                      macd_diff, macd_signal, psar_down, psar_down_indicator,
-                      psar_up, psar_up_indicator, vortex_indicator_neg,
-                      vortex_indicator_pos)
+                      STCIndicator, VortexIndicator, WMAIndicator, adx,
+                      adx_neg, adx_pos, cci, macd, macd_diff, macd_signal,
+                      psar_down, psar_down_indicator, psar_up,
+                      psar_up_indicator, stc, vortex_indicator_neg,
+                      vortex_indicator_pos, wma_indicator)
 
 
 class TestADXIndicator(unittest.TestCase):
@@ -227,4 +228,60 @@ class TestPSARIndicator(unittest.TestCase):
     def test_psar_down_indicator2(self):
         target = 'psar_down_ind'
         result = psar_down_indicator(**self._params)
+        pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
+
+
+class TestSTCIndicator(unittest.TestCase):
+    """
+    https://www.investopedia.com/articles/forex/10/schaff-trend-cycle-indicator.asp
+    https://docs.google.com/spreadsheets/d/1z6o_R_hCGCGQARC791KdrOD5E69IhjAXbXqi1014hcs/edit?usp=sharing
+    """
+
+    _filename = 'ta/tests/data/cs-stc.csv'
+
+    @classmethod
+    def setUpClass(cls):
+        cls._df = pd.read_csv(cls._filename, sep=',')
+        cls._params = dict(close=cls._df['Close'], n_slow=50, n_fast=23, n=10, d1=3, d2=3, fillna=False)
+        cls._indicator = STCIndicator(**cls._params)
+
+    @classmethod
+    def tearDownClass(cls):
+        del(cls._df)
+
+    def test_stc(self):
+        target = 'stc'
+        result = self._indicator.stc()
+        pd.testing.assert_series_equal(self._df[target].tail(15), result.tail(15), check_names=False)
+
+    def test_stc2(self):
+        target = 'stc'
+        result = stc(**self._params)
+        pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
+
+
+class TestWMAIndicator(unittest.TestCase):
+    """
+    """
+
+    _filename = 'ta/tests/data/cs-wma.csv'
+
+    @classmethod
+    def setUpClass(cls):
+        cls._df = pd.read_csv(cls._filename, sep=',')
+        cls._params = dict(close=cls._df['Close'], n=9, fillna=False)
+        cls._indicator = WMAIndicator(**cls._params)
+
+    @classmethod
+    def tearDownClass(cls):
+        del(cls._df)
+
+    def test_wma(self):
+        target = 'WMA'
+        result = self._indicator.wma()
+        pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
+
+    def test_wma2(self):
+        target = 'WMA'
+        result = wma_indicator(**self._params)
         pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)

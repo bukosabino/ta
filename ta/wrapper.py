@@ -8,16 +8,18 @@
 import pandas as pd
 
 from ta.momentum import (AwesomeOscillatorIndicator, KAMAIndicator,
+                         PercentagePriceOscillator, PercentageVolumeOscillator,
                          ROCIndicator, RSIIndicator, StochasticOscillator,
-                         TSIIndicator, UltimateOscillator, WilliamsRIndicator)
+                         StochRSIIndicator, TSIIndicator, UltimateOscillator,
+                         WilliamsRIndicator)
 from ta.others import (CumulativeReturnIndicator, DailyLogReturnIndicator,
                        DailyReturnIndicator)
 from ta.trend import (MACD, ADXIndicator, AroonIndicator, CCIIndicator,
                       DPOIndicator, EMAIndicator, IchimokuIndicator,
                       KSTIndicator, MassIndex, PSARIndicator, SMAIndicator,
-                      TRIXIndicator, VortexIndicator)
+                      STCIndicator, TRIXIndicator, VortexIndicator)
 from ta.volatility import (AverageTrueRange, BollingerBands, DonchianChannel,
-                           KeltnerChannel)
+                           KeltnerChannel, UlcerIndex)
 from ta.volume import (AccDistIndexIndicator, ChaikinMoneyFlowIndicator,
                        EaseOfMovementIndicator, ForceIndexIndicator,
                        MFIIndicator, NegativeVolumeIndexIndicator,
@@ -131,6 +133,9 @@ def add_volatility_ta(df: pd.DataFrame, high: str, low: str, close: str,
     df[f'{colprefix}volatility_dcl'] = indicator_dc.donchian_channel_wband()
     df[f'{colprefix}volatility_dch'] = indicator_dc.donchian_channel_pband()
 
+    # Ulcer Index
+    df[f'{colprefix}volatility_ui'] = UlcerIndex(close=df[close], n=14, fillna=fillna)
+
     return df
 
 
@@ -229,6 +234,10 @@ def add_trend_ta(df: pd.DataFrame, high: str, low: str, close: str, fillna: bool
     df[f'{colprefix}trend_psar_up_indicator'] = indicator.psar_up_indicator()
     df[f'{colprefix}trend_psar_down_indicator'] = indicator.psar_down_indicator()
 
+    # Schaff Trend Cycle (STC)
+    df[f'{colprefix}trend_stc'] = STCIndicator(
+        close=df[close], n_slow=50, n_fast=23, n=10, d1=3, d2=3, fillna=fillna).stc()
+
     return df
 
 
@@ -250,6 +259,12 @@ def add_momentum_ta(df: pd.DataFrame, high: str, low: str, close: str, volume: s
 
     # Relative Strength Index (RSI)
     df[f'{colprefix}momentum_rsi'] = RSIIndicator(close=df[close], n=14, fillna=fillna).rsi()
+
+    # Stoch RSI (StochRSI)
+    indicator = StochRSIIndicator(close=df[close], n=14, d1=3, d2=3, fillna=fillna)
+    df[f'{colprefix}momentum_stoch_rsi'] = indicator.stochrsi()
+    df[f'{colprefix}momentum_stoch_rsi_k'] = indicator.stochrsi_k()
+    df[f'{colprefix}momentum_stoch_rsi_d'] = indicator.stochrsi_d()
 
     # TSI Indicator
     df[f'{colprefix}momentum_tsi'] = TSIIndicator(close=df[close], r=25, s=13, fillna=fillna).tsi()
@@ -278,6 +293,19 @@ def add_momentum_ta(df: pd.DataFrame, high: str, low: str, close: str, volume: s
 
     # Rate Of Change
     df[f'{colprefix}momentum_roc'] = ROCIndicator(close=df[close], n=12, fillna=fillna).roc()
+
+    # Percentage Price Oscillator
+    indicator = PercentagePriceOscillator(close=df[close], n_slow=26, n_fast=12, n_sign=9, fillna=fillna)
+    df[f'{colprefix}momentum_ppo'] = indicator.ppo()
+    df[f'{colprefix}momentum_ppo_signal'] = indicator.ppo_signal()
+    df[f'{colprefix}momentum_ppo_hist'] = indicator.ppo_hist()
+
+    # Percentage Volume Oscillator
+    indicator = PercentageVolumeOscillator(volume=df[volume], n_slow=26, n_fast=12, n_sign=9, fillna=fillna)
+    df[f'{colprefix}momentum_ppo'] = indicator.pvo()
+    df[f'{colprefix}momentum_ppo_signal'] = indicator.pvo_signal()
+    df[f'{colprefix}momentum_ppo_hist'] = indicator.pvo_hist()
+
     return df
 
 

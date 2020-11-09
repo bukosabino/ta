@@ -1,13 +1,18 @@
-from ta.tests.momentum import (TestKAMAIndicator, TestRateOfChangeIndicator,
-                               TestRSIIndicator, TestStochasticOscillator,
+from ta.tests.momentum import (TestKAMAIndicator,
+                               TestPercentagePriceOscillator,
+                               TestPercentageVolumeOscillator,
+                               TestRateOfChangeIndicator, TestRSIIndicator,
+                               TestStochasticOscillator, TestStochRSIIndicator,
                                TestTSIIndicator, TestUltimateOscillator,
                                TestWilliamsRIndicator)
 from ta.tests.trend import (TestADXIndicator, TestCCIIndicator,
                             TestMACDIndicator, TestPSARIndicator,
-                            TestVortexIndicator)
+                            TestSTCIndicator, TestVortexIndicator,
+                            TestWMAIndicator)
 from ta.tests.volatility import (TestAverageTrueRange, TestAverageTrueRange2,
                                  TestBollingerBands, TestDonchianChannel,
-                                 TestDonchianChannel2, TestKeltnerChannel)
+                                 TestDonchianChannel2, TestKeltnerChannel,
+                                 TestUlcerIndex)
 from ta.tests.volume import (TestAccDistIndexIndicator,
                              TestEaseOfMovementIndicator,
                              TestForceIndexIndicator, TestMFIIndicator,
