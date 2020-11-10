@@ -1,5 +1,7 @@
 import plotly.graph_objects as go
+from plotly.subplots import make_subplots
 import pandas as pd
+
 
 class PlotlyPlot():
     """Plotly Plot
@@ -28,6 +30,7 @@ class PlotlyPlot():
         self._low = low
         self._close = close
         self._fig = None
+        self._data = None
         self._excludeMissing = excludeMissing
         self._getlayout()
 
@@ -49,7 +52,6 @@ class PlotlyPlot():
     def candlestickplot(self,
                         increasing_line_color: str = 'green',
                         decreasing_line_color: str = 'red',
-                        slider: bool = True,
                         showlegend: bool = True
                         ):
         """Candlestick Plot
@@ -59,11 +61,10 @@ class PlotlyPlot():
         Args:
             increasing_line_color(str): single candlestick color of increasing pattern.
             decreasing_line_color(str): single candlestick color of decreasing pattern.
-            slider(bool): if True, show the slider.
             showlegend(bool): if True, show the legend
         """
-        self._fig = go.Figure(
-            data=[go.Candlestick(
+        self._main_data = [
+            go.Candlestick(
                 x=self._time,
                 open=self._open,
                 high=self._high,
@@ -72,14 +73,10 @@ class PlotlyPlot():
                 name="Candlestick",
                 increasing_line_color=increasing_line_color,
                 decreasing_line_color=decreasing_line_color,
-                showlegend=showlegend
-            )],
-            layout=self._layout
-        )
-        self._fig.update_layout(xaxis_rangeslider_visible=slider)
+                showlegend=showlegend)
+        ]
 
     def lineplot(self,
-                 slider: str = True,
                  showlegend: bool = True
                  ):
         """Line Plot
@@ -87,19 +84,15 @@ class PlotlyPlot():
         Create the close price line chart.
 
         Args:
-            slider(bool): if True, show the slider.
             showlegend(bool): if True, show the legend
         """
-        self._fig = go.Figure(
-            data=[go.Scatter(
+        self._main_data = [
+            go.Scatter(
                 x=self._time,
                 y=self._close,
                 name="Close",
                 showlegend=showlegend
-            )],
-            layout=self._layout
-        )
-        self._fig.update_layout(xaxis_rangeslider_visible=slider)
+            )]
 
     def ohlcplot(self,
                  increasing_line_color: str = 'green',
@@ -117,8 +110,8 @@ class PlotlyPlot():
             slider(bool): if True, show the slider.
             showlegend(bool): if True, show the legend
         """
-        self._fig = go.Figure(
-            data=[go.Ohlc(
+        self._main_data = [
+            go.Ohlc(
                 x=self._time,
                 open=self._open,
                 high=self._high,
@@ -128,16 +121,23 @@ class PlotlyPlot():
                 increasing_line_color=increasing_line_color,
                 decreasing_line_color=decreasing_line_color,
                 showlegend=showlegend
-            )],
-            layout=self._layout
-        )
-        self._fig.update_layout(xaxis_rangeslider_visible=slider)
+            )
+        ]
 
-    def plot(self):
+    def plot(self,
+             slider: str = True):
         """Plot
 
         Ploting existing figure
+
+        Args:
+            slider(bool): if True, show the slider.
         """
+        self._fig = go.Figure(
+            data=self._main_data,
+            layout=self._layout
+        )
+        self._fig.update_layout(xaxis_rangeslider_visible=slider)
         self._fig.show()
 
     def addTrace(self,
@@ -157,7 +157,7 @@ class PlotlyPlot():
             slider(bool): if True, show the slider.
             showlegend(bool): if True, show the legend
         """
-        self._fig.add_trace(
+        self._main_data.append(
             go.Scatter(
                 x=time,
                 y=indicator_data,
@@ -168,12 +168,64 @@ class PlotlyPlot():
 
     def subplot(self,
                 time: pd.Series,
-                indicator_data: pd.Series,
-                name: str = "",
-                showlegend: bool = True,
-                height: int = 200
+                indicator_datas: list,
+                names: list,
+                positions: list,
+                row_scale: list,
+                showlegend: bool = True
                 ):
         """Subplot
+
+        Create a subplots of plot of indicator data
+
+        Args:
+            time(pandas.Series): dataset 'Timestamp' column.
+            indicator_datas(list): list of dataset 'indicator_data' columns.
+            names(list): list of names of the indicators
+            positions(list): list of positions of the subplot of indicator_data
+            row_scale(list): list of row scale of the plots
+            showlegend(bool): if True, show the legend
+        """
+
+        self._fig = make_subplots(
+            rows=len(row_scale),
+            shared_xaxes=True,
+            shared_yaxes=True,
+            cols=1,
+            print_grid=False,
+            vertical_spacing=0.05,
+            row_heights=row_scale
+        )
+        # main plot
+        for i in range(len(self._main_data)):
+            self._fig.add_trace(self._main_data[i], row=1, col=1)
+
+        # subplot
+        for i in range(len(indicator_datas)):
+            self._fig.add_trace(go.Scatter(
+                x=time,
+                y=indicator_datas[i],
+                name=names[i],
+                showlegend=showlegend
+            ), row=positions[i] + 1, col=1
+            )
+
+        self._fig.update_layout(
+            height=(500 + (len(row_scale) - 1) * 100),
+            xaxis_rangeslider_visible=False
+        )
+        if self._excludeMissing:
+            self._fig.layout.xaxis.type = 'category'
+        self._fig.show()
+
+    def separatePlot(self,
+                     time: pd.Series,
+                     indicator_data: pd.Series,
+                     name: str = "",
+                     showlegend: bool = True,
+                     height: int = 200
+                     ):
+        """Separate Plot
 
         Create a separate of plot of indicator data
 
@@ -197,7 +249,7 @@ class PlotlyPlot():
                 t=50,
             )
         )
-        fig = go.Figure(data=[line], layout=layout)
+        self._fig = go.Figure(data=[line], layout=layout)
         if self._excludeMissing:
-            fig.layout.xaxis.type = 'category'
-        fig.show()
+            self._fig.layout.xaxis.type = 'category'
+        self._fig.show()

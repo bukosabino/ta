@@ -1,7 +1,10 @@
 import os
 import yfinance as yf
 import pandas as pd
-from ta.volume import VolumeWeightedAveragePrice
+
+from ta.momentum import RSIIndicator, StochasticOscillator
+from ta.plots import PlotlyPlot
+
 data = yf.download(
             tickers = 'TSLA',
             period = "1mo",
@@ -13,12 +16,10 @@ data = yf.download(
 df = data.reset_index()
 df['Date'] = pd.to_datetime(df['Date'])
 df['EMA_9'] = df['Close'].ewm(span=9, adjust=False).mean()
-df['VWAP'] = VolumeWeightedAveragePrice(
-        high=df['High'], low=df['Low'], close=df['Close'], volume=df['Volume'], n=14, fillna=False
-    ).volume_weighted_average_price()
-print(df.head())
-
-from ta.plots import PlotlyPlot
+df['RSI'] = RSIIndicator(close=df['Close'], n=14).rsi()
+indicator = StochasticOscillator(high=df['High'], low=df['Low'], close=df['Close'], n=14, d_n=3)
+df['Stoch'] = indicator.stoch()
+df['Stoch_signal'] = indicator.stoch_signal()
 
 pp = PlotlyPlot(
             time=df['Date'],
@@ -27,15 +28,18 @@ pp = PlotlyPlot(
             high=df['High'],
             low=df['Low']
         )
-pp.candlestickplot(slider=False, showlegend=False)
+pp.candlestickplot(showlegend=False)
 pp.addTrace(time=df['Date'],
             indicator_data=df['EMA_9'],
             name="EMA_9",
            showlegend=False)
-pp.addTrace(time=df['Date'],
-            indicator_data=df['VWAP'],
-            name="VWAP")
-pp.plot()
 pp.subplot(time=df['Date'],
-            indicator_data=df['EMA_9'],
-            name="EMA_9")
+            indicator_datas=[df['RSI'],df['Stoch'],df['Stoch_signal']],
+            names=["RSI",'Stoch','Stoch_signal'],
+           positions=[1,2,2],
+           row_scale = [0.6,0.2,0.2],
+            showlegend=True)
+pp.separatePlot(time=df['Date'],
+            indicator_data=df['RSI'],
+            name="RSI",
+            showlegend=True)
