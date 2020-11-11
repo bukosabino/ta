@@ -1,7 +1,7 @@
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import pandas as pd
-
+import streamlit as st
 
 class PlotlyPlot():
     """Plotly Plot
@@ -97,7 +97,6 @@ class PlotlyPlot():
     def ohlcplot(self,
                  increasing_line_color: str = 'green',
                  decreasing_line_color: str = 'red',
-                 slider: str = True,
                  showlegend: bool = True
                  ):
         """OHLC Plot
@@ -107,7 +106,6 @@ class PlotlyPlot():
         Args:
             increasing_line_color(str): single candlestick color of increasing pattern.
             decreasing_line_color(str): single candlestick color of decreasing pattern.
-            slider(bool): if True, show the slider.
             showlegend(bool): if True, show the legend
         """
         self._main_data = [
@@ -124,20 +122,31 @@ class PlotlyPlot():
             )
         ]
 
+    def _plot(self, slider, layout):
+        if not layout:
+            self._fig = go.Figure(
+                data=self._main_data,
+                layout=self._layout
+            )
+        else:
+            self._fig = go.Figure(
+                data=self._main_data,
+                layout=layout
+            )
+        self._fig.update_layout(xaxis_rangeslider_visible=slider)
+
     def plot(self,
-             slider: str = True):
+             slider: str = True,
+             layout: go.Layout = None):
         """Plot
 
         Ploting existing figure
 
         Args:
             slider(bool): if True, show the slider.
+            layout(go.Layout): customize layout for the plot.
         """
-        self._fig = go.Figure(
-            data=self._main_data,
-            layout=self._layout
-        )
-        self._fig.update_layout(xaxis_rangeslider_visible=slider)
+        self._plot(slider, layout)
         self._fig.show()
 
     def addTrace(self,
@@ -154,7 +163,6 @@ class PlotlyPlot():
             time(pandas.Series): dataset 'Timestamp' column.
             indicator_data(pandas.Series): dataset 'indicator_data' column.
             name(str): name of the indicator
-            slider(bool): if True, show the slider.
             showlegend(bool): if True, show the legend
         """
         self._main_data.append(
@@ -166,27 +174,15 @@ class PlotlyPlot():
             )
         )
 
-    def subplot(self,
-                time: pd.Series,
-                indicator_datas: list,
-                names: list,
-                positions: list,
-                row_scale: list,
-                showlegend: bool = True
-                ):
-        """Subplot
-
-        Create a subplots of plot of indicator data
-
-        Args:
-            time(pandas.Series): dataset 'Timestamp' column.
-            indicator_datas(list): list of dataset 'indicator_data' columns.
-            names(list): list of names of the indicators
-            positions(list): list of positions of the subplot of indicator_data
-            row_scale(list): list of row scale of the plots
-            showlegend(bool): if True, show the legend
-        """
-
+    def _subplot(self,
+                 time: pd.Series,
+                 indicator_datas: list,
+                 names: list,
+                 positions: list,
+                 row_scale: list,
+                 showlegend: bool = True,
+                 layout: go.layout = None,
+                 ):
         self._fig = make_subplots(
             rows=len(row_scale),
             shared_xaxes=True,
@@ -209,21 +205,76 @@ class PlotlyPlot():
                 showlegend=showlegend
             ), row=positions[i] + 1, col=1
             )
+        if not layout:
+            self._fig.update_layout(
+                height=(500 + (len(row_scale) - 1) * 100),
+                xaxis_rangeslider_visible=False
+            )
+        else:
+            self._fig.layout = layout
 
-        self._fig.update_layout(
-            height=(500 + (len(row_scale) - 1) * 100),
-            xaxis_rangeslider_visible=False
-        )
         if self._excludeMissing:
             self._fig.layout.xaxis.type = 'category'
+
+    def subplot(self,
+                time: pd.Series,
+                indicator_datas: list,
+                names: list,
+                positions: list,
+                row_scale: list,
+                showlegend: bool = True,
+                layout: go.layout = None
+                ):
+        """Subplot
+
+        Create a subplots of plot of indicator data
+
+        Args:
+            time(pandas.Series): dataset 'Timestamp' column.
+            indicator_datas(list): list of dataset 'indicator_data' columns.
+            names(list): list of names of the indicators
+            positions(list): list of positions of the subplot of indicator_data
+            row_scale(list): list of row scale of the plots
+            showlegend(bool): if True, show the legend
+            layout(go.Layout): customize layout for the subplot.
+        """
+        self._subplot(time, indicator_datas, names, positions, row_scale, showlegend, layout)
+
         self._fig.show()
+
+    def _separatePlot(self,
+                      time: pd.Series,
+                      indicator_data: pd.Series,
+                      name: str = "",
+                      showlegend: bool = True,
+                      height: int = 200,
+                      layout: go.layout = None
+                      ):
+        line = go.Scatter(
+            x=time,
+            y=indicator_data,
+            name=name,
+            showlegend=showlegend
+        )
+        if not layout:
+            layout = go.Layout(
+                height=height,
+                margin=go.layout.Margin(
+                    b=50,
+                    t=50,
+                )
+            )
+        self._fig = go.Figure(data=[line], layout=layout)
+        if self._excludeMissing:
+            self._fig.layout.xaxis.type = 'category'
 
     def separatePlot(self,
                      time: pd.Series,
                      indicator_data: pd.Series,
                      name: str = "",
                      showlegend: bool = True,
-                     height: int = 200
+                     height: int = 200,
+                     layout: go.layout = None
                      ):
         """Separate Plot
 
@@ -235,21 +286,98 @@ class PlotlyPlot():
             name(str): name of the indicator
             showlegend(bool): if True, show the legend
             height(int): height of the plot
+            layout(go.Layout): customize layout for the separate plot.
         """
-        line = go.Scatter(
-            x=time,
-            y=indicator_data,
-            name=name,
-            showlegend=showlegend
-        )
-        layout = go.Layout(
-            height=height,
-            margin=go.layout.Margin(
-                b=50,
-                t=50,
-            )
-        )
-        self._fig = go.Figure(data=[line], layout=layout)
-        if self._excludeMissing:
-            self._fig.layout.xaxis.type = 'category'
+        self._separatePlot(time, indicator_data, name, showlegend, height, layout)
         self._fig.show()
+
+class StreamlitPlot(PlotlyPlot):
+    def __init__(self,
+                 df: pd.DataFrame,
+                 time: str = 'Date',
+                 close: str = 'Close',
+                 open: str = 'Open',
+                 high: str = 'Open',
+                 low: str = 'Low',
+                 excludeMissing: bool = False):
+        self._time = df[time]
+        self._open = df[open]
+        self._high = df[high]
+        self._low = df[low]
+        self._close = df[close]
+        self._fig = None
+        self._data = None
+        self._excludeMissing = excludeMissing
+        self._getlayout()
+        self._df = self._get_data(df)
+        self._run()
+
+    @st.cache
+    def _get_data(self,df):
+        return df
+
+    def _run(self):
+        st.title("TA Library streamlit plot")
+        st.dataframe(self._df)
+
+    def plot(self,
+             slider: str = True,
+             layout: go.Layout = None):
+        """Plot
+
+        Ploting existing figure
+
+        Args:
+            slider(bool): if True, show the slider.
+            layout(go.Layout): customize layout for the plot.
+        """
+        self._plot(slider, layout)
+        st.plotly_chart(self._fig)
+
+    def subplot(self,
+                time: pd.Series,
+                indicator_datas: list,
+                names: list,
+                positions: list,
+                row_scale: list,
+                showlegend: bool = True,
+                layout: go.layout = None
+                ):
+        """Subplot
+
+        Create a subplots of plot of indicator data
+
+        Args:
+            time(pandas.Series): dataset 'Timestamp' column.
+            indicator_datas(list): list of dataset 'indicator_data' columns.
+            names(list): list of names of the indicators
+            positions(list): list of positions of the subplot of indicator_data
+            row_scale(list): list of row scale of the plots
+            showlegend(bool): if True, show the legend
+            layout(go.Layout): customize layout for the subplot.
+        """
+        self._subplot(time, indicator_datas, names, positions, row_scale, showlegend, layout)
+        st.plotly_chart(self._fig)
+
+    def separatePlot(self,
+                     time: pd.Series,
+                     indicator_data: pd.Series,
+                     name: str = "",
+                     showlegend: bool = True,
+                     height: int = 200,
+                     layout: go.layout = None
+                     ):
+        """Separate Plot
+
+        Create a separate of plot of indicator data
+
+        Args:
+            time(pandas.Series): dataset 'Timestamp' column.
+            indicator_data(pandas.Series): dataset 'indicator_data' column.
+            name(str): name of the indicator
+            showlegend(bool): if True, show the legend
+            height(int): height of the plot
+            layout(go.Layout): customize layout for the separate plot.
+        """
+        self._separatePlot(time, indicator_data, name, showlegend, height)
+        st.plotly_chart(self._fig)
