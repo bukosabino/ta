@@ -47,7 +47,7 @@ def plotlyplot(df):
                 name="RSI",
                 showlegend=True)
 
-def streamlitplot(df):
+def streamlitplot():
     import yfinance as yf
     from ta.plots import StreamlitPlot
     data = yf.download(
@@ -66,6 +66,6 @@ def streamlitplot(df):
 # plotlyplot(df)
 
 # streamlit plot example
-streamlitplot(df)
+streamlitplot()
 
 
