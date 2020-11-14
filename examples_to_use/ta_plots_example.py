@@ -48,25 +48,18 @@ def plotlyplot(df):
                 showlegend=True)
 
 def streamlitplot(df):
-    sp = StreamlitPlot(df)
-    sp.candlestickplot(showlegend=False)
-    sp.addTrace(time=df['Date'],
-                indicator_data=df['EMA_9'],
-                name="EMA_9",
-                showlegend=False)
-    sp.plot()
-
-    sp.candlestickplot(showlegend=False)
-    sp.addTrace(time=df['Date'],
-                indicator_data=df['EMA_9'],
-                name="EMA_9",
-                showlegend=False)
-    sp.subplot(time=df['Date'],
-               indicator_datas=[df['RSI'], df['Stoch'], df['Stoch_signal']],
-               names=["RSI", 'Stoch', 'Stoch_signal'],
-               positions=[1, 2, 2],
-               row_scale=[0.6, 0.2, 0.2],
-               showlegend=True)
+    import yfinance as yf
+    from ta.plots import StreamlitPlot
+    data = yf.download(
+        tickers='TSLA',
+        period="1y",
+        group_by='ticker',
+        auto_adjust=True,
+        prepost=False,
+        threads=True,
+    )
+    df = data.reset_index()
+    StreamlitPlot(df)
 
 df = get_data()
 # plotly plot example
