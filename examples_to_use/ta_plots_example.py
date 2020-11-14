@@ -61,7 +61,7 @@ def streamlitplot(df):
     df = data.reset_index()
     StreamlitPlot(df)
 
-df = get_data()
+# df = get_data()
 # plotly plot example
 # plotlyplot(df)
 
