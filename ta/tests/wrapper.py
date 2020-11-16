@@ -28,3 +28,11 @@ class TestWrapper(unittest.TestCase):
         # Add all ta features not filling nans values
         ta.add_all_ta_features(
             df=df, open="Open", high="High", low="Low", close="Close", volume="Volume_BTC", fillna=False)
+
+        # Check added ta features are all numerical values after filling nans
+        input_cols = self._df.columns
+        df_with_ta = ta.add_all_ta_features(
+            df=df, open="Open", high="High", low="Low", close="Close", volume="Volume_BTC", fillna=True
+        )
+        ta_cols = [c for c in df_with_ta.columns if c not in input_cols]
+        assert df_with_ta[ta_cols].apply(lambda series: pd.to_numeric(series, errors='coerce')).notnull().all().all()
