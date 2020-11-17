@@ -134,7 +134,7 @@ def add_volatility_ta(df: pd.DataFrame, high: str, low: str, close: str,
     df[f'{colprefix}volatility_dcp'] = indicator_dc.donchian_channel_pband()
 
     # Ulcer Index
-    df[f'{colprefix}volatility_ui'] = UlcerIndex(close=df[close], n=14, fillna=fillna)
+    df[f'{colprefix}volatility_ui'] = UlcerIndex(close=df[close], n=14, fillna=fillna).ulcer_index()
 
     return df
 
