@@ -608,8 +608,8 @@ class ADXIndicator(IndicatorMixin):
         self._trs[0] = tr.dropna()[0:self._n].sum()
         tr = tr.reset_index(drop=True)
 
-        for i in range(1, len(self._trs)-1):
-            self._trs[i] = self._trs[i-1] - (self._trs[i-1]/float(self._n)) + tr[self._n+i]
+        for i in range(1, len(self._trs)):
+            self._trs[i] = self._trs[i-1] - (self._trs[i-1]/float(self._n)) + tr[self._n+i-1]
 
         up = self._high - self._high.shift(1)
         dn = self._low.shift(1) - self._low
@@ -621,16 +621,16 @@ class ADXIndicator(IndicatorMixin):
 
         pos = pos.reset_index(drop=True)
 
-        for i in range(1, len(self._dip)-1):
-            self._dip[i] = self._dip[i-1] - (self._dip[i-1]/float(self._n)) + pos[self._n+i]
+        for i in range(1, len(self._dip)):
+            self._dip[i] = self._dip[i-1] - (self._dip[i-1]/float(self._n)) + pos[self._n+i-1]
 
         self._din = np.zeros(len(self._close) - (self._n - 1))
         self._din[0] = neg.dropna()[0:self._n].sum()
 
         neg = neg.reset_index(drop=True)
 
-        for i in range(1, len(self._din)-1):
-            self._din[i] = self._din[i-1] - (self._din[i-1]/float(self._n)) + neg[self._n+i]
+        for i in range(1, len(self._din)):
+            self._din[i] = self._din[i-1] - (self._din[i-1]/float(self._n)) + neg[self._n+i-1]
 
     def adx(self) -> pd.Series:
         """Average Directional Index (ADX)
