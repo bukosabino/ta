@@ -16,7 +16,7 @@ class TestRateOfChangeIndicator(unittest.TestCase):
     https://school.stockcharts.com/doku.php?id=technical_indicators:on_balance_volume_obv
     """
 
-    _filename = 'ta/tests/data/cs-roc.csv'
+    _filename = 'test/data/cs-roc.csv'
 
     @classmethod
     def setUpClass(cls):
@@ -45,7 +45,7 @@ class TestRSIIndicator(unittest.TestCase):
     Note: Using a more simple initilization (directly `ewm`; stockcharts uses `sma` + `ewm`)
     """
 
-    _filename = 'ta/tests/data/cs-rsi.csv'
+    _filename = 'test/data/cs-rsi.csv'
 
     @classmethod
     def setUpClass(cls):
@@ -73,7 +73,7 @@ class TestStochRSIIndicator(unittest.TestCase):
     https://school.stockcharts.com/doku.php?id=technical_indicators:stochrsi
     """
 
-    _filename = 'ta/tests/data/cs-stochrsi.csv'
+    _filename = 'test/data/cs-stochrsi.csv'
 
     @classmethod
     def setUpClass(cls):
@@ -101,7 +101,7 @@ class TestUltimateOscillator(unittest.TestCase):
     https://school.stockcharts.com/doku.php?id=technical_indicators:ultimate_oscillator
     """
 
-    _filename = 'ta/tests/data/cs-ultosc.csv'
+    _filename = 'test/data/cs-ultosc.csv'
 
     @classmethod
     def setUpClass(cls):
@@ -140,7 +140,7 @@ class TestStochasticOscillator(unittest.TestCase):
     https://school.stockcharts.com/doku.php?id=technical_indicators:stochastic_oscillator_fast_slow_and_full
     """
 
-    _filename = 'ta/tests/data/cs-soo.csv'
+    _filename = 'test/data/cs-soo.csv'
 
     @classmethod
     def setUpClass(cls):
@@ -179,7 +179,7 @@ class TestWilliamsRIndicator(unittest.TestCase):
     https://school.stockcharts.com/doku.php?id=technical_indicators:williams_r
     """
 
-    _filename = 'ta/tests/data/cs-percentr.csv'
+    _filename = 'test/data/cs-percentr.csv'
 
     @classmethod
     def setUpClass(cls):
@@ -207,7 +207,7 @@ class TestKAMAIndicator(unittest.TestCase):
     https://school.stockcharts.com/doku.php?id=technical_indicators:kaufman_s_adaptive_moving_average
     """
 
-    _filename = 'ta/tests/data/cs-kama.csv'
+    _filename = 'test/data/cs-kama.csv'
 
     @classmethod
     def setUpClass(cls):
@@ -235,7 +235,7 @@ class TestTSIIndicator(unittest.TestCase):
     https://school.stockcharts.com/doku.php?id=technical_indicators:true_strength_index
     """
 
-    _filename = 'ta/tests/data/cs-tsi.csv'
+    _filename = 'test/data/cs-tsi.csv'
 
     @classmethod
     def setUpClass(cls):
@@ -266,7 +266,7 @@ class TestPercentagePriceOscillator(unittest.TestCase):
     https://docs.google.com/spreadsheets/d/1h9p8_PXU7G8sD-LciydpmH6rveaLwvoL7SMBGmO3kM4/edit#gid=0
     """
 
-    _filename = 'ta/tests/data/cs-ppo.csv'
+    _filename = 'test/data/cs-ppo.csv'
 
     @classmethod
     def setUpClass(cls):
@@ -321,7 +321,7 @@ class TestPercentageVolumeOscillator(unittest.TestCase):
     https://docs.google.com/spreadsheets/d/1SyePHvrVBAcmjDiXe877Qrycx6TmajyrZ8UdrwVk9MI/edit#gid=0
     """
 
-    _filename = 'ta/tests/data/cs-pvo.csv'
+    _filename = 'test/data/cs-pvo.csv'
 
     @classmethod
     def setUpClass(cls):
@@ -368,3 +368,7 @@ class TestPercentageVolumeOscillator(unittest.TestCase):
         result = pvo_hist(**self._params)
         pd.testing.assert_series_equal(
             self._df[target].tail(), result.tail(), check_names=False)
+
+
+if __name__ == '__main__':
+    unittest.main()

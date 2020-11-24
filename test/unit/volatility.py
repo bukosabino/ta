@@ -23,7 +23,7 @@ class TestAverageTrueRange(unittest.TestCase):
     https://docs.google.com/spreadsheets/d/1DYG5NI_1px30aZ6oJkDIkWsyJW5V8jGbBVKIr9NWtec/edit?usp=sharing
     """
 
-    _filename = 'ta/tests/data/cs-atr.csv'
+    _filename = 'test/data/cs-atr.csv'
 
     @classmethod
     def setUpClass(cls):
@@ -52,7 +52,7 @@ class TestAverageTrueRange2(unittest.TestCase):
     https://docs.google.com/spreadsheets/d/1IRlmwVmRLAzjIIt2iXBukZyyaSAYB_0iRyAoOowZaBk/edit?usp=sharing
     """
 
-    _filename = 'ta/tests/data/cs-atr2.csv'
+    _filename = 'test/data/cs-atr2.csv'
 
     @classmethod
     def setUpClass(cls):
@@ -80,7 +80,7 @@ class TestBollingerBands(unittest.TestCase):
     https://school.stockcharts.com/doku.php?id=technical_indicators:bollinger_bands
     """
 
-    _filename = 'ta/tests/data/cs-bbands.csv'
+    _filename = 'test/data/cs-bbands.csv'
 
     @classmethod
     def setUpClass(cls):
@@ -169,7 +169,7 @@ class TestDonchianChannel(unittest.TestCase):
     https://docs.google.com/spreadsheets/d/17JWWsxSiAb24BLzncUpccc8hg-03QjVWVXmoRCJ2lME/edit#gid=0
     """
 
-    _filename = 'ta/tests/data/cs-dc.csv'
+    _filename = 'test/data/cs-dc.csv'
 
     @classmethod
     def setUpClass(cls):
@@ -239,7 +239,7 @@ class TestDonchianChannel2(unittest.TestCase):
     https://docs.google.com/spreadsheets/d/17JWWsxSiAb24BLzncUpccc8hg-03QjVWVXmoRCJ2lME/edit#gid=0
     """
 
-    _filename = 'ta/tests/data/cs-dc2.csv'
+    _filename = 'test/data/cs-dc2.csv'
 
     @classmethod
     def setUpClass(cls):
@@ -309,7 +309,7 @@ class TestKeltnerChannel(unittest.TestCase):
     https://docs.google.com/spreadsheets/d/1qT8JbJ7F13bMV9-TcK-oFHL1F5sKPwakQWf6KrvGI3U/edit?usp=sharing
     """
 
-    _filename = 'ta/tests/data/cs-kc.csv'
+    _filename = 'test/data/cs-kc.csv'
 
     @classmethod
     def setUpClass(cls):
@@ -399,7 +399,7 @@ class TestUlcerIndex(unittest.TestCase):
     https://docs.google.com/spreadsheets/d/1PpiRxv4Cnjqod9zNTnls4Lfn8lknHFnWk1DmaTZgZC8/edit#gid=0
     """
 
-    _filename = 'ta/tests/data/cs-ui.csv'
+    _filename = 'test/data/cs-ui.csv'
 
     @classmethod
     def setUpClass(cls):
@@ -420,3 +420,7 @@ class TestUlcerIndex(unittest.TestCase):
         target = 'ulcer_index'
         result = ulcer_index(**self._params)
         pd.testing.assert_series_equal(self._df[target].tail(1), result.tail(1), check_names=False)
+
+
+if __name__ == '__main__':
+    unittest.main()

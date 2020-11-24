@@ -8,6 +8,5 @@ isort-fix:
 	isort --recursive ta
 
 test: lint
-	# python -m unittest discover
-	coverage run tests.py
+	coverage run -m unittest discover
 	coverage report -m

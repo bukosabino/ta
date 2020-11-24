@@ -15,7 +15,7 @@ class TestOnBalanceVolumeIndicator(unittest.TestCase):
     https://school.stockcharts.com/doku.php?id=technical_indicators:on_balance_volume_obv
     """
 
-    _filename = 'ta/tests/data/cs-obv.csv'
+    _filename = 'test/data/cs-obv.csv'
 
     @classmethod
     def setUpClass(cls):
@@ -43,7 +43,7 @@ class TestForceIndexIndicator(unittest.TestCase):
     https://school.stockcharts.com/doku.php?id=technical_indicators:force_index
     """
 
-    _filename = 'ta/tests/data/cs-fi.csv'
+    _filename = 'test/data/cs-fi.csv'
 
     @classmethod
     def setUpClass(cls):
@@ -71,7 +71,7 @@ class TestEaseOfMovementIndicator(unittest.TestCase):
     https://school.stockcharts.com/doku.php?id=technical_indicators:ease_of_movement_emv
     """
 
-    _filename = 'ta/tests/data/cs-easeofmovement.csv'
+    _filename = 'test/data/cs-easeofmovement.csv'
 
     @classmethod
     def setUpClass(cls):
@@ -109,7 +109,7 @@ class TestAccDistIndexIndicator(unittest.TestCase):
     https://school.stockcharts.com/doku.php?id=technical_indicators:accumulation_distribution_line
     """
 
-    _filename = 'ta/tests/data/cs-accum.csv'
+    _filename = 'test/data/cs-accum.csv'
 
     @classmethod
     def setUpClass(cls):
@@ -138,7 +138,7 @@ class TestMFIIndicator(unittest.TestCase):
     https://school.stockcharts.com/doku.php?id=technical_indicators:money_flow_index_mfi
     """
 
-    _filename = 'ta/tests/data/cs-mfi.csv'
+    _filename = 'test/data/cs-mfi.csv'
 
     @classmethod
     def setUpClass(cls):
@@ -168,7 +168,7 @@ class TestVolumeWeightedAveragePrice(unittest.TestCase):
     https://school.stockcharts.com/doku.php?id=technical_indicators:vwap_intraday
     """
 
-    _filename = 'ta/tests/data/cs-vwap.csv'
+    _filename = 'test/data/cs-vwap.csv'
 
     @classmethod
     def setUpClass(cls):
@@ -190,3 +190,7 @@ class TestVolumeWeightedAveragePrice(unittest.TestCase):
         target = 'vwap'
         result = self._indicator.volume_weighted_average_price()
         pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
+
+
+if __name__ == '__main__':
+    unittest.main()

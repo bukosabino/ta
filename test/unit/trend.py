@@ -15,7 +15,7 @@ class TestADXIndicator(unittest.TestCase):
     https://school.stockcharts.com/doku.php?id=technical_indicators:average_directional_index_adx
     """
 
-    _filename = 'ta/tests/data/cs-adx.csv'
+    _filename = 'test/data/cs-adx.csv'
 
     @classmethod
     def setUpClass(cls):
@@ -63,7 +63,7 @@ class TestMACDIndicator(unittest.TestCase):
     https://school.stockcharts.com/doku.php?id=technical_indicators:moving_average_convergence_divergence_macd
     """
 
-    _filename = 'ta/tests/data/cs-macd.csv'
+    _filename = 'test/data/cs-macd.csv'
 
     @classmethod
     def setUpClass(cls):
@@ -111,7 +111,7 @@ class TestCCIIndicator(unittest.TestCase):
     http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:commodity_channel_index_cci
     """
 
-    _filename = 'ta/tests/data/cs-cci.csv'
+    _filename = 'test/data/cs-cci.csv'
 
     @classmethod
     def setUpClass(cls):
@@ -140,7 +140,7 @@ class TestVortexIndicator(unittest.TestCase):
     http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:commodity_channel_index_cci
     """
 
-    _filename = 'ta/tests/data/cs-vortex.csv'
+    _filename = 'test/data/cs-vortex.csv'
 
     @classmethod
     def setUpClass(cls):
@@ -178,7 +178,7 @@ class TestPSARIndicator(unittest.TestCase):
     https://school.stockcharts.com/doku.php?id=technical_indicators:parabolic_sar
     """
 
-    _filename = 'ta/tests/data/cs-psar.csv'
+    _filename = 'test/data/cs-psar.csv'
 
     @classmethod
     def setUpClass(cls):
@@ -237,7 +237,7 @@ class TestSTCIndicator(unittest.TestCase):
     https://docs.google.com/spreadsheets/d/1z6o_R_hCGCGQARC791KdrOD5E69IhjAXbXqi1014hcs/edit?usp=sharing
     """
 
-    _filename = 'ta/tests/data/cs-stc.csv'
+    _filename = 'test/data/cs-stc.csv'
 
     @classmethod
     def setUpClass(cls):
@@ -264,7 +264,7 @@ class TestWMAIndicator(unittest.TestCase):
     """
     """
 
-    _filename = 'ta/tests/data/cs-wma.csv'
+    _filename = 'test/data/cs-wma.csv'
 
     @classmethod
     def setUpClass(cls):
@@ -285,3 +285,7 @@ class TestWMAIndicator(unittest.TestCase):
         target = 'WMA'
         result = wma_indicator(**self._params)
         pd.testing.assert_series_equal(self._df[target].tail(), result.tail(), check_names=False)
+
+
+if __name__ == '__main__':
+    unittest.main()

@@ -7,7 +7,7 @@ import ta
 
 class TestWrapper(unittest.TestCase):
 
-    _filename = 'ta/tests/data/datas.csv'
+    _filename = 'test/data/datas.csv'
 
     @classmethod
     def setUpClass(cls):
@@ -36,3 +36,7 @@ class TestWrapper(unittest.TestCase):
         )
         ta_cols = [c for c in df_with_ta.columns if c not in input_cols]
         assert df_with_ta[ta_cols].apply(lambda series: pd.to_numeric(series, errors='coerce')).notnull().all().all()
+
+
+if __name__ == '__main__':
+    unittest.main()
