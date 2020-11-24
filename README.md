@@ -9,7 +9,7 @@
 
 It is a Technical Analysis library useful to do feature engineering from financial time series datasets (Open, Close, High, Low, Volume). It is built on Pandas and Numpy.
 
-![Bollinger Bands graph example](doc/figure.png)
+![Bollinger Bands graph example](static/figure.png)
 
 The library has implemented 42 indicators:
 
@@ -165,7 +165,7 @@ $ make test
 
 # Sponsor
 
-![Logo OpenSistemas](doc/logo_neuroons_byOS_blue.png)
+![Logo OpenSistemas](static/logo_neuroons_byOS_blue.png)
 
 Thank you to [OpenSistemas](https://opensistemas.com)! It is because of your contribution that I am able to continue the development of this open source library.
 
