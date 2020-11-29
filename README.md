@@ -199,6 +199,11 @@ Thank you to [OpenSistemas](https://opensistemas.com)! It is because of your con
 Check the [changelog](https://github.com/bukosabino/ta/blob/master/RELEASE.md) of project.
 
 
+# Donation
+
+If you think `ta` library help you, please consider [buying me a coffee](https://www.paypal.me/guau/3).
+
+
 # Credits
 
 Developed by Darío López Padial (aka Bukosabino) and [other contributors](https://github.com/bukosabino/ta/graphs/contributors).
