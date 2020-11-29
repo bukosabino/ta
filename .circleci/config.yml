@@ -18,7 +18,7 @@ jobs:
           name: Run linter
           command: |
             . venv/bin/activate
-            pycodestyle --max-line-length=119 ta && isort --check-only --recursive ta
+            make lint
       - run:
           name: Run test
           command: |

@@ -1,5 +1,6 @@
 | Date | Version | Comment |
 | ------------- | ------------- | ------------- |
+| 2020/11/27 | 0.7.0 | Cleaning code https://github.com/bukosabino/ta/pull/209 |
 | 2020/11/17 | 0.6.1 | Fixing Wrapper https://github.com/bukosabino/ta/pull/204 |
 | 2020/11/09 | 0.6.0 | Adding new indicators (Ulcer Index, Weighted Moving Average, Schaff Trend Cycle, Stochastic RSI, Percentage Price Oscillator, Percentage Volume Oscillator) https://github.com/bukosabino/ta/pull/167; Update wrapper https://github.com/bukosabino/ta/pull/166 |
 | 2020/05/12 | 0.5.25 | fixing bug: min_periods when fillna=False https://github.com/bukosabino/ta/pull/158 |

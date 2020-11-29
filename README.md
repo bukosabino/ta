@@ -1,6 +1,8 @@
 ![CircleCI](https://img.shields.io/circleci/build/github/bukosabino/ta/master)
 [![Documentation Status](https://readthedocs.org/projects/technical-analysis-library-in-python/badge/?version=latest)](https://technical-analysis-library-in-python.readthedocs.io/en/latest/?badge=latest)
 [![Coverage Status](https://coveralls.io/repos/github/bukosabino/ta/badge.svg)](https://coveralls.io/github/bukosabino/ta)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![Linter: Prospector](https://img.shields.io/badge/Linter-Prospector-coral.svg)](http://prospector.landscape.io/en/master/)
 ![PyPI](https://img.shields.io/pypi/v/ta)
 ![PyPI - Downloads](https://img.shields.io/pypi/dm/ta)
 [![Donate PayPal](https://img.shields.io/badge/Donate%20%24-PayPal-brightgreen.svg)](https://www.paypal.me/guau/3)
@@ -132,7 +134,7 @@ df = pd.read_csv('ta/tests/data/datas.csv', sep=',')
 df = dropna(df)
 
 # Initialize Bollinger Bands Indicator
-indicator_bb = BollingerBands(close=df["Close"], n=20, ndev=2)
+indicator_bb = BollingerBands(close=df["Close"], window=20, window_dev=2)
 
 # Add Bollinger Bands features
 df['bb_bbm'] = indicator_bb.bollinger_mavg()
@@ -158,7 +160,7 @@ df['bb_bbp'] = indicator_bb.bollinger_pband()
 ```sh
 $ git clone https://github.com/bukosabino/ta.git
 $ cd ta
-$ pip install -r play-requirements.txt
+$ pip install -r requirements-play.txt
 $ make test
 ```
 
@@ -194,7 +196,7 @@ Thank you to [OpenSistemas](https://opensistemas.com)! It is because of your con
 
 # Changelog
 
-[Changelog](https://github.com/bukosabino/ta/blob/master/release.md)
+Check the [changelog](https://github.com/bukosabino/ta/blob/master/RELEASE.md) of project.
 
 
 # Credits
