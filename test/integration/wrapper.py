@@ -1,12 +1,10 @@
 import unittest
 
 import pandas as pd
-
 import ta
 
 
 class TestWrapper(unittest.TestCase):
-
     _filename = "test/data/datas.csv"
 
     @classmethod
@@ -57,10 +55,10 @@ class TestWrapper(unittest.TestCase):
         ta_cols = [c for c in df_with_ta.columns if c not in input_cols]
         self.assertTrue(
             df_with_ta[ta_cols]
-            .apply(lambda series: pd.to_numeric(series, errors="coerce"))
-            .notnull()
-            .all()
-            .all()
+                .apply(lambda series: pd.to_numeric(series, errors="coerce"))
+                .notnull()
+                .all()
+                .all()
         )
 
 

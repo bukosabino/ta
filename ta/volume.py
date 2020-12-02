@@ -28,12 +28,12 @@ class AccDistIndexIndicator(IndicatorMixin):
     """
 
     def __init__(
-        self,
-        high: pd.Series,
-        low: pd.Series,
-        close: pd.Series,
-        volume: pd.Series,
-        fillna: bool = False,
+            self,
+            high: pd.Series,
+            low: pd.Series,
+            close: pd.Series,
+            volume: pd.Series,
+            fillna: bool = False,
     ):
         self._high = high
         self._low = low
@@ -44,7 +44,7 @@ class AccDistIndexIndicator(IndicatorMixin):
 
     def _run(self):
         clv = ((self._close - self._low) - (self._high - self._close)) / (
-            self._high - self._low
+                self._high - self._low
         )
         clv = clv.fillna(0.0)  # float division by zero
         adi = clv * self._volume
@@ -111,13 +111,13 @@ class ChaikinMoneyFlowIndicator(IndicatorMixin):
     """
 
     def __init__(
-        self,
-        high: pd.Series,
-        low: pd.Series,
-        close: pd.Series,
-        volume: pd.Series,
-        window: int = 20,
-        fillna: bool = False,
+            self,
+            high: pd.Series,
+            low: pd.Series,
+            close: pd.Series,
+            volume: pd.Series,
+            window: int = 20,
+            fillna: bool = False,
     ):
         self._high = high
         self._low = low
@@ -129,14 +129,14 @@ class ChaikinMoneyFlowIndicator(IndicatorMixin):
 
     def _run(self):
         mfv = ((self._close - self._low) - (self._high - self._close)) / (
-            self._high - self._low
+                self._high - self._low
         )
         mfv = mfv.fillna(0.0)  # float division by zero
         mfv *= self._volume
         min_periods = 0 if self._fillna else self._window
         self._cmf = (
-            mfv.rolling(self._window, min_periods=min_periods).sum()
-            / self._volume.rolling(self._window, min_periods=min_periods).sum()
+                mfv.rolling(self._window, min_periods=min_periods).sum()
+                / self._volume.rolling(self._window, min_periods=min_periods).sum()
         )
 
     def chaikin_money_flow(self) -> pd.Series:
@@ -166,11 +166,11 @@ class ForceIndexIndicator(IndicatorMixin):
     """
 
     def __init__(
-        self,
-        close: pd.Series,
-        volume: pd.Series,
-        window: int = 13,
-        fillna: bool = False,
+            self,
+            close: pd.Series,
+            volume: pd.Series,
+            window: int = 13,
+            fillna: bool = False,
     ):
         self._close = close
         self._volume = volume
@@ -209,12 +209,12 @@ class EaseOfMovementIndicator(IndicatorMixin):
     """
 
     def __init__(
-        self,
-        high: pd.Series,
-        low: pd.Series,
-        volume: pd.Series,
-        window: int = 14,
-        fillna: bool = False,
+            self,
+            high: pd.Series,
+            low: pd.Series,
+            volume: pd.Series,
+            window: int = 14,
+            fillna: bool = False,
     ):
         self._high = high
         self._low = low
@@ -225,9 +225,9 @@ class EaseOfMovementIndicator(IndicatorMixin):
 
     def _run(self):
         self._emv = (
-            (self._high.diff(1) + self._low.diff(1))
-            * (self._high - self._low)
-            / (2 * self._volume)
+                (self._high.diff(1) + self._low.diff(1))
+                * (self._high - self._low)
+                / (2 * self._volume)
         )
         self._emv *= 100000000
 
@@ -275,8 +275,8 @@ class VolumePriceTrendIndicator(IndicatorMixin):
 
     def _run(self):
         vpt = self._volume * (
-            (self._close - self._close.shift(1, fill_value=self._close.mean()))
-            / self._close.shift(1, fill_value=self._close.mean())
+                (self._close - self._close.shift(1, fill_value=self._close.mean()))
+                / self._close.shift(1, fill_value=self._close.mean())
         )
         self._vpt = vpt.shift(1, fill_value=vpt.mean()) + vpt
 
@@ -352,13 +352,13 @@ class MFIIndicator(IndicatorMixin):
     """
 
     def __init__(
-        self,
-        high: pd.Series,
-        low: pd.Series,
-        close: pd.Series,
-        volume: pd.Series,
-        window: int = 14,
-        fillna: bool = False,
+            self,
+            high: pd.Series,
+            low: pd.Series,
+            close: pd.Series,
+            volume: pd.Series,
+            window: int = 14,
+            fillna: bool = False,
     ):
         self._high = high
         self._low = low
@@ -429,13 +429,13 @@ class VolumeWeightedAveragePrice(IndicatorMixin):
     """
 
     def __init__(
-        self,
-        high: pd.Series,
-        low: pd.Series,
-        close: pd.Series,
-        volume: pd.Series,
-        window: int = 14,
-        fillna: bool = False,
+            self,
+            high: pd.Series,
+            low: pd.Series,
+            close: pd.Series,
+            volume: pd.Series,
+            window: int = 14,
+            fillna: bool = False,
     ):
         self._high = high
         self._low = low
@@ -705,12 +705,12 @@ def money_flow_index(high, low, close, volume, window=14, fillna=False):
 
 
 def volume_weighted_average_price(
-    high: pd.Series,
-    low: pd.Series,
-    close: pd.Series,
-    volume: pd.Series,
-    window: int = 14,
-    fillna: bool = False,
+        high: pd.Series,
+        low: pd.Series,
+        close: pd.Series,
+        volume: pd.Series,
+        window: int = 14,
+        fillna: bool = False,
 ):
     """Volume Weighted Average Price (VWAP)
 

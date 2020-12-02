@@ -26,7 +26,6 @@ class RSIIndicator(IndicatorMixin):
         window(int): n period.
         fillna(bool): if True, fill nan values.
     """
-
     def __init__(self, close: pd.Series, window: int = 14, fillna: bool = False):
         self._close = close
         self._window = window
@@ -75,11 +74,11 @@ class TSIIndicator(IndicatorMixin):
     """
 
     def __init__(
-        self,
-        close: pd.Series,
-        window_slow: int = 25,
-        window_fast: int = 13,
-        fillna: bool = False,
+            self,
+            close: pd.Series,
+            window_slow: int = 25,
+            window_fast: int = 13,
+            fillna: bool = False,
     ):
         self._close = close
         self._window_slow = window_slow
@@ -95,16 +94,16 @@ class TSIIndicator(IndicatorMixin):
             diff_close.ewm(
                 span=self._window_slow, min_periods=min_periods_r, adjust=False
             )
-            .mean()
-            .ewm(span=self._window_fast, min_periods=min_periods_s, adjust=False)
-            .mean()
+                .mean()
+                .ewm(span=self._window_fast, min_periods=min_periods_s, adjust=False)
+                .mean()
         )
         smoothed_abs = (
             abs(diff_close)
-            .ewm(span=self._window_slow, min_periods=min_periods_r, adjust=False)
-            .mean()
-            .ewm(span=self._window_fast, min_periods=min_periods_s, adjust=False)
-            .mean()
+                .ewm(span=self._window_slow, min_periods=min_periods_r, adjust=False)
+                .mean()
+                .ewm(span=self._window_fast, min_periods=min_periods_s, adjust=False)
+                .mean()
         )
         self._tsi = smoothed / smoothed_abs
         self._tsi *= 100
@@ -149,17 +148,17 @@ class UltimateOscillator(IndicatorMixin):
     """
 
     def __init__(
-        self,
-        high: pd.Series,
-        low: pd.Series,
-        close: pd.Series,
-        window1: int = 7,
-        window2: int = 14,
-        window3: int = 28,
-        weight1: float = 4.0,
-        weight2: float = 2.0,
-        weight3: float = 1.0,
-        fillna: bool = False,
+            self,
+            high: pd.Series,
+            low: pd.Series,
+            close: pd.Series,
+            window1: int = 7,
+            window2: int = 14,
+            window3: int = 28,
+            weight1: float = 4.0,
+            weight2: float = 2.0,
+            weight3: float = 1.0,
+            fillna: bool = False,
     ):
         self._high = high
         self._low = low
@@ -183,25 +182,25 @@ class UltimateOscillator(IndicatorMixin):
         min_periods_m = 0 if self._fillna else self._window2
         min_periods_len = 0 if self._fillna else self._window3
         avg_s = (
-            buying_pressure.rolling(self._window1, min_periods=min_periods_s).sum()
-            / true_range.rolling(self._window1, min_periods=min_periods_s).sum()
+                buying_pressure.rolling(self._window1, min_periods=min_periods_s).sum()
+                / true_range.rolling(self._window1, min_periods=min_periods_s).sum()
         )
         avg_m = (
-            buying_pressure.rolling(self._window2, min_periods=min_periods_m).sum()
-            / true_range.rolling(self._window2, min_periods=min_periods_m).sum()
+                buying_pressure.rolling(self._window2, min_periods=min_periods_m).sum()
+                / true_range.rolling(self._window2, min_periods=min_periods_m).sum()
         )
         avg_l = (
-            buying_pressure.rolling(self._window3, min_periods=min_periods_len).sum()
-            / true_range.rolling(self._window3, min_periods=min_periods_len).sum()
+                buying_pressure.rolling(self._window3, min_periods=min_periods_len).sum()
+                / true_range.rolling(self._window3, min_periods=min_periods_len).sum()
         )
         self._uo = (
-            100.0
-            * (
-                (self._weight1 * avg_s)
-                + (self._weight2 * avg_m)
-                + (self._weight3 * avg_l)
-            )
-            / (self._weight1 + self._weight2 + self._weight3)
+                100.0
+                * (
+                        (self._weight1 * avg_s)
+                        + (self._weight2 * avg_m)
+                        + (self._weight3 * avg_l)
+                )
+                / (self._weight1 + self._weight2 + self._weight3)
         )
 
     def ultimate_oscillator(self) -> pd.Series:
@@ -234,13 +233,13 @@ class StochasticOscillator(IndicatorMixin):
     """
 
     def __init__(
-        self,
-        high: pd.Series,
-        low: pd.Series,
-        close: pd.Series,
-        window: int = 14,
-        smooth_window: int = 3,
-        fillna: bool = False,
+            self,
+            high: pd.Series,
+            low: pd.Series,
+            close: pd.Series,
+            window: int = 14,
+            smooth_window: int = 3,
+            fillna: bool = False,
     ):
         self._close = close
         self._high = high
@@ -300,12 +299,12 @@ class KAMAIndicator(IndicatorMixin):
     """
 
     def __init__(
-        self,
-        close: pd.Series,
-        window: int = 10,
-        pow1: int = 2,
-        pow2: int = 30,
-        fillna: bool = False,
+            self,
+            close: pd.Series,
+            window: int = 10,
+            pow1: int = 2,
+            pow2: int = 30,
+            fillna: bool = False,
     ):
         self._close = close
         self._window = window
@@ -324,11 +323,11 @@ class KAMAIndicator(IndicatorMixin):
         efficiency_ratio = er_num / er_den
 
         smoothing_constant = (
-            (
-                efficiency_ratio * (2.0 / (self._pow1 + 1) - 2.0 / (self._pow2 + 1.0))
-                + 2 / (self._pow2 + 1.0)
-            )
-            ** 2.0
+                (
+                        efficiency_ratio * (2.0 / (self._pow1 + 1) - 2.0 / (self._pow2 + 1.0))
+                        + 2 / (self._pow2 + 1.0)
+                )
+                ** 2.0
         ).values
 
         self._kama = np.zeros(smoothing_constant.size)
@@ -343,7 +342,7 @@ class KAMAIndicator(IndicatorMixin):
                 first_value = False
             else:
                 self._kama[i] = self._kama[i - 1] + smoothing_constant[i] * (
-                    close_values[i] - self._kama[i - 1]
+                        close_values[i] - self._kama[i - 1]
                 )
 
     def kama(self) -> pd.Series:
@@ -389,9 +388,9 @@ class ROCIndicator(IndicatorMixin):
 
     def _run(self):
         self._roc = (
-            (self._close - self._close.shift(self._window))
-            / self._close.shift(self._window)
-        ) * 100
+                            (self._close - self._close.shift(self._window))
+                            / self._close.shift(self._window)
+                    ) * 100
 
     def roc(self) -> pd.Series:
         """Rate of Change (ROC)
@@ -438,12 +437,12 @@ class AwesomeOscillatorIndicator(IndicatorMixin):
     """
 
     def __init__(
-        self,
-        high: pd.Series,
-        low: pd.Series,
-        window1: int = 5,
-        window2: int = 34,
-        fillna: bool = False,
+            self,
+            high: pd.Series,
+            low: pd.Series,
+            window1: int = 5,
+            window2: int = 34,
+            fillna: bool = False,
     ):
         self._high = high
         self._low = low
@@ -457,8 +456,8 @@ class AwesomeOscillatorIndicator(IndicatorMixin):
         min_periods_s = 0 if self._fillna else self._window1
         min_periods_len = 0 if self._fillna else self._window2
         self._ao = (
-            median_price.rolling(self._window1, min_periods=min_periods_s).mean()
-            - median_price.rolling(self._window2, min_periods=min_periods_len).mean()
+                median_price.rolling(self._window1, min_periods=min_periods_s).mean()
+                - median_price.rolling(self._window2, min_periods=min_periods_len).mean()
         )
 
     def awesome_oscillator(self) -> pd.Series:
@@ -510,12 +509,12 @@ class WilliamsRIndicator(IndicatorMixin):
     """
 
     def __init__(
-        self,
-        high: pd.Series,
-        low: pd.Series,
-        close: pd.Series,
-        lbp: int = 14,
-        fillna: bool = False,
+            self,
+            high: pd.Series,
+            low: pd.Series,
+            close: pd.Series,
+            lbp: int = 14,
+            fillna: bool = False,
     ):
         self._high = high
         self._low = low
@@ -564,12 +563,12 @@ class StochRSIIndicator(IndicatorMixin):
     """
 
     def __init__(
-        self,
-        close: pd.Series,
-        window: int = 14,
-        smooth1: int = 3,
-        smooth2: int = 3,
-        fillna: bool = False,
+            self,
+            close: pd.Series,
+            window: int = 14,
+            smooth1: int = 3,
+            smooth2: int = 3,
+            fillna: bool = False,
     ):
         self._close = close
         self._window = window
@@ -584,7 +583,7 @@ class StochRSIIndicator(IndicatorMixin):
         ).rsi()
         lowest_low_rsi = self._rsi.rolling(self._window).min()
         self._stochrsi = (self._rsi - lowest_low_rsi) / (
-            self._rsi.rolling(self._window).max() - lowest_low_rsi
+                self._rsi.rolling(self._window).max() - lowest_low_rsi
         )
         self._stochrsi_k = self._stochrsi.rolling(self._smooth1).mean()
 
@@ -633,12 +632,12 @@ class PercentagePriceOscillator(IndicatorMixin):
     """
 
     def __init__(
-        self,
-        close: pd.Series,
-        window_slow: int = 26,
-        window_fast: int = 12,
-        window_sign: int = 9,
-        fillna: bool = False,
+            self,
+            close: pd.Series,
+            window_slow: int = 26,
+            window_fast: int = 12,
+            window_sign: int = 9,
+            fillna: bool = False,
     ):
         self._close = close
         self._window_slow = window_slow
@@ -707,12 +706,12 @@ class PercentageVolumeOscillator(IndicatorMixin):
     """
 
     def __init__(
-        self,
-        volume: pd.Series,
-        window_slow: int = 26,
-        window_fast: int = 12,
-        window_sign: int = 9,
-        fillna: bool = False,
+            self,
+            volume: pd.Series,
+            window_slow: int = 26,
+            window_fast: int = 12,
+            window_sign: int = 9,
+            fillna: bool = False,
     ):
         self._volume = volume
         self._window_slow = window_slow
@@ -807,16 +806,16 @@ def tsi(close, window_slow=25, window_fast=13, fillna=False) -> pd.Series:
 
 
 def ultimate_oscillator(
-    high,
-    low,
-    close,
-    window1=7,
-    window2=14,
-    window3=28,
-    weight1=4.0,
-    weight2=2.0,
-    weight3=1.0,
-    fillna=False,
+        high,
+        low,
+        close,
+        window1=7,
+        window2=14,
+        window3=28,
+        weight1=4.0,
+        weight2=2.0,
+        weight3=1.0,
+        fillna=False,
 ) -> pd.Series:
     """Ultimate Oscillator
 
@@ -896,7 +895,7 @@ def stoch(high, low, close, window=14, smooth_window=3, fillna=False) -> pd.Seri
 
 
 def stoch_signal(
-    high, low, close, window=14, smooth_window=3, fillna=False
+        high, low, close, window=14, smooth_window=3, fillna=False
 ) -> pd.Series:
     """Stochastic Oscillator Signal
 
@@ -1070,11 +1069,11 @@ def roc(close: pd.Series, window: int = 12, fillna: bool = False) -> pd.Series:
 
 
 def stochrsi(
-    close: pd.Series,
-    window: int = 14,
-    smooth1: int = 3,
-    smooth2: int = 3,
-    fillna: bool = False,
+        close: pd.Series,
+        window: int = 14,
+        smooth1: int = 3,
+        smooth2: int = 3,
+        fillna: bool = False,
 ) -> pd.Series:
     """Stochastic RSI
 
@@ -1100,11 +1099,11 @@ def stochrsi(
 
 
 def stochrsi_k(
-    close: pd.Series,
-    window: int = 14,
-    smooth1: int = 3,
-    smooth2: int = 3,
-    fillna: bool = False,
+        close: pd.Series,
+        window: int = 14,
+        smooth1: int = 3,
+        smooth2: int = 3,
+        fillna: bool = False,
 ) -> pd.Series:
     """Stochastic RSI %k
 
@@ -1130,11 +1129,11 @@ def stochrsi_k(
 
 
 def stochrsi_d(
-    close: pd.Series,
-    window: int = 14,
-    smooth1: int = 3,
-    smooth2: int = 3,
-    fillna: bool = False,
+        close: pd.Series,
+        window: int = 14,
+        smooth1: int = 3,
+        smooth2: int = 3,
+        fillna: bool = False,
 ) -> pd.Series:
     """Stochastic RSI %d
 
@@ -1160,11 +1159,11 @@ def stochrsi_d(
 
 
 def ppo(
-    close: pd.Series,
-    window_slow: int = 26,
-    window_fast: int = 12,
-    window_sign: int = 9,
-    fillna: bool = False,
+        close: pd.Series,
+        window_slow: int = 26,
+        window_fast: int = 12,
+        window_sign: int = 9,
+        fillna: bool = False,
 ) -> pd.Series:
     """
     The Percentage Price Oscillator (PPO) is a momentum oscillator that measures
@@ -1191,7 +1190,7 @@ def ppo(
 
 
 def ppo_signal(
-    close: pd.Series, window_slow=26, window_fast=12, window_sign=9, fillna=False
+        close: pd.Series, window_slow=26, window_fast=12, window_sign=9, fillna=False
 ) -> pd.Series:
     """
     The Percentage Price Oscillator (PPO) is a momentum oscillator that measures
@@ -1218,11 +1217,11 @@ def ppo_signal(
 
 
 def ppo_hist(
-    close: pd.Series,
-    window_slow: int = 26,
-    window_fast: int = 12,
-    window_sign: int = 9,
-    fillna: bool = False,
+        close: pd.Series,
+        window_slow: int = 26,
+        window_fast: int = 12,
+        window_sign: int = 9,
+        fillna: bool = False,
 ) -> pd.Series:
     """
     The Percentage Price Oscillator (PPO) is a momentum oscillator that measures
@@ -1249,11 +1248,11 @@ def ppo_hist(
 
 
 def pvo(
-    volume: pd.Series,
-    window_slow: int = 26,
-    window_fast: int = 12,
-    window_sign: int = 9,
-    fillna: bool = False,
+        volume: pd.Series,
+        window_slow: int = 26,
+        window_fast: int = 12,
+        window_sign: int = 9,
+        fillna: bool = False,
 ) -> pd.Series:
     """
     The Percentage Volume Oscillator (PVO) is a momentum oscillator for volume.
@@ -1283,11 +1282,11 @@ def pvo(
 
 
 def pvo_signal(
-    volume: pd.Series,
-    window_slow: int = 26,
-    window_fast: int = 12,
-    window_sign: int = 9,
-    fillna: bool = False,
+        volume: pd.Series,
+        window_slow: int = 26,
+        window_fast: int = 12,
+        window_sign: int = 9,
+        fillna: bool = False,
 ) -> pd.Series:
     """
     The Percentage Volume Oscillator (PVO) is a momentum oscillator for volume.
@@ -1317,11 +1316,11 @@ def pvo_signal(
 
 
 def pvo_hist(
-    volume: pd.Series,
-    window_slow: int = 26,
-    window_fast: int = 12,
-    window_sign: int = 9,
-    fillna: bool = False,
+        volume: pd.Series,
+        window_slow: int = 26,
+        window_fast: int = 12,
+        window_sign: int = 9,
+        fillna: bool = False,
 ) -> pd.Series:
     """
     The Percentage Volume Oscillator (PVO) is a momentum oscillator for volume.

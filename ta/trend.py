@@ -9,6 +9,7 @@ import numpy as np
 import pandas as pd
 
 from ta.utils import IndicatorMixin, _ema, _get_min_max, _sma
+from ta.volatility import AverageTrueRange
 
 
 class AroonIndicator(IndicatorMixin):
@@ -90,12 +91,12 @@ class MACD(IndicatorMixin):
     """
 
     def __init__(
-        self,
-        close: pd.Series,
-        window_slow: int = 26,
-        window_fast: int = 12,
-        window_sign: int = 9,
-        fillna: bool = False,
+            self,
+            close: pd.Series,
+            window_slow: int = 26,
+            window_fast: int = 12,
+            window_sign: int = 9,
+            fillna: bool = False,
     ):
         self._close = close
         self._window_slow = window_slow
@@ -295,12 +296,12 @@ class MassIndex(IndicatorMixin):
     """
 
     def __init__(
-        self,
-        high: pd.Series,
-        low: pd.Series,
-        window_fast: int = 9,
-        window_slow: int = 25,
-        fillna: bool = False,
+            self,
+            high: pd.Series,
+            low: pd.Series,
+            window_fast: int = 9,
+            window_slow: int = 25,
+            fillna: bool = False,
     ):
         self._high = high
         self._low = low
@@ -345,14 +346,14 @@ class IchimokuIndicator(IndicatorMixin):
     """
 
     def __init__(
-        self,
-        high: pd.Series,
-        low: pd.Series,
-        window1: int = 9,
-        window2: int = 26,
-        window3: int = 52,
-        visual: bool = False,
-        fillna: bool = False,
+            self,
+            high: pd.Series,
+            low: pd.Series,
+            window1: int = 9,
+            window2: int = 26,
+            window3: int = 52,
+            visual: bool = False,
+            fillna: bool = False,
     ):
         self._high = high
         self._low = low
@@ -367,12 +368,12 @@ class IchimokuIndicator(IndicatorMixin):
         min_periods_n1 = 0 if self._fillna else self._window1
         min_periods_n2 = 0 if self._fillna else self._window2
         self._conv = 0.5 * (
-            self._high.rolling(self._window1, min_periods=min_periods_n1).max()
-            + self._low.rolling(self._window1, min_periods=min_periods_n1).min()
+                self._high.rolling(self._window1, min_periods=min_periods_n1).max()
+                + self._low.rolling(self._window1, min_periods=min_periods_n1).min()
         )
         self._base = 0.5 * (
-            self._high.rolling(self._window2, min_periods=min_periods_n2).max()
-            + self._low.rolling(self._window2, min_periods=min_periods_n2).min()
+                self._high.rolling(self._window2, min_periods=min_periods_n2).max()
+                + self._low.rolling(self._window2, min_periods=min_periods_n2).min()
         )
 
     def ichimoku_conversion_line(self) -> pd.Series:
@@ -417,8 +418,8 @@ class IchimokuIndicator(IndicatorMixin):
             pandas.Series: New feature generated.
         """
         spanb = 0.5 * (
-            self._high.rolling(self._window3, min_periods=0).max()
-            + self._low.rolling(self._window3, min_periods=0).min()
+                self._high.rolling(self._window3, min_periods=0).max()
+                + self._low.rolling(self._window3, min_periods=0).min()
         )
         spanb = (
             spanb.shift(self._window2, fill_value=spanb.mean())
@@ -454,18 +455,18 @@ class KSTIndicator(IndicatorMixin):
     """
 
     def __init__(
-        self,
-        close: pd.Series,
-        roc1: int = 10,
-        roc2: int = 15,
-        roc3: int = 20,
-        roc4: int = 30,
-        window1: int = 10,
-        window2: int = 10,
-        window3: int = 10,
-        window4: int = 15,
-        nsig: int = 9,
-        fillna: bool = False,
+            self,
+            close: pd.Series,
+            roc1: int = 10,
+            roc2: int = 15,
+            roc3: int = 20,
+            roc4: int = 30,
+            window1: int = 10,
+            window2: int = 10,
+            window3: int = 10,
+            window4: int = 15,
+            nsig: int = 9,
+            fillna: bool = False,
     ):
         self._close = close
         self._r1 = roc1
@@ -487,47 +488,47 @@ class KSTIndicator(IndicatorMixin):
         min_periods_n4 = 0 if self._fillna else self._window4
         rocma1 = (
             (
-                (
-                    self._close
-                    - self._close.shift(self._r1, fill_value=self._close.mean())
-                )
-                / self._close.shift(self._r1, fill_value=self._close.mean())
+                    (
+                            self._close
+                            - self._close.shift(self._r1, fill_value=self._close.mean())
+                    )
+                    / self._close.shift(self._r1, fill_value=self._close.mean())
             )
-            .rolling(self._window1, min_periods=min_periods_n1)
-            .mean()
+                .rolling(self._window1, min_periods=min_periods_n1)
+                .mean()
         )
         rocma2 = (
             (
-                (
-                    self._close
-                    - self._close.shift(self._r2, fill_value=self._close.mean())
-                )
-                / self._close.shift(self._r2, fill_value=self._close.mean())
+                    (
+                            self._close
+                            - self._close.shift(self._r2, fill_value=self._close.mean())
+                    )
+                    / self._close.shift(self._r2, fill_value=self._close.mean())
             )
-            .rolling(self._window2, min_periods=min_periods_n2)
-            .mean()
+                .rolling(self._window2, min_periods=min_periods_n2)
+                .mean()
         )
         rocma3 = (
             (
-                (
-                    self._close
-                    - self._close.shift(self._r3, fill_value=self._close.mean())
-                )
-                / self._close.shift(self._r3, fill_value=self._close.mean())
+                    (
+                            self._close
+                            - self._close.shift(self._r3, fill_value=self._close.mean())
+                    )
+                    / self._close.shift(self._r3, fill_value=self._close.mean())
             )
-            .rolling(self._window3, min_periods=min_periods_n3)
-            .mean()
+                .rolling(self._window3, min_periods=min_periods_n3)
+                .mean()
         )
         rocma4 = (
             (
-                (
-                    self._close
-                    - self._close.shift(self._r4, fill_value=self._close.mean())
-                )
-                / self._close.shift(self._r4, fill_value=self._close.mean())
+                    (
+                            self._close
+                            - self._close.shift(self._r4, fill_value=self._close.mean())
+                    )
+                    / self._close.shift(self._r4, fill_value=self._close.mean())
             )
-            .rolling(self._window4, min_periods=min_periods_n4)
-            .mean()
+                .rolling(self._window4, min_periods=min_periods_n4)
+                .mean()
         )
         self._kst = 100 * (rocma1 + 2 * rocma2 + 3 * rocma3 + 4 * rocma4)
         self._kst_sig = self._kst.rolling(self._nsig, min_periods=0).mean()
@@ -588,10 +589,10 @@ class DPOIndicator(IndicatorMixin):
     def _run(self):
         min_periods = 0 if self._fillna else self._window
         self._dpo = (
-            self._close.shift(
-                int((0.5 * self._window) + 1), fill_value=self._close.mean()
-            )
-            - self._close.rolling(self._window, min_periods=min_periods).mean()
+                self._close.shift(
+                    int((0.5 * self._window) + 1), fill_value=self._close.mean()
+                )
+                - self._close.rolling(self._window, min_periods=min_periods).mean()
         )
 
     def dpo(self) -> pd.Series:
@@ -625,13 +626,13 @@ class CCIIndicator(IndicatorMixin):
     """
 
     def __init__(
-        self,
-        high: pd.Series,
-        low: pd.Series,
-        close: pd.Series,
-        window: int = 20,
-        constant: float = 0.015,
-        fillna: bool = False,
+            self,
+            high: pd.Series,
+            low: pd.Series,
+            close: pd.Series,
+            window: int = 20,
+            constant: float = 0.015,
+            fillna: bool = False,
     ):
         self._high = high
         self._low = low
@@ -648,14 +649,14 @@ class CCIIndicator(IndicatorMixin):
         min_periods = 0 if self._fillna else self._window
         typical_price = (self._high + self._low + self._close) / 3.0
         self._cci = (
-            typical_price
-            - typical_price.rolling(self._window, min_periods=min_periods).mean()
-        ) / (
-            self._constant
-            * typical_price.rolling(self._window, min_periods=min_periods).apply(
-                _mad, True
-            )
-        )
+                            typical_price
+                            - typical_price.rolling(self._window, min_periods=min_periods).mean()
+                    ) / (
+                            self._constant
+                            * typical_price.rolling(self._window, min_periods=min_periods).apply(
+                        _mad, True
+                    )
+                    )
 
     def cci(self) -> pd.Series:
         """Commodity Channel Index (CCI)
@@ -693,12 +694,12 @@ class ADXIndicator(IndicatorMixin):
     """
 
     def __init__(
-        self,
-        high: pd.Series,
-        low: pd.Series,
-        close: pd.Series,
-        window: int = 14,
-        fillna: bool = False,
+            self,
+            high: pd.Series,
+            low: pd.Series,
+            close: pd.Series,
+            window: int = 14,
+            fillna: bool = False,
     ):
         self._high = high
         self._low = low
@@ -718,14 +719,14 @@ class ADXIndicator(IndicatorMixin):
 
         self._trs_initial = np.zeros(self._window - 1)
         self._trs = np.zeros(len(self._close) - (self._window - 1))
-        self._trs[0] = diff_directional_movement.dropna()[0 : self._window].sum()
+        self._trs[0] = diff_directional_movement.dropna()[0: self._window].sum()
         diff_directional_movement = diff_directional_movement.reset_index(drop=True)
 
         for i in range(1, len(self._trs) - 1):
             self._trs[i] = (
-                self._trs[i - 1]
-                - (self._trs[i - 1] / float(self._window))
-                + diff_directional_movement[self._window + i]
+                    self._trs[i - 1]
+                    - (self._trs[i - 1] / float(self._window))
+                    + diff_directional_movement[self._window + i]
             )
 
         diff_up = self._high - self._high.shift(1)
@@ -734,27 +735,27 @@ class ADXIndicator(IndicatorMixin):
         neg = abs(((diff_down > diff_up) & (diff_down > 0)) * diff_down)
 
         self._dip = np.zeros(len(self._close) - (self._window - 1))
-        self._dip[0] = pos.dropna()[0 : self._window].sum()
+        self._dip[0] = pos.dropna()[0: self._window].sum()
 
         pos = pos.reset_index(drop=True)
 
         for i in range(1, len(self._dip) - 1):
             self._dip[i] = (
-                self._dip[i - 1]
-                - (self._dip[i - 1] / float(self._window))
-                + pos[self._window + i]
+                    self._dip[i - 1]
+                    - (self._dip[i - 1] / float(self._window))
+                    + pos[self._window + i]
             )
 
         self._din = np.zeros(len(self._close) - (self._window - 1))
-        self._din[0] = neg.dropna()[0 : self._window].sum()
+        self._din[0] = neg.dropna()[0: self._window].sum()
 
         neg = neg.reset_index(drop=True)
 
         for i in range(1, len(self._din) - 1):
             self._din[i] = (
-                self._din[i - 1]
-                - (self._din[i - 1] / float(self._window))
-                + neg[self._window + i]
+                    self._din[i - 1]
+                    - (self._din[i - 1] / float(self._window))
+                    + neg[self._window + i]
             )
 
     def adx(self) -> pd.Series:
@@ -774,12 +775,12 @@ class ADXIndicator(IndicatorMixin):
         directional_index = 100 * np.abs((dip - din) / (dip + din))
 
         adx_series = np.zeros(len(self._trs))
-        adx_series[self._window] = directional_index[0 : self._window].mean()
+        adx_series[self._window] = directional_index[0: self._window].mean()
 
         for i in range(self._window + 1, len(adx_series)):
             adx_series[i] = (
-                (adx_series[i - 1] * (self._window - 1)) + directional_index[i - 1]
-            ) / float(self._window)
+                                    (adx_series[i - 1] * (self._window - 1)) + directional_index[i - 1]
+                            ) / float(self._window)
 
         adx_series = np.concatenate((self._trs_initial, adx_series), axis=0)
         adx_series = pd.Series(data=adx_series, index=self._close.index)
@@ -836,12 +837,12 @@ class VortexIndicator(IndicatorMixin):
     """
 
     def __init__(
-        self,
-        high: pd.Series,
-        low: pd.Series,
-        close: pd.Series,
-        window: int = 14,
-        fillna: bool = False,
+            self,
+            high: pd.Series,
+            low: pd.Series,
+            close: pd.Series,
+            window: int = 14,
+            fillna: bool = False,
     ):
         self._high = high
         self._low = low
@@ -910,13 +911,13 @@ class PSARIndicator(IndicatorMixin):
     """
 
     def __init__(
-        self,
-        high: pd.Series,
-        low: pd.Series,
-        close: pd.Series,
-        step: float = 0.02,
-        max_step: float = 0.20,
-        fillna: bool = False,
+            self,
+            high: pd.Series,
+            low: pd.Series,
+            close: pd.Series,
+            step: float = 0.02,
+            max_step: float = 0.20,
+            fillna: bool = False,
     ):
         self._high = high
         self._low = low
@@ -944,7 +945,7 @@ class PSARIndicator(IndicatorMixin):
 
             if up_trend:
                 self._psar.iloc[i] = self._psar.iloc[i - 1] + (
-                    acceleration_factor * (up_trend_high - self._psar.iloc[i - 1])
+                        acceleration_factor * (up_trend_high - self._psar.iloc[i - 1])
                 )
 
                 if min_low < self._psar.iloc[i]:
@@ -967,7 +968,7 @@ class PSARIndicator(IndicatorMixin):
                         self._psar.iloc[i] = low1
             else:
                 self._psar.iloc[i] = self._psar.iloc[i - 1] - (
-                    acceleration_factor * (self._psar.iloc[i - 1] - down_trend_low)
+                        acceleration_factor * (self._psar.iloc[i - 1] - down_trend_low)
                 )
 
                 if max_high > self._psar.iloc[i]:
@@ -1071,14 +1072,14 @@ class STCIndicator(IndicatorMixin):
     """
 
     def __init__(
-        self,
-        close: pd.Series,
-        window_slow: int = 50,
-        window_fast: int = 23,
-        cycle: int = 10,
-        smooth1: int = 3,
-        smooth2: int = 3,
-        fillna: bool = False,
+            self,
+            close: pd.Series,
+            window_slow: int = 50,
+            window_fast: int = 23,
+            cycle: int = 10,
+            smooth1: int = 3,
+            smooth2: int = 3,
+            fillna: bool = False,
     ):
         self._close = close
         self._window_slow = window_slow
@@ -1090,7 +1091,6 @@ class STCIndicator(IndicatorMixin):
         self._run()
 
     def _run(self):
-
         _emafast = _ema(self._close, self._window_fast, self._fillna)
         _emaslow = _ema(self._close, self._window_slow, self._fillna)
         _macd = _emafast - _emaslow
@@ -1460,16 +1460,16 @@ def dpo(close, window=20, fillna=False):
 
 
 def kst(
-    close,
-    roc1=10,
-    roc2=15,
-    roc3=20,
-    roc4=30,
-    window1=10,
-    window2=10,
-    window3=10,
-    window4=15,
-    fillna=False,
+        close,
+        roc1=10,
+        roc2=15,
+        roc3=20,
+        roc4=30,
+        window1=10,
+        window2=10,
+        window3=10,
+        window4=15,
+        fillna=False,
 ):
     """KST Oscillator (KST)
 
@@ -1511,7 +1511,7 @@ def kst(
 
 
 def stc(
-    close, window_slow=50, window_fast=23, cycle=10, smooth1=3, smooth2=3, fillna=False
+        close, window_slow=50, window_fast=23, cycle=10, smooth1=3, smooth2=3, fillna=False
 ):
     """Schaff Trend Cycle (STC)
 
@@ -1548,17 +1548,17 @@ def stc(
 
 
 def kst_sig(
-    close,
-    roc1=10,
-    roc2=15,
-    roc3=20,
-    roc4=30,
-    window1=10,
-    window2=10,
-    window3=10,
-    window4=15,
-    nsig=9,
-    fillna=False,
+        close,
+        roc1=10,
+        roc2=15,
+        roc3=20,
+        roc4=30,
+        window1=10,
+        window2=10,
+        window3=10,
+        window4=15,
+        nsig=9,
+        fillna=False,
 ):
     """KST Oscillator (KST Signal)
 
@@ -1601,7 +1601,7 @@ def kst_sig(
 
 
 def ichimoku_conversion_line(
-    high, low, window1=9, window2=26, visual=False, fillna=False
+        high, low, window1=9, window2=26, visual=False, fillna=False
 ) -> pd.Series:
     """Tenkan-sen (Conversion Line)
 
@@ -1632,7 +1632,7 @@ def ichimoku_conversion_line(
 
 
 def ichimoku_base_line(
-    high, low, window1=9, window2=26, visual=False, fillna=False
+        high, low, window1=9, window2=26, visual=False, fillna=False
 ) -> pd.Series:
     """Kijun-sen (Base Line)
 
@@ -1855,3 +1855,139 @@ def psar_down_indicator(high, low, close, step=0.02, max_step=0.20, fillna=False
         high=high, low=low, close=close, step=step, max_step=max_step, fillna=fillna
     )
     return indicator.psar_down_indicator()
+
+
+class SuperTrendIndicator(object):
+    """
+
+    Supertrend (ST)
+    """
+    # code from pandas-ta
+    close: pd.Series
+    high: pd.Series
+    low: pd.Series
+
+    def __init__(self,
+                 close: pd.Series,
+                 high: pd.Series,
+                 low: pd.Series,
+                 multiplier: float = 3.0,
+                 length: int = 10):
+        self.close = close
+        self.high = high
+        self.low = low
+        self.multiplier: float = float(multiplier) if multiplier and multiplier > 0 else 3.0
+        self.length = int(length) if length and length > 0 else 7
+
+    def get_supertrend(self) -> pd.Series:
+        return self.get_all_ST()['ST']
+
+    def get_supertrend_upper(self) -> pd.Series:
+        return self.get_all_ST()['ST_upper']
+
+    def get_supertrend_lower(self) -> pd.Series:
+        return self.get_all_ST()['ST_lower']
+
+    def get_supertrend_strategy_returns(self) -> pd.Series:
+        """
+
+        :return: pd.Series with 1 or -1 (buy, sell)
+        """
+        return self.get_all_ST()['ST_strategy']
+
+    def get_all_ST(self) -> pd.DataFrame:
+        """
+
+        ST Indicator, trading predictions, ST high/low
+        """
+        m = self.close.size
+        dir_, trend = [1] * m, [0] * m
+        long, short = [np.NaN] * m, [np.NaN] * m
+        ATR = AverageTrueRange(self.high, self.low, self.close, self.length)
+
+        hl2_ = (self.high + self.low) / 2
+        matr = ATR.average_true_range() * self.multiplier
+        upperband = hl2_ + matr
+        lowerband = hl2_ - matr
+
+        for i in range(1, m):
+            if self.close.iloc[i] > upperband.iloc[i - 1]:
+                dir_[i] = 1
+            elif self.close.iloc[i] < lowerband.iloc[i - 1]:
+                dir_[i] = -1
+            else:
+                dir_[i] = dir_[i - 1]
+                if dir_[i] > 0 and lowerband.iloc[i] < lowerband.iloc[i - 1]:
+                    lowerband.iloc[i] = lowerband.iloc[i - 1]
+                if dir_[i] < 0 and upperband.iloc[i] > upperband.iloc[i - 1]:
+                    upperband.iloc[i] = upperband.iloc[i - 1]
+
+            if dir_[i] > 0:
+                trend[i] = long[i] = lowerband.iloc[i]
+            else:
+                trend[i] = short[i] = upperband.iloc[i]
+
+        # Prepare DataFrame to return
+        df = pd.DataFrame(
+            {
+                f"ST": trend,
+                f"ST_strategy": dir_,
+                f"ST_lower": long,
+                f"ST_upper": short,
+            },
+            index=self.close.index
+        )
+
+        return df
+
+
+def supertrend_indicator(close: pd.Series,
+                         high: pd.Series,
+                         low: pd.Series,
+                         multiplier: float = 3.0,
+                         length: int = 10) -> pd.Series:
+    ST = SuperTrendIndicator(close=close,
+                             high=high,
+                             low=low,
+                             multiplier=multiplier,
+                             length=length)
+    return ST.get_supertrend()
+
+
+def supertrend_strategy(close: pd.Series,
+                        high: pd.Series,
+                        low: pd.Series,
+                        multiplier: float = 3.0,
+                        length: int = 10) -> pd.Series:
+    ST = SuperTrendIndicator(close=close,
+                             high=high,
+                             low=low,
+                             multiplier=multiplier,
+                             length=length)
+    return ST.get_supertrend_strategy_returns()
+
+
+def supertrend_lower(close: pd.Series,
+                     high: pd.Series,
+                     low: pd.Series,
+                     multiplier: float = 3.0,
+                     length: int = 10) -> pd.Series:
+    ST = SuperTrendIndicator(close=close,
+                             high=high,
+                             low=low,
+                             multiplier=multiplier,
+                             length=length)
+    return ST.get_supertrend_lower()
+
+
+def supertrend_upper(close: pd.Series,
+                     high: pd.Series,
+                     low: pd.Series,
+                     multiplier: float = 3.0,
+                     length: int = 10) -> pd.Series:
+    ST = SuperTrendIndicator(close=close,
+                             high=high,
+                             low=low,
+                             multiplier=multiplier,
+                             length=length)
+    return ST.get_supertrend_upper()
