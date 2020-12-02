@@ -8,8 +8,8 @@
 import numpy as np
 import pandas as pd
 
-from ta.utils import IndicatorMixin, _ema, _get_min_max, _sma
-from ta.volatility import AverageTrueRange
+from .utils import IndicatorMixin, _ema, _get_min_max, _sma
+from .volatility import AverageTrueRange
 
 
 class AroonIndicator(IndicatorMixin):
