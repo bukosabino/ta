@@ -7,7 +7,7 @@
 
 import pandas as pd
 
-from ta.momentum import (
+from .momentum import (
     AwesomeOscillatorIndicator,
     KAMAIndicator,
     PercentagePriceOscillator,
@@ -20,12 +20,12 @@ from ta.momentum import (
     UltimateOscillator,
     WilliamsRIndicator,
 )
-from ta.others import (
+from .others import (
     CumulativeReturnIndicator,
     DailyLogReturnIndicator,
     DailyReturnIndicator,
 )
-from ta.trend import (
+from .trend import (
     MACD,
     ADXIndicator,
     AroonIndicator,
@@ -42,14 +42,14 @@ from ta.trend import (
     VortexIndicator,
     SuperTrendIndicator,
 )
-from ta.volatility import (
+from .volatility import (
     AverageTrueRange,
     BollingerBands,
     DonchianChannel,
     KeltnerChannel,
     UlcerIndex,
 )
-from ta.volume import (
+from .volume import (
     AccDistIndexIndicator,
     ChaikinMoneyFlowIndicator,
     EaseOfMovementIndicator,
