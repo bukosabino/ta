@@ -26,6 +26,7 @@ class RSIIndicator(IndicatorMixin):
         window(int): n period.
         fillna(bool): if True, fill nan values.
     """
+
     def __init__(self, close: pd.Series, window: int = 14, fillna: bool = False):
         self._close = close
         self._window = window

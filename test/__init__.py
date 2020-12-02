@@ -1,5 +1,3 @@
-from test.integration.wrapper import TestWrapper
-
 __all__ = [
     "TestWrapper",
     "TestKAMAIndicator",
