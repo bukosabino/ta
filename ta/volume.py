@@ -9,8 +9,7 @@
 import numpy as np
 import pandas as pd
 
-from .utils import IndicatorMixin
-from .utils import _ema
+from .utils import IndicatorMixin, _ema
 
 
 class AccDistIndexIndicator(IndicatorMixin):
