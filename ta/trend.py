@@ -146,6 +146,72 @@ class MACD(IndicatorMixin):
             macd_diff_series, name=f"MACD_diff_{self._window_fast}_{self._window_slow}"
         )
 
+   
+class VWMACD(IndicatorMixin):
+    """Volume Weighted Moving Average Convergence Divergence (MACD)
+
+    Is a trend-following momentum indicator that shows the relationship between
+    two moving averages of prices with volume.
+
+    https://tlc.thinkorswim.com/center/reference/Tech-Indicators/studies-library/V-Z/VolumeWeightedMACD
+
+    Args:
+        close(pandas.Series): dataset 'Close' column.
+        volume(pandas.Series): dataset 'Volume' column.
+        n_fast(int): n period short-term.
+        n_slow(int): n period long-term.
+        n_sign(int): n period to signal.
+        fillna(bool): if True, fill nan values.
+    """
+    def __init__(self,
+                 close: pd.Series,
+                 volume: pd.Series,
+                 n_slow: int = 26,
+                 n_fast: int = 12,
+                 n_sign: int = 9,
+                 fillna: bool = False):
+        self._close = close
+        self._volume = volume
+        self._n_slow = n_slow
+        self._n_fast = n_fast
+        self._n_sign = n_sign
+        self._fillna = fillna
+        self._run()
+
+    def _run(self):
+        self._emafast = ema(self._close*self._volume, self._n_fast, self._fillna)/ema(self._volume, self._n_fast, self._fillna)
+        self._emaslow = ema(self._close*self._volume, self._n_slow, self._fillna)/ema(self._volume, self._n_slow, self._fillna)
+        self._macd = self._emafast - self._emaslow
+        self._macd_signal = ema(self._macd, self._n_sign, self._fillna)
+        self._macd_diff = self._macd - self._macd_signal
+
+    def macd(self) -> pd.Series:
+        """MACD Line
+
+        Returns:
+            pandas.Series: New feature generated.
+        """
+        macd = self._check_fillna(self._macd, value=0)
+        return pd.Series(macd, name=f'MACD_{self._n_fast}_{self._n_slow}')
+
+    def macd_signal(self) -> pd.Series:
+        """Signal Line
+
+        Returns:
+            pandas.Series: New feature generated.
+        """
+
+        macd_signal = self._check_fillna(self._macd_signal, value=0)
+        return pd.Series(macd_signal, name=f'MACD_sign_{self._n_fast}_{self._n_slow}')
+
+    def macd_diff(self) -> pd.Series:
+        """MACD Histogram
+
+        Returns:
+            pandas.Series: New feature generated.
+        """
+        macd_diff = self._check_fillna(self._macd_diff, value=0)
+        return pd.Series(macd_diff, name=f'MACD_diff_{self._n_fast}_{self._n_slow}')
 
 class EMAIndicator(IndicatorMixin):
     """EMA - Exponential Moving Average
