@@ -145,8 +145,9 @@ class MACD(IndicatorMixin):
         return pd.Series(
             macd_diff_series, name=f"MACD_diff_{self._window_fast}_{self._window_slow}"
         )
-
-   class VWMACD(IndicatorMixin):
+      
+      
+class VWMACD(IndicatorMixin):
     """Volume Weighted Moving Average Convergence Divergence (MACD)
 
     Is a trend-following momentum indicator that shows the relationship between
