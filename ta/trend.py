@@ -146,8 +146,7 @@ class MACD(IndicatorMixin):
             macd_diff_series, name=f"MACD_diff_{self._window_fast}_{self._window_slow}"
         )
 
-   
-class VWMACD(IndicatorMixin):
+   class VWMACD(IndicatorMixin):
     """Volume Weighted Moving Average Convergence Divergence (MACD)
 
     Is a trend-following momentum indicator that shows the relationship between
@@ -179,10 +178,10 @@ class VWMACD(IndicatorMixin):
         self._run()
 
     def _run(self):
-        self._emafast = ema(self._close*self._volume, self._n_fast, self._fillna)/ema(self._volume, self._n_fast, self._fillna)
-        self._emaslow = ema(self._close*self._volume, self._n_slow, self._fillna)/ema(self._volume, self._n_slow, self._fillna)
+        self._emafast = _ema(self._close*self._volume, self._n_fast, self._fillna)/_ema(self._volume, self._n_fast, self._fillna)
+        self._emaslow = _ema(self._close*self._volume, self._n_slow, self._fillna)/_ema(self._volume, self._n_slow, self._fillna)
         self._macd = self._emafast - self._emaslow
-        self._macd_signal = ema(self._macd, self._n_sign, self._fillna)
+        self._macd_signal = _ema(self._macd, self._n_sign, self._fillna)
         self._macd_diff = self._macd - self._macd_signal
 
     def macd(self) -> pd.Series:
