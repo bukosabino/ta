@@ -41,6 +41,7 @@ The library has implemented 42 indicators:
 * Exponential Moving Average (EMA)
 * Weighted Moving Average (WMA)
 * Moving Average Convergence Divergence (MACD)
+* Volume Weighted Moving Average Convergence Divergence (VWMACD)
 * Average Directional Movement Index (ADX)
 * Vortex Indicator (VI)
 * Trix (TRIX)
