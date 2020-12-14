@@ -37,7 +37,7 @@ class IndicatorMixin:
 
     @staticmethod
     def _true_range(
-        high: pd.Series, low: pd.Series, prev_close: pd.Series
+            high: pd.Series, low: pd.Series, prev_close: pd.Series
     ) -> pd.Series:
         tr1 = high - low
         tr2 = (high - prev_close).abs()

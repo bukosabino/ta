@@ -1,7 +1,6 @@
 import unittest
 
 import pandas as pd
-
 from ta.volume import (
     AccDistIndexIndicator,
     EaseOfMovementIndicator,

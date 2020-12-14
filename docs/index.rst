@@ -1,7 +1,7 @@
 .. Technical Analysis Library in Python documentation master file, created by
-   sphinx-quickstart on Tue Apr 10 15:47:09 2018.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
+sphinx-quickstart on Tue Apr 10 15:47:09 2018.
+You can adapt this file completely to your liking, but it should at least
+contain the root `toctree` directive.
 
 Welcome to Technical Analysis Library in Python's documentation!
 ================================================================

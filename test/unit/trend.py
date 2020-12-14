@@ -1,7 +1,6 @@
 import unittest
 
 import pandas as pd
-
 from ta.trend import (
     MACD,
     ADXIndicator,
@@ -374,7 +373,6 @@ class TestSTCIndicator(unittest.TestCase):
 
 
 class TestWMAIndicator(unittest.TestCase):
-
     _filename = "test/data/cs-wma.csv"
 
     @classmethod

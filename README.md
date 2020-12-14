@@ -51,6 +51,7 @@ The library has implemented 42 indicators:
 * Ichimoku Kinkō Hyō (Ichimoku)
 * Parabolic Stop And Reverse (Parabolic SAR)
 * Schaff Trend Cycle (STC)
+* SuperTrend (ST)
 
 #### Momentum
 
