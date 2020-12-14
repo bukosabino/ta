@@ -8,7 +8,7 @@
 import numpy as np
 import pandas as pd
 
-from ta.ta.utils import IndicatorMixin
+from ta.utils import IndicatorMixin
 
 
 class DailyReturnIndicator(IndicatorMixin):

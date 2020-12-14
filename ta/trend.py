@@ -8,8 +8,8 @@
 import numpy as np
 import pandas as pd
 
-from ta.ta.utils import IndicatorMixin, _ema, _sma, _get_min_max
-from ta.ta.volatility import AverageTrueRange
+from ta.utils import IndicatorMixin, _ema, _sma, _get_min_max
+from ta.volatility import AverageTrueRange
 
 
 class AroonIndicator(IndicatorMixin):
@@ -1878,24 +1878,28 @@ class SuperTrendIndicator(object):
         self.low = low
         self.multiplier: float = float(multiplier) if multiplier and multiplier > 0 else 3.0
         self.length = int(length) if length and length > 0 else 7
+        self._all = self._get_all_ST()
 
     def get_supertrend(self) -> pd.Series:
-        return self.get_all_ST()['ST']
+        return self._all['ST']
 
     def get_supertrend_upper(self) -> pd.Series:
-        return self.get_all_ST()['ST_upper']
+        return self._all['ST_upper']
 
     def get_supertrend_lower(self) -> pd.Series:
-        return self.get_all_ST()['ST_lower']
+        return self._all['ST_lower']
 
     def get_supertrend_strategy_returns(self) -> pd.Series:
         """
 
         :return: pd.Series with 1 or -1 (buy, sell)
         """
-        return self.get_all_ST()['ST_strategy']
+        return self._all['ST_strategy']
 
     def get_all_ST(self) -> pd.DataFrame:
+        return self._all
+
+    def _get_all_ST(self) -> pd.DataFrame:
         """
 
         ST Indicator, trading predictions, ST high/low
