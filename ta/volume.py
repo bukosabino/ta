@@ -9,7 +9,7 @@
 import numpy as np
 import pandas as pd
 
-from ta.utils import IndicatorMixin, ema
+from ta.utils import IndicatorMixin, _ema
 
 
 class AccDistIndexIndicator(IndicatorMixin):
@@ -27,7 +27,14 @@ class AccDistIndexIndicator(IndicatorMixin):
         fillna(bool): if True, fill nan values.
     """
 
-    def __init__(self, high: pd.Series, low: pd.Series, close: pd.Series, volume: pd.Series, fillna: bool = False):
+    def __init__(
+        self,
+        high: pd.Series,
+        low: pd.Series,
+        close: pd.Series,
+        volume: pd.Series,
+        fillna: bool = False,
+    ):
         self._high = high
         self._low = low
         self._close = close
@@ -36,10 +43,12 @@ class AccDistIndexIndicator(IndicatorMixin):
         self._run()
 
     def _run(self):
-        clv = ((self._close - self._low) - (self._high - self._close)) / (self._high - self._low)
+        clv = ((self._close - self._low) - (self._high - self._close)) / (
+            self._high - self._low
+        )
         clv = clv.fillna(0.0)  # float division by zero
-        ad = clv * self._volume
-        self._ad = ad.cumsum()
+        adi = clv * self._volume
+        self._adi = adi.cumsum()
 
     def acc_dist_index(self) -> pd.Series:
         """Accumulation/Distribution Index (ADI)
@@ -47,8 +56,8 @@ class AccDistIndexIndicator(IndicatorMixin):
         Returns:
             pandas.Series: New feature generated.
         """
-        ad = self._check_fillna(self._ad, value=0)
-        return pd.Series(ad, name='adi')
+        adi = self._check_fillna(self._adi, value=0)
+        return pd.Series(adi, name="adi")
 
 
 class OnBalanceVolumeIndicator(IndicatorMixin):
@@ -82,7 +91,7 @@ class OnBalanceVolumeIndicator(IndicatorMixin):
             pandas.Series: New feature generated.
         """
         obv = self._check_fillna(self._obv, value=0)
-        return pd.Series(obv, name='obv')
+        return pd.Series(obv, name="obv")
 
 
 class ChaikinMoneyFlowIndicator(IndicatorMixin):
@@ -97,28 +106,38 @@ class ChaikinMoneyFlowIndicator(IndicatorMixin):
         low(pandas.Series): dataset 'Low' column.
         close(pandas.Series): dataset 'Close' column.
         volume(pandas.Series): dataset 'Volume' column.
-        n(int): n period.
+        window(int): n period.
         fillna(bool): if True, fill nan values.
     """
 
-    def __init__(self, high: pd.Series, low: pd.Series, close: pd.Series,
-                 volume: pd.Series, n: int = 20, fillna: bool = False):
+    def __init__(
+        self,
+        high: pd.Series,
+        low: pd.Series,
+        close: pd.Series,
+        volume: pd.Series,
+        window: int = 20,
+        fillna: bool = False,
+    ):
         self._high = high
         self._low = low
         self._close = close
         self._volume = volume
-        self._n = n
+        self._window = window
         self._fillna = fillna
         self._run()
 
     def _run(self):
-        mfv = ((self._close - self._low) - (self._high - self._close)) / (self._high - self._low)
+        mfv = ((self._close - self._low) - (self._high - self._close)) / (
+            self._high - self._low
+        )
         mfv = mfv.fillna(0.0)  # float division by zero
         mfv *= self._volume
-        min_periods = 0 if self._fillna else self._n
+        min_periods = 0 if self._fillna else self._window
         self._cmf = (
-                mfv.rolling(self._n, min_periods=min_periods).sum() /
-                self._volume.rolling(self._n, min_periods=min_periods).sum())
+            mfv.rolling(self._window, min_periods=min_periods).sum()
+            / self._volume.rolling(self._window, min_periods=min_periods).sum()
+        )
 
     def chaikin_money_flow(self) -> pd.Series:
         """Chaikin Money Flow (CMF)
@@ -127,7 +146,7 @@ class ChaikinMoneyFlowIndicator(IndicatorMixin):
             pandas.Series: New feature generated.
         """
         cmf = self._check_fillna(self._cmf, value=0)
-        return pd.Series(cmf, name='cmf')
+        return pd.Series(cmf, name="cmf")
 
 
 class ForceIndexIndicator(IndicatorMixin):
@@ -140,24 +159,28 @@ class ForceIndexIndicator(IndicatorMixin):
     http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:force_index
 
     Args:
-        high(pandas.Series): dataset 'High' column.
-        low(pandas.Series): dataset 'Low' column.
         close(pandas.Series): dataset 'Close' column.
         volume(pandas.Series): dataset 'Volume' column.
-        n(int): n period.
+        window(int): n period.
         fillna(bool): if True, fill nan values.
     """
 
-    def __init__(self, close: pd.Series, volume: pd.Series, n: int = 13, fillna: bool = False):
+    def __init__(
+        self,
+        close: pd.Series,
+        volume: pd.Series,
+        window: int = 13,
+        fillna: bool = False,
+    ):
         self._close = close
         self._volume = volume
-        self._n = n
+        self._window = window
         self._fillna = fillna
         self._run()
 
     def _run(self):
-        fi = (self._close - self._close.shift(1)) * self._volume
-        self._fi = ema(fi, self._n, fillna=self._fillna)
+        fi_series = (self._close - self._close.shift(1)) * self._volume
+        self._fi = _ema(fi_series, self._window, fillna=self._fillna)
 
     def force_index(self) -> pd.Series:
         """Force Index (FI)
@@ -165,8 +188,8 @@ class ForceIndexIndicator(IndicatorMixin):
         Returns:
             pandas.Series: New feature generated.
         """
-        fi = self._check_fillna(self._fi, value=0)
-        return pd.Series(fi, name=f'fi_{self._n}')
+        fi_series = self._check_fillna(self._fi, value=0)
+        return pd.Series(fi_series, name=f"fi_{self._window}")
 
 
 class EaseOfMovementIndicator(IndicatorMixin):
@@ -181,20 +204,31 @@ class EaseOfMovementIndicator(IndicatorMixin):
         high(pandas.Series): dataset 'High' column.
         low(pandas.Series): dataset 'Low' column.
         volume(pandas.Series): dataset 'Volume' column.
-        n(int): n period.
+        window(int): n period.
         fillna(bool): if True, fill nan values.
     """
 
-    def __init__(self, high: pd.Series, low: pd.Series, volume: pd.Series, n: int = 14, fillna: bool = False):
+    def __init__(
+        self,
+        high: pd.Series,
+        low: pd.Series,
+        volume: pd.Series,
+        window: int = 14,
+        fillna: bool = False,
+    ):
         self._high = high
         self._low = low
         self._volume = volume
-        self._n = n
+        self._window = window
         self._fillna = fillna
         self._run()
 
     def _run(self):
-        self._emv = (self._high.diff(1) + self._low.diff(1)) * (self._high - self._low) / (2 * self._volume)
+        self._emv = (
+            (self._high.diff(1) + self._low.diff(1))
+            * (self._high - self._low)
+            / (2 * self._volume)
+        )
         self._emv *= 100000000
 
     def ease_of_movement(self) -> pd.Series:
@@ -204,7 +238,7 @@ class EaseOfMovementIndicator(IndicatorMixin):
             pandas.Series: New feature generated.
         """
         emv = self._check_fillna(self._emv, value=0)
-        return pd.Series(emv, name=f'eom_{self._n}')
+        return pd.Series(emv, name=f"eom_{self._window}")
 
     def sma_ease_of_movement(self) -> pd.Series:
         """Signal Ease of movement (EoM, EMV)
@@ -212,10 +246,10 @@ class EaseOfMovementIndicator(IndicatorMixin):
         Returns:
             pandas.Series: New feature generated.
         """
-        min_periods = 0 if self._fillna else self._n
-        emv = self._emv.rolling(self._n, min_periods=min_periods).mean()
+        min_periods = 0 if self._fillna else self._window
+        emv = self._emv.rolling(self._window, min_periods=min_periods).mean()
         emv = self._check_fillna(emv, value=0)
-        return pd.Series(emv, name=f'sma_eom_{self._n}')
+        return pd.Series(emv, name=f"sma_eom_{self._window}")
 
 
 class VolumePriceTrendIndicator(IndicatorMixin):
@@ -240,8 +274,10 @@ class VolumePriceTrendIndicator(IndicatorMixin):
         self._run()
 
     def _run(self):
-        vpt = (self._volume * ((self._close - self._close.shift(1, fill_value=self._close.mean()))
-                               / self._close.shift(1, fill_value=self._close.mean())))
+        vpt = self._volume * (
+            (self._close - self._close.shift(1, fill_value=self._close.mean()))
+            / self._close.shift(1, fill_value=self._close.mean())
+        )
         self._vpt = vpt.shift(1, fill_value=vpt.mean()) + vpt
 
     def volume_price_trend(self) -> pd.Series:
@@ -251,7 +287,7 @@ class VolumePriceTrendIndicator(IndicatorMixin):
             pandas.Series: New feature generated.
         """
         vpt = self._check_fillna(self._vpt, value=0)
-        return pd.Series(vpt, name='vpt')
+        return pd.Series(vpt, name="vpt")
 
 
 class NegativeVolumeIndexIndicator(IndicatorMixin):
@@ -273,8 +309,10 @@ class NegativeVolumeIndexIndicator(IndicatorMixin):
 
     def _run(self):
         price_change = self._close.pct_change()
-        vol_decrease = (self._volume.shift(1) > self._volume)
-        self._nvi = pd.Series(data=np.nan, index=self._close.index, dtype='float64', name='nvi')
+        vol_decrease = self._volume.shift(1) > self._volume
+        self._nvi = pd.Series(
+            data=np.nan, index=self._close.index, dtype="float64", name="nvi"
+        )
         self._nvi.iloc[0] = 1000
         for i in range(1, len(self._nvi)):
             if vol_decrease.iloc[i]:
@@ -290,7 +328,7 @@ class NegativeVolumeIndexIndicator(IndicatorMixin):
         """
         # IDEA: There shouldn't be any na; might be better to throw exception
         nvi = self._check_fillna(self._nvi, value=1000)
-        return pd.Series(nvi, name='nvi')
+        return pd.Series(nvi, name="nvi")
 
 
 class MFIIndicator(IndicatorMixin):
@@ -309,48 +347,53 @@ class MFIIndicator(IndicatorMixin):
         low(pandas.Series): dataset 'Low' column.
         close(pandas.Series): dataset 'Close' column.
         volume(pandas.Series): dataset 'Volume' column.
-        n(int): n period.
+        window(int): n period.
         fillna(bool): if True, fill nan values.
     """
 
-    def __init__(self,
-                 high: pd.Series,
-                 low: pd.Series,
-                 close: pd.Series,
-                 volume: pd.Series,
-                 n: int = 14,
-                 fillna: bool = False):
+    def __init__(
+        self,
+        high: pd.Series,
+        low: pd.Series,
+        close: pd.Series,
+        volume: pd.Series,
+        window: int = 14,
+        fillna: bool = False,
+    ):
         self._high = high
         self._low = low
         self._close = close
         self._volume = volume
-        self._n = n
+        self._window = window
         self._fillna = fillna
         self._run()
 
     def _run(self):
-        # 1 typical price
-        tp = (self._high + self._low + self._close) / 3.0
+        typical_price = (self._high + self._low + self._close) / 3.0
+        up_down = np.where(
+            typical_price > typical_price.shift(1),
+            1,
+            np.where(typical_price < typical_price.shift(1), -1, 0),
+        )
+        mfr = typical_price * self._volume * up_down
 
-        # 2 up or down column
-        up_down = np.where(tp > tp.shift(1), 1, np.where(tp < tp.shift(1), -1, 0))
-
-        # 3 money flow
-        mf = tp * self._volume * up_down
-
-        # 4 positive and negative money flow with n periods
-        min_periods = 0 if self._fillna else self._n
-        n_positive_mf = mf.rolling(
-            self._n, min_periods=min_periods).apply(lambda x: np.sum(np.where(x >= 0.0, x, 0.0)), raw=True)
+        # Positive and negative money flow with n periods
+        min_periods = 0 if self._fillna else self._window
+        n_positive_mf = mfr.rolling(self._window, min_periods=min_periods).apply(
+            lambda x: np.sum(np.where(x >= 0.0, x, 0.0)), raw=True
+        )
         n_negative_mf = abs(
-            mf.rolling(self._n, min_periods=min_periods).apply(lambda x: np.sum(np.where(x < 0.0, x, 0.0)), raw=True))
+            mfr.rolling(self._window, min_periods=min_periods).apply(
+                lambda x: np.sum(np.where(x < 0.0, x, 0.0)), raw=True
+            )
+        )
 
-        # n_positive_mf = np.where(mf.rolling(self._n).sum() >= 0.0, mf, 0.0)
-        # n_negative_mf = abs(np.where(mf.rolling(self._n).sum() < 0.0, mf, 0.0))
+        # n_positive_mf = np.where(mf.rolling(self._window).sum() >= 0.0, mf, 0.0)
+        # n_negative_mf = abs(np.where(mf.rolling(self._window).sum() < 0.0, mf, 0.0))
 
-        # 5 money flow index
-        mr = n_positive_mf / n_negative_mf
-        self._mr = (100 - (100 / (1 + mr)))
+        # Money flow index
+        mfi = n_positive_mf / n_negative_mf
+        self._mfi = 100 - (100 / (1 + mfi))
 
     def money_flow_index(self) -> pd.Series:
         """Money Flow Index (MFI)
@@ -358,8 +401,8 @@ class MFIIndicator(IndicatorMixin):
         Returns:
             pandas.Series: New feature generated.
         """
-        mr = self._check_fillna(self._mr, value=50)
-        return pd.Series(mr, name=f'mfi_{self._n}')
+        mfi = self._check_fillna(self._mfi, value=50)
+        return pd.Series(mfi, name=f"mfi_{self._window}")
 
 
 class VolumeWeightedAveragePrice(IndicatorMixin):
@@ -378,41 +421,45 @@ class VolumeWeightedAveragePrice(IndicatorMixin):
         low(pandas.Series): dataset 'Low' column.
         close(pandas.Series): dataset 'Close' column.
         volume(pandas.Series): dataset 'Volume' column.
-        n(int): n period.
+        window(int): n period.
         fillna(bool): if True, fill nan values.
 
     Returns:
         pandas.Series: New feature generated.
     """
 
-    def __init__(self,
-                 high: pd.Series,
-                 low: pd.Series,
-                 close: pd.Series,
-                 volume: pd.Series,
-                 n: int = 14,
-                 fillna: bool = False):
+    def __init__(
+        self,
+        high: pd.Series,
+        low: pd.Series,
+        close: pd.Series,
+        volume: pd.Series,
+        window: int = 14,
+        fillna: bool = False,
+    ):
         self._high = high
         self._low = low
         self._close = close
         self._volume = volume
-        self._n = n
+        self._window = window
         self._fillna = fillna
         self._run()
 
     def _run(self):
         # 1 typical price
-        tp = (self._high + self._low + self._close) / 3.0
+        typical_price = (self._high + self._low + self._close) / 3.0
 
         # 2 typical price * volume
-        pv = (tp * self._volume)
+        typical_price_volume = typical_price * self._volume
 
         # 3 total price * volume
-        min_periods = 0 if self._fillna else self._n
-        total_pv = pv.rolling(self._n, min_periods=min_periods).sum()
+        min_periods = 0 if self._fillna else self._window
+        total_pv = typical_price_volume.rolling(
+            self._window, min_periods=min_periods
+        ).sum()
 
         # 4 total volume
-        total_volume = self._volume.rolling(self._n, min_periods=min_periods).sum()
+        total_volume = self._volume.rolling(self._window, min_periods=min_periods).sum()
 
         self.vwap = total_pv / total_volume
 
@@ -423,7 +470,7 @@ class VolumeWeightedAveragePrice(IndicatorMixin):
             pandas.Series: New feature generated.
         """
         vwap = self._check_fillna(self.vwap)
-        return pd.Series(vwap, name=f'vwap_{self._n}')
+        return pd.Series(vwap, name=f"vwap_{self._window}")
 
 
 def acc_dist_index(high, low, close, volume, fillna=False):
@@ -443,7 +490,9 @@ def acc_dist_index(high, low, close, volume, fillna=False):
     Returns:
         pandas.Series: New feature generated.
     """
-    return AccDistIndexIndicator(high=high, low=low, close=close, volume=volume, fillna=fillna).acc_dist_index()
+    return AccDistIndexIndicator(
+        high=high, low=low, close=close, volume=volume, fillna=fillna
+    ).acc_dist_index()
 
 
 def on_balance_volume(close, volume, fillna=False):
@@ -462,10 +511,12 @@ def on_balance_volume(close, volume, fillna=False):
     Returns:
         pandas.Series: New feature generated.
     """
-    return OnBalanceVolumeIndicator(close=close, volume=volume, fillna=fillna).on_balance_volume()
+    return OnBalanceVolumeIndicator(
+        close=close, volume=volume, fillna=fillna
+    ).on_balance_volume()
 
 
-def chaikin_money_flow(high, low, close, volume, n=20, fillna=False):
+def chaikin_money_flow(high, low, close, volume, window=20, fillna=False):
     """Chaikin Money Flow (CMF)
 
     It measures the amount of Money Flow Volume over a specific period.
@@ -477,17 +528,18 @@ def chaikin_money_flow(high, low, close, volume, n=20, fillna=False):
         low(pandas.Series): dataset 'Low' column.
         close(pandas.Series): dataset 'Close' column.
         volume(pandas.Series): dataset 'Volume' column.
-        n(int): n period.
+        window(int): n period.
         fillna(bool): if True, fill nan values.
 
     Returns:
         pandas.Series: New feature generated.
     """
     return ChaikinMoneyFlowIndicator(
-        high=high, low=low, close=close, volume=volume, n=n, fillna=fillna).chaikin_money_flow()
+        high=high, low=low, close=close, volume=volume, window=window, fillna=fillna
+    ).chaikin_money_flow()
 
 
-def force_index(close, volume, n=13, fillna=False):
+def force_index(close, volume, window=13, fillna=False):
     """Force Index (FI)
 
     It illustrates how strong the actual buying or selling pressure is. High
@@ -499,16 +551,18 @@ def force_index(close, volume, n=13, fillna=False):
     Args:
         close(pandas.Series): dataset 'Close' column.
         volume(pandas.Series): dataset 'Volume' column.
-        n(int): n period.
+        window(int): n period.
         fillna(bool): if True, fill nan values.
 
     Returns:
         pandas.Series: New feature generated.
     """
-    return ForceIndexIndicator(close=close, volume=volume, n=n, fillna=fillna).force_index()
+    return ForceIndexIndicator(
+        close=close, volume=volume, window=window, fillna=fillna
+    ).force_index()
 
 
-def ease_of_movement(high, low, volume, n=14, fillna=False):
+def ease_of_movement(high, low, volume, window=14, fillna=False):
     """Ease of movement (EoM, EMV)
 
     It relate an asset's price change to its volume and is particularly useful
@@ -520,17 +574,18 @@ def ease_of_movement(high, low, volume, n=14, fillna=False):
         high(pandas.Series): dataset 'High' column.
         low(pandas.Series): dataset 'Low' column.
         volume(pandas.Series): dataset 'Volume' column.
-        n(int): n period.
+        window(int): n period.
         fillna(bool): if True, fill nan values.
 
     Returns:
         pandas.Series: New feature generated.
     """
     return EaseOfMovementIndicator(
-        high=high, low=low, volume=volume, n=n, fillna=fillna).ease_of_movement()
+        high=high, low=low, volume=volume, window=window, fillna=fillna
+    ).ease_of_movement()
 
 
-def sma_ease_of_movement(high, low, volume, n=14, fillna=False):
+def sma_ease_of_movement(high, low, volume, window=14, fillna=False):
     """Ease of movement (EoM, EMV)
 
     It relate an asset's price change to its volume and is particularly useful
@@ -542,14 +597,15 @@ def sma_ease_of_movement(high, low, volume, n=14, fillna=False):
         high(pandas.Series): dataset 'High' column.
         low(pandas.Series): dataset 'Low' column.
         volume(pandas.Series): dataset 'Volume' column.
-        n(int): n period.
+        window(int): n period.
         fillna(bool): if True, fill nan values.
 
     Returns:
         pandas.Series: New feature generated.
     """
     return EaseOfMovementIndicator(
-        high=high, low=low, volume=volume, n=n, fillna=fillna).sma_ease_of_movement()
+        high=high, low=low, volume=volume, window=window, fillna=fillna
+    ).sma_ease_of_movement()
 
 
 def volume_price_trend(close, volume, fillna=False):
@@ -569,7 +625,9 @@ def volume_price_trend(close, volume, fillna=False):
     Returns:
         pandas.Series: New feature generated.
     """
-    return VolumePriceTrendIndicator(close=close, volume=volume, fillna=fillna).volume_price_trend()
+    return VolumePriceTrendIndicator(
+        close=close, volume=volume, fillna=fillna
+    ).volume_price_trend()
 
 
 def negative_volume_index(close, volume, fillna=False):
@@ -612,10 +670,12 @@ def negative_volume_index(close, volume, fillna=False):
     See also:
         https://en.wikipedia.org/wiki/Negative_volume_index
     """
-    return NegativeVolumeIndexIndicator(close=close, volume=volume, fillna=fillna).negative_volume_index()
+    return NegativeVolumeIndexIndicator(
+        close=close, volume=volume, fillna=fillna
+    ).negative_volume_index()
 
 
-def money_flow_index(high, low, close, volume, n=14, fillna=False):
+def money_flow_index(high, low, close, volume, window=14, fillna=False):
     """Money Flow Index (MFI)
 
     Uses both price and volume to measure buying and selling pressure. It is
@@ -631,19 +691,27 @@ def money_flow_index(high, low, close, volume, n=14, fillna=False):
         low(pandas.Series): dataset 'Low' column.
         close(pandas.Series): dataset 'Close' column.
         volume(pandas.Series): dataset 'Volume' column.
-        n(int): n period.
+        window(int): n period.
         fillna(bool): if True, fill nan values.
 
     Returns:
         pandas.Series: New feature generated.
 
     """
-    indicator = MFIIndicator(high=high, low=low, close=close, volume=volume, n=n, fillna=fillna)
+    indicator = MFIIndicator(
+        high=high, low=low, close=close, volume=volume, window=window, fillna=fillna
+    )
     return indicator.money_flow_index()
 
 
 def volume_weighted_average_price(
-        high: pd.Series, low: pd.Series, close: pd.Series, volume: pd.Series, n: int = 14, fillna: bool = False):
+    high: pd.Series,
+    low: pd.Series,
+    close: pd.Series,
+    volume: pd.Series,
+    window: int = 14,
+    fillna: bool = False,
+):
     """Volume Weighted Average Price (VWAP)
 
     VWAP equals the dollar value of all trading periods divided
@@ -659,21 +727,14 @@ def volume_weighted_average_price(
         low(pandas.Series): dataset 'Low' column.
         close(pandas.Series): dataset 'Close' column.
         volume(pandas.Series): dataset 'Volume' column.
-        n(int): n period.
+        window(int): n period.
         fillna(bool): if True, fill nan values.
 
     Returns:
         pandas.Series: New feature generated.
     """
 
-    indicator = VolumeWeightedAveragePrice(high=high, low=low, close=close, volume=volume, n=n, fillna=fillna)
+    indicator = VolumeWeightedAveragePrice(
+        high=high, low=low, close=close, volume=volume, window=window, fillna=fillna
+    )
     return indicator.volume_weighted_average_price()
-
-
-# TODO
-def put_call_ratio():
-    """Put/Call ratio (PCR)
-    https://en.wikipedia.org/wiki/Put/call_ratio
-    """
-    # TODO
-    pass

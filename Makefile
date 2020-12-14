@@ -1,13 +1,19 @@
 init:
 	pip install -r requirements.txt
 
-lint:
-	pycodestyle --max-line-length=119 ta && isort --check-only --recursive ta
+isort:
+	isort --check-only --recursive ta test
+
+format: isort
+	black --target-version py36 ta test
 
 isort-fix:
-	isort --recursive ta
+	isort --recursive ta test
+
+lint: isort
+	prospector test/
+	prospector ta/
 
 test: lint
-	# python -m unittest discover
-	coverage run tests.py
+	coverage run -m unittest discover
 	coverage report -m

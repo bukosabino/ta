@@ -25,7 +25,9 @@ class DailyReturnIndicator(IndicatorMixin):
         self._run()
 
     def _run(self):
-        self._dr = (self._close / self._close.shift(1, fill_value=self._close.mean())) - 1
+        self._dr = (
+            self._close / self._close.shift(1, fill_value=self._close.mean())
+        ) - 1
         self._dr *= 100
 
     def daily_return(self) -> pd.Series:
@@ -34,8 +36,8 @@ class DailyReturnIndicator(IndicatorMixin):
         Returns:
             pandas.Series: New feature generated.
         """
-        dr = self._check_fillna(self._dr, value=0)
-        return pd.Series(dr, name='d_ret')
+        dr_series = self._check_fillna(self._dr, value=0)
+        return pd.Series(dr_series, name="d_ret")
 
 
 class DailyLogReturnIndicator(IndicatorMixin):
@@ -54,7 +56,7 @@ class DailyLogReturnIndicator(IndicatorMixin):
         self._run()
 
     def _run(self):
-        self._dr = np.log(self._close).diff()
+        self._dr = pd.Series(np.log(self._close)).diff()
         self._dr *= 100
 
     def daily_log_return(self) -> pd.Series:
@@ -63,8 +65,8 @@ class DailyLogReturnIndicator(IndicatorMixin):
         Returns:
             pandas.Series: New feature generated.
         """
-        dr = self._check_fillna(self._dr, value=0)
-        return pd.Series(dr, name='d_logret')
+        dr_series = self._check_fillna(self._dr, value=0)
+        return pd.Series(dr_series, name="d_logret")
 
 
 class CumulativeReturnIndicator(IndicatorMixin):
@@ -90,8 +92,8 @@ class CumulativeReturnIndicator(IndicatorMixin):
         Returns:
             pandas.Series: New feature generated.
         """
-        cr = self._check_fillna(self._cr, value=-1)
-        return pd.Series(cr, name='cum_ret')
+        cum_ret = self._check_fillna(self._cr, value=-1)
+        return pd.Series(cum_ret, name="cum_ret")
 
 
 def daily_return(close, fillna=False):

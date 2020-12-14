@@ -1,0 +1,23 @@
+output-format: grouped
+
+strictness: veryhigh
+doc-warnings: true
+test-warnings: true
+max-line-length: 120
+
+mypy:
+  run: true
+  options:
+    ignore-missing-imports: true
+
+bandit:
+  run: true
+
+pep8:
+  disable:
+    - E203
+
+pep257:
+  run: false
+  disable:
+    - D213

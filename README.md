@@ -1,20 +1,23 @@
 ![CircleCI](https://img.shields.io/circleci/build/github/bukosabino/ta/master)
 [![Documentation Status](https://readthedocs.org/projects/technical-analysis-library-in-python/badge/?version=latest)](https://technical-analysis-library-in-python.readthedocs.io/en/latest/?badge=latest)
 [![Coverage Status](https://coveralls.io/repos/github/bukosabino/ta/badge.svg)](https://coveralls.io/github/bukosabino/ta)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![Linter: Prospector](https://img.shields.io/badge/Linter-Prospector-coral.svg)](http://prospector.landscape.io/en/master/)
 ![PyPI](https://img.shields.io/pypi/v/ta)
 ![PyPI - Downloads](https://img.shields.io/pypi/dm/ta)
 [![Donate PayPal](https://img.shields.io/badge/Donate%20%24-PayPal-brightgreen.svg)](https://www.paypal.me/guau/3)
 
 # Technical Analysis Library in Python
 
-It is a Technical Analysis library to financial time series datasets (open, close, high, low, volume). You can use it to do feature engineering from financial datasets. It is built on Pandas and Numpy.
+It is a Technical Analysis library useful to do feature engineering from financial time series datasets (Open, Close, High, Low, Volume). It is built on Pandas and Numpy.
 
-![Bollinger Bands graph example](doc/figure.png)
+![Bollinger Bands graph example](static/figure.png)
 
-The library has implemented 34 indicators:
+The library has implemented 42 indicators:
 
 #### Volume
 
+* Money Flow Index (MFI)
 * Accumulation/Distribution Index (ADI)
 * On-Balance Volume (OBV)
 * Chaikin Money Flow (CMF)
@@ -30,9 +33,13 @@ The library has implemented 34 indicators:
 * Bollinger Bands (BB)
 * Keltner Channel (KC)
 * Donchian Channel (DC)
+* Ulcer Index (UI)
 
 #### Trend
 
+* Simple Moving Average (SMA)
+* Exponential Moving Average (EMA)
+* Weighted Moving Average (WMA)
 * Moving Average Convergence Divergence (MACD)
 * Average Directional Movement Index (ADX)
 * Vortex Indicator (VI)
@@ -43,11 +50,12 @@ The library has implemented 34 indicators:
 * KST Oscillator (KST)
 * Ichimoku Kinkō Hyō (Ichimoku)
 * Parabolic Stop And Reverse (Parabolic SAR)
+* Schaff Trend Cycle (STC)
 
 #### Momentum
 
-* Money Flow Index (MFI)
 * Relative Strength Index (RSI)
+* Stochastic RSI (SRSI)
 * True strength index (TSI)
 * Ultimate Oscillator (UO)
 * Stochastic Oscillator (SR)
@@ -55,6 +63,8 @@ The library has implemented 34 indicators:
 * Awesome Oscillator (AO)
 * Kaufman's Adaptive Moving Average (KAMA)
 * Rate of Change (ROC)
+* Percentage Price Oscillator (PPO)
+* Percentage Volume Oscillator (PVO)
 
 #### Others
 
@@ -124,7 +134,7 @@ df = pd.read_csv('ta/tests/data/datas.csv', sep=',')
 df = dropna(df)
 
 # Initialize Bollinger Bands Indicator
-indicator_bb = BollingerBands(close=df["Close"], n=20, ndev=2)
+indicator_bb = BollingerBands(close=df["Close"], window=20, window_dev=2)
 
 # Add Bollinger Bands features
 df['bb_bbm'] = indicator_bb.bollinger_mavg()
@@ -150,19 +160,19 @@ df['bb_bbp'] = indicator_bb.bollinger_pband()
 ```sh
 $ git clone https://github.com/bukosabino/ta.git
 $ cd ta
-$ pip install -r play-requirements.txt
+$ pip install -r requirements-play.txt
 $ make test
 ```
 
 
 # Sponsor
 
-![Logo OpenSistemas](doc/logo_neuroons_byOS_blue.png)
+![Logo OpenSistemas](static/logo_neuroons_byOS_blue.png)
 
 Thank you to [OpenSistemas](https://opensistemas.com)! It is because of your contribution that I am able to continue the development of this open source library.
 
 
-# Based on:
+# Based on
 
 * https://en.wikipedia.org/wiki/Technical_analysis
 * https://pandas.pydata.org
@@ -170,23 +180,34 @@ Thank you to [OpenSistemas](https://opensistemas.com)! It is because of your con
 * https://github.com/femtotrader/pandas_talib
 
 
-# In Progress:
+# In Progress
 
 * Automated tests for all the indicators.
 
 
-# TODO:
+# TODO
 
+* Use [NumExpr](https://github.com/pydata/numexpr) to speed up the NumPy/Pandas operations? [Article Motivation](https://towardsdatascience.com/speed-up-your-numpy-and-pandas-with-numexpr-package-25bd1ab0836b)
 * Add [more technical analysis features](https://en.wikipedia.org/wiki/Technical_analysis).
 * Wrapper to get financial data.
 * Use of the Pandas multi-indexing techniques to calculate several indicators at the same time.
-* use Plotly/Streamlit to visualize features
+* Use Plotly/Streamlit to visualize features
 
 
-# Credits:
+# Changelog
+
+Check the [changelog](https://github.com/bukosabino/ta/blob/master/RELEASE.md) of project.
+
+
+# Donation
+
+If you think `ta` library help you, please consider [buying me a coffee](https://www.paypal.me/guau/3).
+
+
+# Credits
 
 Developed by Darío López Padial (aka Bukosabino) and [other contributors](https://github.com/bukosabino/ta/graphs/contributors).
 
 Please, let me know about any comment or feedback.
 
-Also, I am a software engineer freelance focused on Data Science using Python tools such as Pandas, Scikit-Learn, Backtrader, Zipline or Catalyst. Don't hesitate to contact me if you need something related with this library, Python, Technical Analysis, AlgoTrading, Machine Learning, etc.
+Also, I am a software engineer freelance focused on Data Science using Python tools such as Pandas, Scikit-Learn, Backtrader, Zipline or Catalyst. Don't hesitate to contact me if you need to develop something related with this library, Python, Technical Analysis, AlgoTrading, Machine Learning, etc.
