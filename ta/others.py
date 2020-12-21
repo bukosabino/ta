@@ -113,10 +113,10 @@ class HeikinAshiCandlestick(IndicatorMixin):
                  low: pd.Series,
                  close: pd.Series,
                  fillna: bool = False):
-        self._open = open 
+        self._open = open
         self._high = high
-        self._low = low 
-        self._close = close 
+        self._low = low
+        self._close = close
         self._fillna = fillna
         self._run()
 

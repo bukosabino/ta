@@ -501,7 +501,7 @@ class StreamlitPlot:
         data = self._main_plot(chart_type)
         self._plot(data, ind_data, subplot)
         return ind_data
-    
+
     def _library_fuct(self, indicator, params):
         fillna = self._fillna[0]
         if indicator == "SMA":
