@@ -107,11 +107,12 @@ class HeikinAshiCandlestick(IndicatorMixin):
         fillna(bool): if True, fill nan values.
     """
 
-    def __init__(self, open: pd.Series, 
-                       high: pd.Series,
-                       low: pd.Series,
-                       close: pd.Series,
-                       fillna: bool = False):
+    def __init__(self,
+                 open: pd.Series,
+                 high: pd.Series,
+                 low: pd.Series,
+                 close: pd.Series,
+                 fillna: bool = False):
         self._open = open 
         self._high = high
         self._low = low 
@@ -165,6 +166,7 @@ class HeikinAshiCandlestick(IndicatorMixin):
         ha_close = self._check_fillna(self._ha_close, value=0)
         return pd.Series(ha_close, name='heikin_ashi_candlestick_close')
 
+
 def daily_return(close, fillna=False):
     """Daily Return (DR)
 
@@ -204,3 +206,83 @@ def cumulative_return(close, fillna=False):
         pandas.Series: New feature generated.
     """
     return CumulativeReturnIndicator(close=close, fillna=fillna).cumulative_return()
+
+
+def heikin_ashi_candlestick_open(open, high, low, close, fillna=False):
+    """Heikin-Ashi Candlestick Open
+
+    Args:
+        open(pandas.Series): dataset 'Open' column.
+        high(pandas.Series): dataset 'High' column.
+        low(pandas.Series): dataset 'Low' column.
+        close(pandas.Series): dataset 'Close' column.
+        fillna(bool): if True, fill nan values.
+
+    Returns:
+        pandas.Series: New feature generated.
+    """
+    return HeikinAshiCandlestick(open=open,
+                                 high=high,
+                                 low=low,
+                                 close=close,
+                                 fillna=fillna).heikin_ashi_candlestick_open()
+
+
+def heikin_ashi_candlestick_high(open, high, low, close, fillna=False):
+    """Heikin-Ashi Candlestick High
+
+    Args:
+        open(pandas.Series): dataset 'Open' column.
+        high(pandas.Series): dataset 'High' column.
+        low(pandas.Series): dataset 'Low' column.
+        close(pandas.Series): dataset 'Close' column.
+        fillna(bool): if True, fill nan values.
+
+    Returns:
+        pandas.Series: New feature generated.
+    """
+    return HeikinAshiCandlestick(open=open,
+                                 high=high,
+                                 low=low,
+                                 close=close,
+                                 fillna=fillna).heikin_ashi_candlestick_high()
+
+
+def heikin_ashi_candlestick_low(open, high, low, close, fillna=False):
+    """Heikin-Ashi Candlestick Low
+
+    Args:
+        open(pandas.Series): dataset 'Open' column.
+        high(pandas.Series): dataset 'High' column.
+        low(pandas.Series): dataset 'Low' column.
+        close(pandas.Series): dataset 'Close' column.
+        fillna(bool): if True, fill nan values.
+
+    Returns:
+        pandas.Series: New feature generated.
+    """
+    return HeikinAshiCandlestick(open=open,
+                                 high=high,
+                                 low=low,
+                                 close=close,
+                                 fillna=fillna).heikin_ashi_candlestick_low()
+
+
+def heikin_ashi_candlestick_close(open, high, low, close, fillna=False):
+    """Heikin-Ashi Candlestick Close
+
+    Args:
+        open(pandas.Series): dataset 'Open' column.
+        high(pandas.Series): dataset 'High' column.
+        low(pandas.Series): dataset 'Low' column.
+        close(pandas.Series): dataset 'Close' column.
+        fillna(bool): if True, fill nan values.
+
+    Returns:
+        pandas.Series: New feature generated.
+    """
+    return HeikinAshiCandlestick(open=open,
+                                 high=high,
+                                 low=low,
+                                 close=close,
+                                 fillna=fillna).heikin_ashi_candlestick_close()

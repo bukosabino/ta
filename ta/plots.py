@@ -311,6 +311,7 @@ class PlotlyPlot():
         self._separatePlot(time, indicator_data, name, showlegend, height, layout)
         self._fig.show()
 
+
 ta = {
         "SMA": {
             "params": {
@@ -353,7 +354,8 @@ ta = {
         }
     }
 
-class StreamlitPlot():
+
+class StreamlitPlot:
     """StreamlitPlot
 
     Plot the stock data as well as indicator data.
@@ -397,7 +399,7 @@ class StreamlitPlot():
                     request_data[k] = value
             self._fillna = st.sidebar.checkbox("Fill NA"),
             self._showlegend = st.sidebar.checkbox("Show Legend", value=True)
-            self._rangeslider = st.sidebar.checkbox("Range Slider",value=True)
+            self._rangeslider = st.sidebar.checkbox("Range Slider", value=True)
             ind_data = self._graph_plot(
                 indicator, ta[indicator]['subplot'], request_data, chart_type)
             for data in ind_data:
@@ -509,10 +511,21 @@ class StreamlitPlot():
         elif indicator == "RSI":
             return [RSIIndicator(close=self._close, n=params["Period"], fillna=fillna).rsi()]
         elif indicator == "TSI":
-            return [TSIIndicator(close=self._close, r=params["High Peroid"], s=params["Slow Period"], fillna=fillna).tsi()]
+            return [TSIIndicator(close=self._close,
+                                 r=params["High Peroid"],
+                                 s=params["Slow Period"],
+                                 fillna=fillna).tsi()]
         elif indicator == "Stochastic Oscillator":
-            indicator = StochasticOscillator(high=self._high, low=self._low, close=self._close, n=params["Period"], d_n=params["SMA Period"], fillna=fillna)
+            indicator = StochasticOscillator(high=self._high,
+                                             low=self._low,
+                                             close=self._close,
+                                             n=params["Period"],
+                                             d_n=params["SMA Period"],
+                                             fillna=fillna)
             return [indicator.stoch(), indicator.stoch_signal()]
         elif indicator == "Bollinger Bands":
-            indicator_bb = BollingerBands(close=self._close, n=params["Period"], ndev=params["N Factor Standard Deviation"], fillna=fillna)
-            return [indicator_bb.bollinger_hband(),indicator_bb.bollinger_lband()]
+            indicator_bb = BollingerBands(close=self._close,
+                                          n=params["Period"],
+                                          ndev=params["N Factor Standard Deviation"],
+                                          fillna=fillna)
+            return [indicator_bb.bollinger_hband(), indicator_bb.bollinger_lband()]
