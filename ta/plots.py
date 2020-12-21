@@ -22,6 +22,7 @@ from ta.volume import (AccDistIndexIndicator, ChaikinMoneyFlowIndicator,
                        OnBalanceVolumeIndicator, VolumePriceTrendIndicator,
                        VolumeWeightedAveragePrice)
 
+
 class PlotlyPlot():
     """Plotly Plot
 
@@ -311,44 +312,44 @@ class PlotlyPlot():
         self._fig.show()
 
 ta = {
-        "SMA":{
-            "params":{
-                "Period":10
+        "SMA": {
+            "params": {
+                "Period": 10
             },
             "subplot": False
         },
-        "EMA":{
-            "params":{
-                "Period":10
+        "EMA": {
+            "params": {
+                "Period": 10
             },
             "subplot": False
         },
-        "RSI":{
-            "params":{
-                "Period":14
+        "RSI": {
+            "params": {
+                "Period": 14
             },
             "subplot": True
         },
-        "TSI":{
-            "params":{
+        "TSI": {
+            "params": {
                 "High Peroid": 25,
                 "Slow Period": 13,
             },
             "subplot": True
         },
-        "Stochastic Oscillator":{
-            "params":{
+        "Stochastic Oscillator": {
+            "params": {
                 "Period": 14,
                 "SMA Period": 3
             },
             "subplot": True
         },
-        "Bollinger Bands":{
-            "params":{
+        "Bollinger Bands": {
+            "params": {
                 "Period": 20,
                 "N Factor Standard Deviation": 2
             },
-            "subplot":False
+            "subplot": False
         }
     }
 
@@ -403,7 +404,6 @@ class StreamlitPlot():
                 self._df[data.name] = data
         st.dataframe(self._df)
 
-
     def _main_plot(self, chart_type):
         data = None
         if chart_type == "Candlestick":
@@ -415,14 +415,14 @@ class StreamlitPlot():
                     close=self._close,
                     name="Candlestick",
                     showlegend=False
-                )]
+                    )]
         elif chart_type == "Line":
             data = [go.Scatter(
                     x=self._time,
                     y=self._close,
                     name="Close",
                     showlegend=False
-                )]
+                    )]
         elif chart_type == "OHLC":
             data = [
                 go.Ohlc(
@@ -435,7 +435,6 @@ class StreamlitPlot():
                     showlegend=False
                 )]
         return data
-
 
     def _plot(self, data, ind_data, subplot):
         fig = None
@@ -470,7 +469,7 @@ class StreamlitPlot():
                         showlegend=self._showlegend
                     )
                 )
-            fig =  go.Figure(
+            fig = go.Figure(
                 data=data,
                 layout=go.Layout(
                     margin=go.layout.Margin(
@@ -494,7 +493,6 @@ class StreamlitPlot():
         )
         fig.update_layout(xaxis_rangeslider_visible=self._rangeslider)
         st.plotly_chart(fig)
-
 
     def _graph_plot(self, indicator, subplot, request_data, chart_type):
         ind_data = self._library_fuct(indicator, request_data)
