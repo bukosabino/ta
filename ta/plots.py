@@ -484,13 +484,13 @@ class StreamlitPlot:
             autosize=False,
             width=800,
             height=800,
-            margin=dict(
-                l=50,
-                r=50,
-                b=100,
-                t=100,
-                pad=4
-            ),
+            margin={
+                'l': 50,
+                'r': 50,
+                'b': 100,
+                't': 100,
+                'pad': 4
+            },
             paper_bgcolor="LightSteelBlue",
         )
         fig.update_layout(xaxis_rangeslider_visible=self._rangeslider)
