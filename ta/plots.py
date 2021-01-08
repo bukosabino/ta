@@ -93,7 +93,7 @@ class PlotlyPlot:
                 )
         self._fig.add_trace(data, row=1, col=1)
 
-    def addLine(self, time, ind_data, name, row, showlegend=True):
+    def addLine(self, ind_data, name, row, showlegend=True):
         """Add indicator to the plot.
 
         Add the indicator plot.
@@ -105,7 +105,7 @@ class PlotlyPlot:
             showlegend(bool): if True, show the legend
         """
         self._fig.add_trace(go.Scatter(
-            x=time,
+            x=self._time,
             y=ind_data,
             name=name,
             showlegend=showlegend), row=row, col=1)
