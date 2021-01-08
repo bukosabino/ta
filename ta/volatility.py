@@ -8,7 +8,7 @@
 import numpy as np
 import pandas as pd
 
-from ta.utils import IndicatorMixin, ema
+from ta.utils import IndicatorMixin
 
 
 class AverageTrueRange(IndicatorMixin):
@@ -24,26 +24,35 @@ class AverageTrueRange(IndicatorMixin):
         high(pandas.Series): dataset 'High' column.
         low(pandas.Series): dataset 'Low' column.
         close(pandas.Series): dataset 'Close' column.
-        n(int): n period.
+        window(int): n period.
         fillna(bool): if True, fill nan values.
     """
 
-    def __init__(self, high: pd.Series, low: pd.Series, close: pd.Series, n: int = 14, fillna: bool = False):
+    def __init__(
+        self,
+        high: pd.Series,
+        low: pd.Series,
+        close: pd.Series,
+        window: int = 14,
+        fillna: bool = False,
+    ):
         self._high = high
         self._low = low
         self._close = close
-        self._n = n
+        self._window = window
         self._fillna = fillna
         self._run()
 
     def _run(self):
-        cs = self._close.shift(1)
-        tr = self._true_range(self._high, self._low, cs)
+        close_shift = self._close.shift(1)
+        true_range = self._true_range(self._high, self._low, close_shift)
         atr = np.zeros(len(self._close))
-        atr[self._n-1] = tr[0:self._n].mean()
-        for i in range(self._n, len(atr)):
-            atr[i] = (atr[i-1] * (self._n-1) + tr.iloc[i]) / float(self._n)
-        self._atr = pd.Series(data=atr, index=tr.index)
+        atr[self._window - 1] = true_range[0 : self._window].mean()
+        for i in range(self._window, len(atr)):
+            atr[i] = (atr[i - 1] * (self._window - 1) + true_range.iloc[i]) / float(
+                self._window
+            )
+        self._atr = pd.Series(data=atr, index=true_range.index)
 
     def average_true_range(self) -> pd.Series:
         """Average True Range (ATR)
@@ -52,7 +61,7 @@ class AverageTrueRange(IndicatorMixin):
             pandas.Series: New feature generated.
         """
         atr = self._check_fillna(self._atr, value=0)
-        return pd.Series(atr, name='atr')
+        return pd.Series(atr, name="atr")
 
 
 class BollingerBands(IndicatorMixin):
@@ -62,24 +71,32 @@ class BollingerBands(IndicatorMixin):
 
     Args:
         close(pandas.Series): dataset 'Close' column.
-        n(int): n period.
-        ndev(int): n factor standard deviation
+        window(int): n period.
+        window_dev(int): n factor standard deviation
         fillna(bool): if True, fill nan values.
     """
 
-    def __init__(self, close: pd.Series, n: int = 20, ndev: int = 2, fillna: bool = False):
+    def __init__(
+        self,
+        close: pd.Series,
+        window: int = 20,
+        window_dev: int = 2,
+        fillna: bool = False,
+    ):
         self._close = close
-        self._n = n
-        self._ndev = ndev
+        self._window = window
+        self._window_dev = window_dev
         self._fillna = fillna
         self._run()
 
     def _run(self):
-        min_periods = 0 if self._fillna else self._n
-        self._mavg = self._close.rolling(self._n, min_periods=min_periods).mean()
-        self._mstd = self._close.rolling(self._n, min_periods=min_periods).std(ddof=0)
-        self._hband = self._mavg + self._ndev * self._mstd
-        self._lband = self._mavg - self._ndev * self._mstd
+        min_periods = 0 if self._fillna else self._window
+        self._mavg = self._close.rolling(self._window, min_periods=min_periods).mean()
+        self._mstd = self._close.rolling(self._window, min_periods=min_periods).std(
+            ddof=0
+        )
+        self._hband = self._mavg + self._window_dev * self._mstd
+        self._lband = self._mavg - self._window_dev * self._mstd
 
     def bollinger_mavg(self) -> pd.Series:
         """Bollinger Channel Middle Band
@@ -88,7 +105,7 @@ class BollingerBands(IndicatorMixin):
             pandas.Series: New feature generated.
         """
         mavg = self._check_fillna(self._mavg, value=-1)
-        return pd.Series(mavg, name='mavg')
+        return pd.Series(mavg, name="mavg")
 
     def bollinger_hband(self) -> pd.Series:
         """Bollinger Channel High Band
@@ -97,7 +114,7 @@ class BollingerBands(IndicatorMixin):
             pandas.Series: New feature generated.
         """
         hband = self._check_fillna(self._hband, value=-1)
-        return pd.Series(hband, name='hband')
+        return pd.Series(hband, name="hband")
 
     def bollinger_lband(self) -> pd.Series:
         """Bollinger Channel Low Band
@@ -106,7 +123,7 @@ class BollingerBands(IndicatorMixin):
             pandas.Series: New feature generated.
         """
         lband = self._check_fillna(self._lband, value=-1)
-        return pd.Series(lband, name='lband')
+        return pd.Series(lband, name="lband")
 
     def bollinger_wband(self) -> pd.Series:
         """Bollinger Channel Band Width
@@ -118,7 +135,7 @@ class BollingerBands(IndicatorMixin):
         """
         wband = ((self._hband - self._lband) / self._mavg) * 100
         wband = self._check_fillna(wband, value=0)
-        return pd.Series(wband, name='bbiwband')
+        return pd.Series(wband, name="bbiwband")
 
     def bollinger_pband(self) -> pd.Series:
         """Bollinger Channel Percentage Band
@@ -130,7 +147,7 @@ class BollingerBands(IndicatorMixin):
         """
         pband = (self._close - self._lband) / (self._hband - self._lband)
         pband = self._check_fillna(pband, value=0)
-        return pd.Series(pband, name='bbipband')
+        return pd.Series(pband, name="bbipband")
 
     def bollinger_hband_indicator(self) -> pd.Series:
         """Bollinger Channel Indicator Crossing High Band (binary).
@@ -140,9 +157,11 @@ class BollingerBands(IndicatorMixin):
         Returns:
             pandas.Series: New feature generated.
         """
-        hband = pd.Series(np.where(self._close > self._hband, 1.0, 0.0), index=self._close.index)
+        hband = pd.Series(
+            np.where(self._close > self._hband, 1.0, 0.0), index=self._close.index
+        )
         hband = self._check_fillna(hband, value=0)
-        return pd.Series(hband, index=self._close.index, name='bbihband')
+        return pd.Series(hband, index=self._close.index, name="bbihband")
 
     def bollinger_lband_indicator(self) -> pd.Series:
         """Bollinger Channel Indicator Crossing Low Band (binary).
@@ -152,9 +171,11 @@ class BollingerBands(IndicatorMixin):
         Returns:
             pandas.Series: New feature generated.
         """
-        lband = pd.Series(np.where(self._close < self._lband, 1.0, 0.0), index=self._close.index)
+        lband = pd.Series(
+            np.where(self._close < self._lband, 1.0, 0.0), index=self._close.index
+        )
         lband = self._check_fillna(lband, value=0)
-        return pd.Series(lband, name='bbilband')
+        return pd.Series(lband, name="bbilband")
 
 
 class KeltnerChannel(IndicatorMixin):
@@ -170,41 +191,64 @@ class KeltnerChannel(IndicatorMixin):
         high(pandas.Series): dataset 'High' column.
         low(pandas.Series): dataset 'Low' column.
         close(pandas.Series): dataset 'Close' column.
-        n(int): n period.
-        n_atr(int): n atr period. Only valid if ov param is False.
+        window(int): n period.
+        window_atr(int): n atr period. Only valid if original_version param is False.
         fillna(bool): if True, fill nan values.
-        ov(bool): if True, use original version as the centerline (SMA of typical price)
+        original_version(bool): if True, use original version as the centerline (SMA of typical price)
             if False, use EMA of close as the centerline. More info:
             https://school.stockcharts.com/doku.php?id=technical_indicators:keltner_channels
     """
 
     def __init__(
-            self, high: pd.Series, low: pd.Series, close: pd.Series, n: int = 20, n_atr: int = 10,
-            fillna: bool = False, ov: bool = True):
+        self,
+        high: pd.Series,
+        low: pd.Series,
+        close: pd.Series,
+        window: int = 20,
+        window_atr: int = 10,
+        fillna: bool = False,
+        original_version: bool = True,
+    ):
         self._high = high
         self._low = low
         self._close = close
-        self._n = n
-        self._n_atr = n_atr
+        self._window = window
+        self._window_atr = window_atr
         self._fillna = fillna
-        self._ov = ov
+        self._original_version = original_version
         self._run()
 
     def _run(self):
-        min_periods = 1 if self._fillna else self._n
-        if self._ov:
-            self._tp = ((self._high + self._low + self._close) / 3.0).rolling(self._n, min_periods=min_periods).mean()
-            self._tp_high = (((4 * self._high) - (2 * self._low) + self._close) / 3.0).rolling(
-                self._n, min_periods=0).mean()
-            self._tp_low = (((-2 * self._high) + (4 * self._low) + self._close) / 3.0).rolling(
-                self._n, min_periods=0).mean()
+        min_periods = 1 if self._fillna else self._window
+        if self._original_version:
+            self._tp = (
+                ((self._high + self._low + self._close) / 3.0)
+                .rolling(self._window, min_periods=min_periods)
+                .mean()
+            )
+            self._tp_high = (
+                (((4 * self._high) - (2 * self._low) + self._close) / 3.0)
+                .rolling(self._window, min_periods=0)
+                .mean()
+            )
+            self._tp_low = (
+                (((-2 * self._high) + (4 * self._low) + self._close) / 3.0)
+                .rolling(self._window, min_periods=0)
+                .mean()
+            )
         else:
-            self._tp = self._close.ewm(span=self._n, min_periods=min_periods, adjust=False).mean()
+            self._tp = self._close.ewm(
+                span=self._window, min_periods=min_periods, adjust=False
+            ).mean()
             atr = AverageTrueRange(
-                close=self._close, high=self._high, low=self._low, n=self._n_atr, fillna=self._fillna
+                close=self._close,
+                high=self._high,
+                low=self._low,
+                window=self._window_atr,
+                fillna=self._fillna,
             ).average_true_range()
-            self._tp_high = self._tp + (2*atr)
-            self._tp_low = self._tp - (2*atr)
+            self._tp_high = self._tp + (2 * atr)
+            self._tp_low = self._tp - (2 * atr)
 
     def keltner_channel_mband(self) -> pd.Series:
         """Keltner Channel Middle Band
@@ -212,8 +256,8 @@ class KeltnerChannel(IndicatorMixin):
         Returns:
             pandas.Series: New feature generated.
         """
-        tp = self._check_fillna(self._tp, value=-1)
-        return pd.Series(tp, name='mavg')
+        tp_middle = self._check_fillna(self._tp, value=-1)
+        return pd.Series(tp_middle, name="mavg")
 
     def keltner_channel_hband(self) -> pd.Series:
         """Keltner Channel High Band
@@ -221,8 +265,8 @@ class KeltnerChannel(IndicatorMixin):
         Returns:
             pandas.Series: New feature generated.
         """
-        tp = self._check_fillna(self._tp_high, value=-1)
-        return pd.Series(tp, name='kc_hband')
+        tp_high = self._check_fillna(self._tp_high, value=-1)
+        return pd.Series(tp_high, name="kc_hband")
 
     def keltner_channel_lband(self) -> pd.Series:
         """Keltner Channel Low Band
@@ -231,7 +275,7 @@ class KeltnerChannel(IndicatorMixin):
             pandas.Series: New feature generated.
         """
         tp_low = self._check_fillna(self._tp_low, value=-1)
-        return pd.Series(tp_low, name='kc_lband')
+        return pd.Series(tp_low, name="kc_lband")
 
     def keltner_channel_wband(self) -> pd.Series:
         """Keltner Channel Band Width
@@ -241,7 +285,7 @@ class KeltnerChannel(IndicatorMixin):
         """
         wband = ((self._tp_high - self._tp_low) / self._tp) * 100
         wband = self._check_fillna(wband, value=0)
-        return pd.Series(wband, name='bbiwband')
+        return pd.Series(wband, name="bbiwband")
 
     def keltner_channel_pband(self) -> pd.Series:
         """Keltner Channel Percentage Band
@@ -251,7 +295,7 @@ class KeltnerChannel(IndicatorMixin):
         """
         pband = (self._close - self._tp_low) / (self._tp_high - self._tp_low)
         pband = self._check_fillna(pband, value=0)
-        return pd.Series(pband, name='bbipband')
+        return pd.Series(pband, name="bbipband")
 
     def keltner_channel_hband_indicator(self) -> pd.Series:
         """Keltner Channel Indicator Crossing High Band (binary)
@@ -261,9 +305,11 @@ class KeltnerChannel(IndicatorMixin):
         Returns:
             pandas.Series: New feature generated.
         """
-        hband = pd.Series(np.where(self._close > self._tp_high, 1.0, 0.0), index=self._close.index)
+        hband = pd.Series(
+            np.where(self._close > self._tp_high, 1.0, 0.0), index=self._close.index
+        )
         hband = self._check_fillna(hband, value=0)
-        return pd.Series(hband, name='dcihband')
+        return pd.Series(hband, name="dcihband")
 
     def keltner_channel_lband_indicator(self) -> pd.Series:
         """Keltner Channel Indicator Crossing Low Band (binary)
@@ -273,9 +319,11 @@ class KeltnerChannel(IndicatorMixin):
         Returns:
             pandas.Series: New feature generated.
         """
-        lband = pd.Series(np.where(self._close < self._tp_low, 1.0, 0.0), index=self._close.index)
+        lband = pd.Series(
+            np.where(self._close < self._tp_low, 1.0, 0.0), index=self._close.index
+        )
         lband = self._check_fillna(lband, value=0)
-        return pd.Series(lband, name='dcilband')
+        return pd.Series(lband, name="dcilband")
 
 
 class DonchianChannel(IndicatorMixin):
@@ -287,30 +335,35 @@ class DonchianChannel(IndicatorMixin):
         high(pandas.Series): dataset 'High' column.
         low(pandas.Series): dataset 'Low' column.
         close(pandas.Series): dataset 'Close' column.
-        n(int): n period.
+        window(int): n period.
         fillna(bool): if True, fill nan values.
     """
 
     def __init__(
-            self,
-            high: pd.Series,
-            low: pd.Series,
-            close: pd.Series,
-            n: int = 20,
-            offset: int = 0,
-            fillna: bool = False):
+        self,
+        high: pd.Series,
+        low: pd.Series,
+        close: pd.Series,
+        window: int = 20,
+        offset: int = 0,
+        fillna: bool = False,
+    ):
         self._offset = offset
         self._close = close
         self._high = high
         self._low = low
-        self._n = n
+        self._window = window
         self._fillna = fillna
         self._run()
 
     def _run(self):
-        self._min_periods = 1 if self._fillna else self._n
-        self._hband = self._high.rolling(self._n, min_periods=self._min_periods).max()
-        self._lband = self._low.rolling(self._n, min_periods=self._min_periods).min()
+        self._min_periods = 1 if self._fillna else self._window
+        self._hband = self._high.rolling(
+            self._window, min_periods=self._min_periods
+        ).max()
+        self._lband = self._low.rolling(
+            self._window, min_periods=self._min_periods
+        ).min()
 
     def donchian_channel_hband(self) -> pd.Series:
         """Donchian Channel High Band
@@ -321,7 +374,7 @@ class DonchianChannel(IndicatorMixin):
         hband = self._check_fillna(self._hband, value=-1)
         if self._offset != 0:
             hband = hband.shift(self._offset)
-        return pd.Series(hband, name='dchband')
+        return pd.Series(hband, name="dchband")
 
     def donchian_channel_lband(self) -> pd.Series:
         """Donchian Channel Low Band
@@ -332,7 +385,7 @@ class DonchianChannel(IndicatorMixin):
         lband = self._check_fillna(self._lband, value=-1)
         if self._offset != 0:
             lband = lband.shift(self._offset)
-        return pd.Series(lband, name='dclband')
+        return pd.Series(lband, name="dclband")
 
     def donchian_channel_mband(self) -> pd.Series:
         """Donchian Channel Middle Band
@@ -344,7 +397,7 @@ class DonchianChannel(IndicatorMixin):
         mband = self._check_fillna(mband, value=-1)
         if self._offset != 0:
             mband = mband.shift(self._offset)
-        return pd.Series(mband, name='dcmband')
+        return pd.Series(mband, name="dcmband")
 
     def donchian_channel_wband(self) -> pd.Series:
         """Donchian Channel Band Width
@@ -352,12 +405,12 @@ class DonchianChannel(IndicatorMixin):
         Returns:
             pandas.Series: New feature generated.
         """
-        mavg = self._close.rolling(self._n, min_periods=self._min_periods).mean()
+        mavg = self._close.rolling(self._window, min_periods=self._min_periods).mean()
         wband = ((self._hband - self._lband) / mavg) * 100
         wband = self._check_fillna(wband, value=0)
         if self._offset != 0:
             wband = wband.shift(self._offset)
-        return pd.Series(wband, name='dcwband')
+        return pd.Series(wband, name="dcwband")
 
     def donchian_channel_pband(self) -> pd.Series:
         """Donchian Channel Percentage Band
@@ -369,7 +422,7 @@ class DonchianChannel(IndicatorMixin):
         pband = self._check_fillna(pband, value=0)
         if self._offset != 0:
             pband = pband.shift(self._offset)
-        return pd.Series(pband, name='dcpband')
+        return pd.Series(pband, name="dcpband")
 
 
 class UlcerIndex(IndicatorMixin):
@@ -379,26 +432,27 @@ class UlcerIndex(IndicatorMixin):
 
     Args:
         close(pandas.Series): dataset 'Close' column.
-        n(int): n period.
+        window(int): n period.
         fillna(bool): if True, fill nan values.
     """
 
-    def __init__(self, close: pd.Series, n: int = 14, fillna: bool = False):
+    def __init__(self, close: pd.Series, window: int = 14, fillna: bool = False):
         self._close = close
-        self._n = n
+        self._window = window
         self._fillna = fillna
         self._run()
 
     def _run(self):
-        _ui_max = self._close.rolling(self._n, min_periods=1).max()
+        _ui_max = self._close.rolling(self._window, min_periods=1).max()
         _r_i = 100 * (self._close - _ui_max) / _ui_max
 
         def ui_function():
             def _ui_function(x):
-                return np.sqrt((x**2/self._n).sum())
+                return np.sqrt((x ** 2 / self._window).sum())
+
             return _ui_function
 
-        self._ui = _r_i.rolling(self._n).apply(ui_function(), raw=True)
+        self._ulcer_idx = _r_i.rolling(self._window).apply(ui_function(), raw=True)
 
     def ulcer_index(self) -> pd.Series:
         """Ulcer Index (UI)
@@ -406,11 +460,11 @@ class UlcerIndex(IndicatorMixin):
         Returns:
             pandas.Series: New feature generated.
         """
-        ui = self._check_fillna(self._ui)
-        return pd.Series(ui, name='ui')
+        ulcer_idx = self._check_fillna(self._ulcer_idx)
+        return pd.Series(ulcer_idx, name="ui")
 
 
-def average_true_range(high, low, close, n=14, fillna=False):
+def average_true_range(high, low, close, window=14, fillna=False):
     """Average True Range (ATR)
 
     The indicator provide an indication of the degree of price volatility.
@@ -423,17 +477,19 @@ def average_true_range(high, low, close, n=14, fillna=False):
         high(pandas.Series): dataset 'High' column.
         low(pandas.Series): dataset 'Low' column.
         close(pandas.Series): dataset 'Close' column.
-        n(int): n period.
+        window(int): n period.
         fillna(bool): if True, fill nan values.
 
     Returns:
         pandas.Series: New feature generated.
     """
-    indicator = AverageTrueRange(high=high, low=low, close=close, n=n, fillna=fillna)
+    indicator = AverageTrueRange(
+        high=high, low=low, close=close, window=window, fillna=fillna
+    )
     return indicator.average_true_range()
 
 
-def bollinger_mavg(close, n=20, fillna=False):
+def bollinger_mavg(close, window=20, fillna=False):
     """Bollinger Bands (BB)
 
     N-period simple moving average (MA).
@@ -442,17 +498,17 @@ def bollinger_mavg(close, n=20, fillna=False):
 
     Args:
         close(pandas.Series): dataset 'Close' column.
-        n(int): n period.
+        window(int): n period.
         fillna(bool): if True, fill nan values.
 
     Returns:
         pandas.Series: New feature generated.
     """
-    indicator = BollingerBands(close=close, n=n, fillna=fillna)
+    indicator = BollingerBands(close=close, window=window, fillna=fillna)
     return indicator.bollinger_mavg()
 
 
-def bollinger_hband(close, n=20, ndev=2, fillna=False):
+def bollinger_hband(close, window=20, window_dev=2, fillna=False):
     """Bollinger Bands (BB)
 
     Upper band at K times an N-period standard deviation above the moving
@@ -462,18 +518,20 @@ def bollinger_hband(close, n=20, ndev=2, fillna=False):
 
     Args:
         close(pandas.Series): dataset 'Close' column.
-        n(int): n period.
-        ndev(int): n factor standard deviation
+        window(int): n period.
+        window_dev(int): n factor standard deviation
         fillna(bool): if True, fill nan values.
 
     Returns:
         pandas.Series: New feature generated.
     """
-    indicator = BollingerBands(close=close, n=n, ndev=ndev, fillna=fillna)
+    indicator = BollingerBands(
+        close=close, window=window, window_dev=window_dev, fillna=fillna
+    )
     return indicator.bollinger_hband()
 
 
-def bollinger_lband(close, n=20, ndev=2, fillna=False):
+def bollinger_lband(close, window=20, window_dev=2, fillna=False):
     """Bollinger Bands (BB)
 
     Lower band at K times an N-period standard deviation below the moving
@@ -483,54 +541,60 @@ def bollinger_lband(close, n=20, ndev=2, fillna=False):
 
     Args:
         close(pandas.Series): dataset 'Close' column.
-        n(int): n period.
-        ndev(int): n factor standard deviation
+        window(int): n period.
+        window_dev(int): n factor standard deviation
         fillna(bool): if True, fill nan values.
 
     Returns:
         pandas.Series: New feature generated.
     """
-    indicator = BollingerBands(close=close, n=n, ndev=ndev, fillna=fillna)
+    indicator = BollingerBands(
+        close=close, window=window, window_dev=window_dev, fillna=fillna
+    )
     return indicator.bollinger_lband()
 
 
-def bollinger_wband(close, n=20, ndev=2, fillna=False):
+def bollinger_wband(close, window=20, window_dev=2, fillna=False):
     """Bollinger Channel Band Width
 
     From: https://school.stockcharts.com/doku.php?id=technical_indicators:bollinger_band_width
 
     Args:
         close(pandas.Series): dataset 'Close' column.
-        n(int): n period.
-        ndev(int): n factor standard deviation
+        window(int): n period.
+        window_dev(int): n factor standard deviation
         fillna(bool): if True, fill nan values.
 
     Returns:
         pandas.Series: New feature generated.
     """
-    indicator = BollingerBands(close=close, n=n, ndev=ndev, fillna=fillna)
+    indicator = BollingerBands(
+        close=close, window=window, window_dev=window_dev, fillna=fillna
+    )
     return indicator.bollinger_wband()
 
 
-def bollinger_pband(close, n=20, ndev=2, fillna=False):
+def bollinger_pband(close, window=20, window_dev=2, fillna=False):
     """Bollinger Channel Percentage Band
 
     From: https://school.stockcharts.com/doku.php?id=technical_indicators:bollinger_band_perce
 
     Args:
         close(pandas.Series): dataset 'Close' column.
-        n(int): n period.
-        ndev(int): n factor standard deviation
+        window(int): n period.
+        window_dev(int): n factor standard deviation
         fillna(bool): if True, fill nan values.
 
     Returns:
         pandas.Series: New feature generated.
     """
-    indicator = BollingerBands(close=close, n=n, ndev=ndev, fillna=fillna)
+    indicator = BollingerBands(
+        close=close, window=window, window_dev=window_dev, fillna=fillna
+    )
     return indicator.bollinger_pband()
 
 
-def bollinger_hband_indicator(close, n=20, ndev=2, fillna=False):
+def bollinger_hband_indicator(close, window=20, window_dev=2, fillna=False):
     """Bollinger High Band Indicator
 
     Returns 1, if close is higher than bollinger high band. Else, return 0.
@@ -539,18 +603,20 @@ def bollinger_hband_indicator(close, n=20, ndev=2, fillna=False):
 
     Args:
         close(pandas.Series): dataset 'Close' column.
-        n(int): n period.
-        ndev(int): n factor standard deviation
+        window(int): n period.
+        window_dev(int): n factor standard deviation
         fillna(bool): if True, fill nan values.
 
     Returns:
         pandas.Series: New feature generated.
     """
-    indicator = BollingerBands(close=close, n=n, ndev=ndev, fillna=fillna)
+    indicator = BollingerBands(
+        close=close, window=window, window_dev=window_dev, fillna=fillna
+    )
     return indicator.bollinger_hband_indicator()
 
 
-def bollinger_lband_indicator(close, n=20, ndev=2, fillna=False):
+def bollinger_lband_indicator(close, window=20, window_dev=2, fillna=False):
     """Bollinger Low Band Indicator
 
     Returns 1, if close is lower than bollinger low band. Else, return 0.
@@ -559,18 +625,22 @@ def bollinger_lband_indicator(close, n=20, ndev=2, fillna=False):
 
     Args:
         close(pandas.Series): dataset 'Close' column.
-        n(int): n period.
-        ndev(int): n factor standard deviation
+        window(int): n period.
+        window_dev(int): n factor standard deviation
         fillna(bool): if True, fill nan values.
 
     Returns:
         pandas.Series: New feature generated.
     """
-    indicator = BollingerBands(close=close, n=n, ndev=ndev, fillna=fillna)
+    indicator = BollingerBands(
+        close=close, window=window, window_dev=window_dev, fillna=fillna
+    )
     return indicator.bollinger_lband_indicator()
 
 
-def keltner_channel_mband(high, low, close, n=20, n_atr=10, fillna=False, ov=True):
+def keltner_channel_mband(
+    high, low, close, window=20, window_atr=10, fillna=False, original_version=True
+):
     """Keltner channel (KC)
 
     Showing a simple moving average line (central) of typical price.
@@ -581,21 +651,31 @@ def keltner_channel_mband(high, low, close, n=20, n_atr=10, fillna=False, ov=Tru
         high(pandas.Series): dataset 'High' column.
         low(pandas.Series): dataset 'Low' column.
         close(pandas.Series): dataset 'Close' column.
-        n(int): n period.
-        n_atr(int): n atr period. Only valid if ov param is False.
+        window(int): n period.
+        window_atr(int): n atr period. Only valid if original_version param is False.
         fillna(bool): if True, fill nan values.
-        ov(bool): if True, use original version as the centerline (SMA of typical price)
+        original_version(bool): if True, use original version as the centerline (SMA of typical price)
             if False, use EMA of close as the centerline. More info:
             https://school.stockcharts.com/doku.php?id=technical_indicators:keltner_channels
 
     Returns:
         pandas.Series: New feature generated.
     """
-    indicator = KeltnerChannel(high=high, low=low, close=close, n=n, n_atr=n_atr, fillna=fillna, ov=ov)
+    indicator = KeltnerChannel(
+        high=high,
+        low=low,
+        close=close,
+        window=window,
+        window_atr=window_atr,
+        fillna=fillna,
+        original_version=original_version,
+    )
     return indicator.keltner_channel_mband()
 
 
-def keltner_channel_hband(high, low, close, n=20, n_atr=10, fillna=False, ov=True):
+def keltner_channel_hband(
+    high, low, close, window=20, window_atr=10, fillna=False, original_version=True
+):
     """Keltner channel (KC)
 
     Showing a simple moving average line (high) of typical price.
@@ -606,21 +686,31 @@ def keltner_channel_hband(high, low, close, n=20, n_atr=10, fillna=False, ov=Tru
         high(pandas.Series): dataset 'High' column.
         low(pandas.Series): dataset 'Low' column.
         close(pandas.Series): dataset 'Close' column.
-        n(int): n period.
-        n_atr(int): n atr period. Only valid if ov param is False.
+        window(int): n period.
+        window_atr(int): n atr period. Only valid if original_version param is False.
         fillna(bool): if True, fill nan values.
-        ov(bool): if True, use original version as the centerline (SMA of typical price)
+        original_version(bool): if True, use original version as the centerline (SMA of typical price)
             if False, use EMA of close as the centerline. More info:
             https://school.stockcharts.com/doku.php?id=technical_indicators:keltner_channels
 
     Returns:
         pandas.Series: New feature generated.
     """
-    indicator = KeltnerChannel(high=high, low=low, close=close, n=n, n_atr=n_atr, fillna=fillna, ov=ov)
+    indicator = KeltnerChannel(
+        high=high,
+        low=low,
+        close=close,
+        window=window,
+        window_atr=window_atr,
+        fillna=fillna,
+        original_version=original_version,
+    )
     return indicator.keltner_channel_hband()
 
 
-def keltner_channel_lband(high, low, close, n=20, n_atr=10, fillna=False, ov=True):
+def keltner_channel_lband(
+    high, low, close, window=20, window_atr=10, fillna=False, original_version=True
+):
     """Keltner channel (KC)
 
     Showing a simple moving average line (low) of typical price.
@@ -631,21 +721,31 @@ def keltner_channel_lband(high, low, close, n=20, n_atr=10, fillna=False, ov=Tru
         high(pandas.Series): dataset 'High' column.
         low(pandas.Series): dataset 'Low' column.
         close(pandas.Series): dataset 'Close' column.
-        n(int): n period.
-        n_atr(int): n atr period. Only valid if ov param is False.
+        window(int): n period.
+        window_atr(int): n atr period. Only valid if original_version param is False.
         fillna(bool): if True, fill nan values.
-        ov(bool): if True, use original version as the centerline (SMA of typical price)
+        original_version(bool): if True, use original version as the centerline (SMA of typical price)
             if False, use EMA of close as the centerline. More info:
             https://school.stockcharts.com/doku.php?id=technical_indicators:keltner_channels
 
     Returns:
         pandas.Series: New feature generated.
     """
-    indicator = KeltnerChannel(high=high, low=low, close=close, n=n, n_atr=n_atr, fillna=fillna, ov=ov)
+    indicator = KeltnerChannel(
+        high=high,
+        low=low,
+        close=close,
+        window=window,
+        window_atr=window_atr,
+        fillna=fillna,
+        original_version=original_version,
+    )
     return indicator.keltner_channel_lband()
 
 
-def keltner_channel_wband(high, low, close, n=20, n_atr=10, fillna=False, ov=True):
+def keltner_channel_wband(
+    high, low, close, window=20, window_atr=10, fillna=False, original_version=True
+):
     """Keltner Channel Band Width
 
     https://school.stockcharts.com/doku.php?id=technical_indicators:keltner_channels
@@ -654,21 +754,31 @@ def keltner_channel_wband(high, low, close, n=20, n_atr=10, fillna=False, ov=Tru
         high(pandas.Series): dataset 'High' column.
         low(pandas.Series): dataset 'Low' column.
         close(pandas.Series): dataset 'Close' column.
-        n(int): n period.
-        n_atr(int): n atr period. Only valid if ov param is False.
+        window(int): n period.
+        window_atr(int): n atr period. Only valid if original_version param is False.
         fillna(bool): if True, fill nan values.
-        ov(bool): if True, use original version as the centerline (SMA of typical price)
+        original_version(bool): if True, use original version as the centerline (SMA of typical price)
             if False, use EMA of close as the centerline. More info:
             https://school.stockcharts.com/doku.php?id=technical_indicators:keltner_channels
 
     Returns:
         pandas.Series: New feature generated.
     """
-    indicator = KeltnerChannel(high=high, low=low, close=close, n=n, n_atr=n_atr, fillna=fillna, ov=ov)
+    indicator = KeltnerChannel(
+        high=high,
+        low=low,
+        close=close,
+        window=window,
+        window_atr=window_atr,
+        fillna=fillna,
+        original_version=original_version,
+    )
     return indicator.keltner_channel_wband()
 
 
-def keltner_channel_pband(high, low, close, n=20, n_atr=10, fillna=False, ov=True):
+def keltner_channel_pband(
+    high, low, close, window=20, window_atr=10, fillna=False, original_version=True
+):
     """Keltner Channel Percentage Band
 
     https://school.stockcharts.com/doku.php?id=technical_indicators:keltner_channels
@@ -677,21 +787,31 @@ def keltner_channel_pband(high, low, close, n=20, n_atr=10, fillna=False, ov=Tru
         high(pandas.Series): dataset 'High' column.
         low(pandas.Series): dataset 'Low' column.
         close(pandas.Series): dataset 'Close' column.
-        n(int): n period.
-        n_atr(int): n atr period. Only valid if ov param is False.
+        window(int): n period.
+        window_atr(int): n atr period. Only valid if original_version param is False.
         fillna(bool): if True, fill nan values.
-        ov(bool): if True, use original version as the centerline (SMA of typical price)
+        original_version(bool): if True, use original version as the centerline (SMA of typical price)
             if False, use EMA of close as the centerline. More info:
             https://school.stockcharts.com/doku.php?id=technical_indicators:keltner_channels
 
     Returns:
         pandas.Series: New feature generated.
     """
-    indicator = KeltnerChannel(high=high, low=low, close=close, n=n, n_atr=n_atr, fillna=fillna, ov=ov)
+    indicator = KeltnerChannel(
+        high=high,
+        low=low,
+        close=close,
+        window=window,
+        window_atr=window_atr,
+        fillna=fillna,
+        original_version=original_version,
+    )
     return indicator.keltner_channel_pband()
 
 
-def keltner_channel_hband_indicator(high, low, close, n=20, n_atr=10, fillna=False, ov=True):
+def keltner_channel_hband_indicator(
+    high, low, close, window=20, window_atr=10, fillna=False, original_version=True
+):
     """Keltner Channel High Band Indicator (KC)
 
     Returns 1, if close is higher than keltner high band channel. Else,
@@ -703,21 +823,31 @@ def keltner_channel_hband_indicator(high, low, close, n=20, n_atr=10, fillna=Fal
         high(pandas.Series): dataset 'High' column.
         low(pandas.Series): dataset 'Low' column.
         close(pandas.Series): dataset 'Close' column.
-        n(int): n period.
-        n_atr(int): n atr period. Only valid if ov param is False.
+        window(int): n period.
+        window_atr(int): n atr period. Only valid if original_version param is False.
         fillna(bool): if True, fill nan values.
-        ov(bool): if True, use original version as the centerline (SMA of typical price)
+        original_version(bool): if True, use original version as the centerline (SMA of typical price)
             if False, use EMA of close as the centerline. More info:
             https://school.stockcharts.com/doku.php?id=technical_indicators:keltner_channels
 
     Returns:
         pandas.Series: New feature generated.
     """
-    indicator = KeltnerChannel(high=high, low=low, close=close, n=n, n_atr=n_atr, fillna=fillna, ov=ov)
+    indicator = KeltnerChannel(
+        high=high,
+        low=low,
+        close=close,
+        window=window,
+        window_atr=window_atr,
+        fillna=fillna,
+        original_version=original_version,
+    )
     return indicator.keltner_channel_hband_indicator()
 
 
-def keltner_channel_lband_indicator(high, low, close, n=20, n_atr=10, fillna=False, ov=True):
+def keltner_channel_lband_indicator(
+    high, low, close, window=20, window_atr=10, fillna=False, original_version=True
+):
     """Keltner Channel Low Band Indicator (KC)
 
     Returns 1, if close is lower than keltner low band channel. Else, return 0.
@@ -728,21 +858,29 @@ def keltner_channel_lband_indicator(high, low, close, n=20, n_atr=10, fillna=Fal
         high(pandas.Series): dataset 'High' column.
         low(pandas.Series): dataset 'Low' column.
         close(pandas.Series): dataset 'Close' column.
-        n(int): n period.
-        n_atr(int): n atr period. Only valid if ov param is False.
+        window(int): n period.
+        window_atr(int): n atr period. Only valid if original_version param is False.
         fillna(bool): if True, fill nan values.
-        ov(bool): if True, use original version as the centerline (SMA of typical price)
+        original_version(bool): if True, use original version as the centerline (SMA of typical price)
             if False, use EMA of close as the centerline. More info:
             https://school.stockcharts.com/doku.php?id=technical_indicators:keltner_channels
 
     Returns:
         pandas.Series: New feature generated.
     """
-    indicator = KeltnerChannel(high=high, low=low, close=close, n=n, n_atr=n_atr, fillna=fillna, ov=ov)
+    indicator = KeltnerChannel(
+        high=high,
+        low=low,
+        close=close,
+        window=window,
+        window_atr=window_atr,
+        fillna=fillna,
+        original_version=original_version,
+    )
     return indicator.keltner_channel_lband_indicator()
 
 
-def donchian_channel_hband(high, low, close, n=20, offset=0, fillna=False):
+def donchian_channel_hband(high, low, close, window=20, offset=0, fillna=False):
     """Donchian Channel High Band (DC)
 
     The upper band marks the highest price of an issue for n periods.
@@ -753,17 +891,19 @@ def donchian_channel_hband(high, low, close, n=20, offset=0, fillna=False):
         high(pandas.Series): dataset 'High' column.
         low(pandas.Series): dataset 'Low' column.
         close(pandas.Series): dataset 'Close' column.
-        n(int): n period.
+        window(int): n period.
         fillna(bool): if True, fill nan values.
 
     Returns:
         pandas.Series: New feature generated.
     """
-    indicator = DonchianChannel(high=high, low=low, close=close, n=n, offset=offset, fillna=fillna)
+    indicator = DonchianChannel(
+        high=high, low=low, close=close, window=window, offset=offset, fillna=fillna
+    )
     return indicator.donchian_channel_hband()
 
 
-def donchian_channel_lband(high, low, close, n=20, offset=0, fillna=False):
+def donchian_channel_lband(high, low, close, window=20, offset=0, fillna=False):
     """Donchian Channel Low Band (DC)
 
     The lower band marks the lowest price for n periods.
@@ -774,17 +914,19 @@ def donchian_channel_lband(high, low, close, n=20, offset=0, fillna=False):
         high(pandas.Series): dataset 'High' column.
         low(pandas.Series): dataset 'Low' column.
         close(pandas.Series): dataset 'Close' column.
-        n(int): n period.
+        window(int): n period.
         fillna(bool): if True, fill nan values.
 
     Returns:
         pandas.Series: New feature generated.
     """
-    indicator = DonchianChannel(high=high, low=low, close=close, n=n, offset=offset, fillna=fillna)
+    indicator = DonchianChannel(
+        high=high, low=low, close=close, window=window, offset=offset, fillna=fillna
+    )
     return indicator.donchian_channel_lband()
 
 
-def donchian_channel_mband(high, low, close, n=10, offset=0, fillna=False):
+def donchian_channel_mband(high, low, close, window=10, offset=0, fillna=False):
     """Donchian Channel Middle Band (DC)
 
     https://www.investopedia.com/terms/d/donchianchannels.asp
@@ -793,17 +935,19 @@ def donchian_channel_mband(high, low, close, n=10, offset=0, fillna=False):
         high(pandas.Series): dataset 'High' column.
         low(pandas.Series): dataset 'Low' column.
         close(pandas.Series): dataset 'Close' column.
-        n(int): n period.
+        window(int): n period.
         fillna(bool): if True, fill nan values.
 
     Returns:
         pandas.Series: New feature generated.
     """
-    indicator = DonchianChannel(high=high, low=low, close=close, n=n, offset=offset, fillna=fillna)
+    indicator = DonchianChannel(
+        high=high, low=low, close=close, window=window, offset=offset, fillna=fillna
+    )
     return indicator.donchian_channel_mband()
 
 
-def donchian_channel_wband(high, low, close, n=10, offset=0, fillna=False):
+def donchian_channel_wband(high, low, close, window=10, offset=0, fillna=False):
     """Donchian Channel Band Width (DC)
 
     https://www.investopedia.com/terms/d/donchianchannels.asp
@@ -812,17 +956,19 @@ def donchian_channel_wband(high, low, close, n=10, offset=0, fillna=False):
         high(pandas.Series): dataset 'High' column.
         low(pandas.Series): dataset 'Low' column.
         close(pandas.Series): dataset 'Close' column.
-        n(int): n period.
+        window(int): n period.
         fillna(bool): if True, fill nan values.
 
     Returns:
         pandas.Series: New feature generated.
     """
-    indicator = DonchianChannel(high=high, low=low, close=close, n=n, offset=offset, fillna=fillna)
+    indicator = DonchianChannel(
+        high=high, low=low, close=close, window=window, offset=offset, fillna=fillna
+    )
     return indicator.donchian_channel_wband()
 
 
-def donchian_channel_pband(high, low, close, n=10, offset=0, fillna=False):
+def donchian_channel_pband(high, low, close, window=10, offset=0, fillna=False):
     """Donchian Channel Percentage Band (DC)
 
     https://www.investopedia.com/terms/d/donchianchannels.asp
@@ -831,28 +977,30 @@ def donchian_channel_pband(high, low, close, n=10, offset=0, fillna=False):
         high(pandas.Series): dataset 'High' column.
         low(pandas.Series): dataset 'Low' column.
         close(pandas.Series): dataset 'Close' column.
-        n(int): n period.
+        window(int): n period.
         fillna(bool): if True, fill nan values.
 
     Returns:
         pandas.Series: New feature generated.
     """
-    indicator = DonchianChannel(high=high, low=low, close=close, n=n, offset=offset, fillna=fillna)
+    indicator = DonchianChannel(
+        high=high, low=low, close=close, window=window, offset=offset, fillna=fillna
+    )
     return indicator.donchian_channel_pband()
 
 
-def ulcer_index(close, n=14, fillna=False):
+def ulcer_index(close, window=14, fillna=False):
     """Ulcer Index
 
     https://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:ulcer_index
 
     Args:
         close(pandas.Series): dataset 'Close' column.
-        n(int): n period.
+        window(int): n period.
         fillna(bool): if True, fill nan values.
 
     Returns:
             pandas.Series: New feature generated.
     """
-    indicator = UlcerIndex(close=close, n=n, fillna=fillna)
+    indicator = UlcerIndex(close=close, window=window, fillna=fillna)
     return indicator.ulcer_index()
