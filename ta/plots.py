@@ -1,7 +1,7 @@
-import plotly.graph_objects as go
-from plotly.subplots import make_subplots
 import pandas as pd
+import plotly.graph_objects as go
 import streamlit as st
+from plotly.subplots import make_subplots
 
 
 class PlotlyPlot:
@@ -98,7 +98,6 @@ class PlotlyPlot:
 
         Add the indicator plot.
         Args:
-            time(pandas.Series): dataset 'Timestamp' column.
             ind_data(pandas.Series): dataset indicator column.
             name(str): name of the indicator
             row(int): position of the plot
@@ -110,7 +109,7 @@ class PlotlyPlot:
             name=name,
             showlegend=showlegend), row=row, col=1)
 
-    def addHorizontalLine(self, y, name, row, showlegend=True):
+    def addHorizontalLine(self, y, name, row, showlegend=True, color='black'):
         """Add horizontal line
 
         Add horizontal line to the plot
@@ -119,13 +118,35 @@ class PlotlyPlot:
             name(str): name of the horizontal line
             row(int): position of the horizontal line
             showlegend(bool): if True, show the legend
+            color(str): color of the horizontal line
         """
         self._fig.add_trace(go.Scatter(
             x=self._time,
             y=[y] * len(self._time),
             name=name,
-            line=dict(dash='dash', width=0.7),
+            line=dict(dash='dash', width=0.7, color=color),
             showlegend=showlegend), row=row, col=1)
+
+    def addHorizontalArea(self, range, row, color="red"):
+        """Add horizontal area
+
+        Add horizontal area to the plot
+        Args:
+            range(tuple): y range of the horizontal area
+            row(int): position of the horizontal area
+            color(str): color of the horizontal area
+        """
+        self._fig.add_trace(go.Scatter(
+            x=self._time,
+            y=[range[1]] * len(self._time),
+            line=dict(width=0, color=color),
+            showlegend=False), row=row, col=1)
+        self._fig.add_trace(go.Scatter(
+            x=self._time,
+            y=[range[0]] * len(self._time),
+            line=dict(width=0, color=color),
+            fill='tonexty',
+            showlegend=False), row=row, col=1)
 
     def show(self):
         """show
