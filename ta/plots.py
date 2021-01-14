@@ -1,6 +1,6 @@
 import pandas as pd
-import plotly.graph_objects as go
 import streamlit as st
+import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
 
@@ -93,7 +93,7 @@ class PlotlyPlot:
                 )
         self._fig.add_trace(data, row=1, col=1)
 
-    def addLine(self, ind_data, name, row, showlegend=True):
+    def addLine(self, ind_data, name, row, showlegend=True, color='black'):
         """Add indicator to the plot.
 
         Add the indicator plot.
@@ -102,11 +102,13 @@ class PlotlyPlot:
             name(str): name of the indicator
             row(int): position of the plot
             showlegend(bool): if True, show the legend
+            color(str): color of the horizontal line
         """
         self._fig.add_trace(go.Scatter(
             x=self._time,
             y=ind_data,
             name=name,
+            line=dict(color=color),
             showlegend=showlegend), row=row, col=1)
 
     def addHorizontalLine(self, y, name, row, showlegend=True, color='black'):
