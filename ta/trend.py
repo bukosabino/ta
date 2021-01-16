@@ -1231,6 +1231,57 @@ class AlligatorIndicator(IndicatorMixin):
         return pd.Series(alligator_lips_series, name=f"alligator_jaw_{self._window_lips}")
 
 
+class FractalsIndicator(IndicatorMixin):
+    """Williams Fractals Indicator
+
+    The Fractals indicator identify bullish and bearish turning point
+    by checking patterns
+
+    https://www.investopedia.com/articles/trading/06/fractals.asp
+
+    Args:
+        high(pandas.Series): dataset 'High' column.
+        low(pandas.Series): dataset 'Low' column.
+        window(int): n period jaw length.
+        fillna(bool): if True, fill nan values.
+    """
+    def __init__(self,
+                 high: pd.Series,
+                 low: pd.Series,
+                 window: int = 2,
+                 fillna: bool = False):
+        self._high = high
+        self._low = low
+        self._window = window
+        self._fillna = fillna
+        self._run()
+
+    def _run(self):
+        _window_size = 2 * self._window + 1
+        self._bear_fractal = self._high.rolling(_window_size, center=True)\
+                                       .apply(lambda x: -1 if max(x) <= x[self._window] else 0, raw=True)
+        self._bull_fractal = self._low.rolling(_window_size, center=True)\
+                                      .apply(lambda x: 1 if min(x) >= x[self._window] else 0, raw=True)
+
+    def fractal_bearish(self) -> pd.Series:
+        """Bearish fractal
+
+        Returns:
+            pandas.Series: New feature generated.
+        """
+        bear_fractal = self._check_fillna(self._bear_fractal, value=0)
+        return pd.Series(bear_fractal, name=f"bear_fractal_{self._window}")
+
+    def fractal_bullish(self) -> pd.Series:
+        """Bullish fractal
+
+        Returns:
+            pandas.Series: New feature generated.
+        """
+        bull_fractal = self._check_fillna(self._bull_fractal, value=0)
+        return pd.Series(bull_fractal, name=f"bear_fractal_{self._window}")
+
+
 def ema_indicator(close, window=12, fillna=False):
     """Exponential Moving Average (EMA)
 
@@ -2103,3 +2154,49 @@ def alligator_lips_indicator(high,
         fillna=fillna
     )
     return indicator.alligator_lips()
+
+
+def fractal_bearish_indicator(high, low, window=2, fillna=False):
+    """Williams Fractals Bearish Indicator
+
+    The Fractals indicator identify bullish and bearish turning point
+    by checking patterns
+
+    https://www.investopedia.com/articles/trading/06/fractals.asp
+
+    Args:
+        high(pandas.Series): dataset 'High' column.
+        low(pandas.Series): dataset 'Low' column.
+        window(int): n period jaw length.
+        fillna(bool): if True, fill nan values.
+    """
+    indicator = FractalsIndicator(
+        high=high,
+        low=low,
+        window=window,
+        fillna=fillna
+    )
+    return indicator.fractal_bearish()
+
+
+def fractal_bullish_indicator(high, low, window=2, fillna=False):
+    """Williams Fractals Bullish Indicator
+
+    The Fractals indicator identify bullish and bearish turning point
+    by checking patterns
+
+    https://www.investopedia.com/articles/trading/06/fractals.asp
+
+    Args:
+        high(pandas.Series): dataset 'High' column.
+        low(pandas.Series): dataset 'Low' column.
+        window(int): n period jaw length.
+        fillna(bool): if True, fill nan values.
+    """
+    indicator = FractalsIndicator(
+        high=high,
+        low=low,
+        window=window,
+        fillna=fillna
+    )
+    return indicator.fractal_bullish()
