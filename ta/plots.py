@@ -91,6 +91,14 @@ class PlotlyPlot:
                     name="OHLC",
                     showlegend=self._showlegend
                 )
+        elif self._chart_type == 'Area':
+            data = go.Scatter(
+                    x=self._time,
+                    y=self._close,
+                    name="Close",
+                    showlegend=self._showlegend,
+                    fill='tozeroy'
+            )
         self._fig.add_trace(data, row=1, col=1)
 
     def addLine(self, ind_data, name, row, showlegend=True, color='black'):
