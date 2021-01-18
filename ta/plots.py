@@ -1,6 +1,8 @@
 import pandas as pd
 import streamlit as st
 import plotly.graph_objects as go
+from datetime import datetime
+from datetime import timedelta, date
 from plotly.subplots import make_subplots
 
 
@@ -158,11 +160,27 @@ class PlotlyPlot:
             fill='tonexty',
             showlegend=False), row=row, col=1)
 
+    def _getExcludeDates(self):
+        startDate = self._time.iloc[0]
+        endDate = self._time.iloc[-1]
+        currentDate = startDate
+        dateArray = []
+        index = 0
+        while currentDate <= endDate:
+            if currentDate != self._time.iloc[index]:
+                dateArray.append(currentDate)
+            else:
+                index += 1
+            currentDate += timedelta(days=1)
+        return dateArray
+
     def show(self):
         """show
 
         Show the plots
         """
+        excludeDates = self._getExcludeDates()
+        excludeDates = [i.strftime("%Y-%m-%d") for i in excludeDates]
         self._fig.update_layout(
             autosize=True,
             width=700,
@@ -178,6 +196,11 @@ class PlotlyPlot:
         )
         self._fig.update_layout(
             xaxis_rangeslider_visible=self._rangeslider
+        )
+        self._fig.update_xaxes(
+            rangebreaks=[
+                dict(values=excludeDates)
+            ]
         )
         self._fig.show()
 
@@ -234,6 +257,8 @@ class StreamlitPlot(PlotlyPlot):
 
         Show the plots
         """
+        excludeDates = self._getExcludeDates()
+        excludeDates = [i.strftime("%Y-%m-%d") for i in excludeDates]
         self._fig.update_layout(
             autosize=True,
             width=700,
@@ -248,6 +273,11 @@ class StreamlitPlot(PlotlyPlot):
             paper_bgcolor="LightSteelBlue",
         )
         self._fig.update_layout(
-            xaxis_rangeslider_visible=self._rangeslider
+            xaxis_rangeslider_visible=self._rangeslider,
+        )
+        self._fig.update_xaxes(
+            rangebreaks=[
+                dict(values=excludeDates)
+            ]
         )
         st.plotly_chart(self._fig)
