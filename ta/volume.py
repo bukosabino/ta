@@ -453,7 +453,7 @@ class VolumeWeightedAveragePrice(IndicatorMixin):
         # 1 typical price
         self._typical_price = (
             self._custom_typical_price
-            if self._custom_typical_price
+            if self._custom_typical_price is not None
             else (self._high + self._low + self._close) / 3.0
         )
 
@@ -497,14 +497,14 @@ class VolumeWeightedAveragePrice(IndicatorMixin):
         if not bands:
             bands = [2, -2]
 
-        volume_sqr_vwap = self._volume * (self._typical_price ** 2.0)
+        volume_sqr_vwap = self._volume * self._typical_price.pow(2)
         min_periods = 0 if self._fillna else self._window
         volume_sqr_vwap_sum = volume_sqr_vwap.rolling(
             self._window, min_periods=min_periods
         ).sum()
-        sqr_price = volume_sqr_vwap_sum / self._total_volume - (self.vwap ** 2.0)
+        sqr_price = volume_sqr_vwap_sum / self._total_volume - self.vwap.pow(2)
         sqr_price[sqr_price < 0] = 0.0
-        deviation = sqr_price ** (1 / 2.0)
+        deviation = sqr_price.pow(1 / 2.0)
 
         band_series = [self.vwap + n * deviation for n in bands]
         band_series = [self._check_fillna(band) for band in band_series]
