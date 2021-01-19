@@ -503,15 +503,15 @@ class VolumeWeightedAveragePrice(IndicatorMixin):
             self._window, min_periods=min_periods
         ).sum()
         sqr_price = volume_sqr_vwap_sum / self._total_volume - self.vwap.pow(2)
-        sqr_price[sqr_price < 0] = 0.0
+        sqr_price = sqr_price.clip(0.0)
         deviation = sqr_price.pow(1 / 2.0)
 
-        band_series = [self.vwap + n * deviation for n in bands]
-        band_series = [self._check_fillna(band) for band in band_series]
-        return [
-            pd.Series(band, name=f"vwap_{self._window}_{bands[i]}stdev")
+        band_series = [self._check_fillna(self.vwap + n * deviation) for n in bands]
+        result = [
+            band.rename(f"vwap_{self._window}_{bands[i]}stdev")
             for i, band in enumerate(band_series)
         ]
+        return result
 
 
 def acc_dist_index(high, low, close, volume, fillna=False):
