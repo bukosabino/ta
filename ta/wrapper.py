@@ -6,7 +6,6 @@
 """
 
 import pandas as pd
-
 from ta.momentum import (
     AwesomeOscillatorIndicator,
     KAMAIndicator,

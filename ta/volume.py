@@ -6,9 +6,10 @@
 
 """
 
+from typing import List
+
 import numpy as np
 import pandas as pd
-
 from ta.utils import IndicatorMixin, _ema
 
 
@@ -423,6 +424,7 @@ class VolumeWeightedAveragePrice(IndicatorMixin):
         volume(pandas.Series): dataset 'Volume' column.
         window(int): n period.
         fillna(bool): if True, fill nan values.
+        custom_typical_price(pandas.Series): custom typical price.
 
     Returns:
         pandas.Series: New feature generated.
@@ -436,6 +438,7 @@ class VolumeWeightedAveragePrice(IndicatorMixin):
         volume: pd.Series,
         window: int = 14,
         fillna: bool = False,
+        custom_typical_price: pd.Series = None,
     ):
         self._high = high
         self._low = low
@@ -443,14 +446,19 @@ class VolumeWeightedAveragePrice(IndicatorMixin):
         self._volume = volume
         self._window = window
         self._fillna = fillna
+        self._custom_typical_price = custom_typical_price
         self._run()
 
     def _run(self):
         # 1 typical price
-        typical_price = (self._high + self._low + self._close) / 3.0
+        self._typical_price = (
+            self._custom_typical_price
+            if self._custom_typical_price is not None
+            else (self._high + self._low + self._close) / 3.0
+        )
 
         # 2 typical price * volume
-        typical_price_volume = typical_price * self._volume
+        typical_price_volume = self._typical_price * self._volume
 
         # 3 total price * volume
         min_periods = 0 if self._fillna else self._window
@@ -459,9 +467,11 @@ class VolumeWeightedAveragePrice(IndicatorMixin):
         ).sum()
 
         # 4 total volume
-        total_volume = self._volume.rolling(self._window, min_periods=min_periods).sum()
+        self._total_volume = self._volume.rolling(
+            self._window, min_periods=min_periods
+        ).sum()
 
-        self.vwap = total_pv / total_volume
+        self.vwap = total_pv / self._total_volume
 
     def volume_weighted_average_price(self) -> pd.Series:
         """Volume Weighted Average Price (VWAP)
@@ -471,6 +481,37 @@ class VolumeWeightedAveragePrice(IndicatorMixin):
         """
         vwap = self._check_fillna(self.vwap)
         return pd.Series(vwap, name=f"vwap_{self._window}")
+
+    def stdev_bands(
+        self,
+        bands: list,
+    ) -> List[pd.Series]:
+        """VWAP Standard Deviation Bands
+
+        Args:
+            bands(Sequence): list of N's where N denotes deviations count.
+
+        Returns:
+            Sequence(pandas.Series): list of new features.
+        """
+        if not bands:
+            bands = [2, -2]
+
+        volume_sqr_vwap = self._volume * self._typical_price.pow(2)
+        min_periods = 0 if self._fillna else self._window
+        volume_sqr_vwap_sum = volume_sqr_vwap.rolling(
+            self._window, min_periods=min_periods
+        ).sum()
+        sqr_price = volume_sqr_vwap_sum / self._total_volume - self.vwap.pow(2)
+        sqr_price = sqr_price.clip(0.0)
+        deviation = sqr_price.pow(1 / 2.0)
+
+        band_series = [self._check_fillna(self.vwap + n * deviation) for n in bands]
+        result = [
+            band.rename(f"vwap_{self._window}_{bands[i]}stdev")
+            for i, band in enumerate(band_series)
+        ]
+        return result
 
 
 def acc_dist_index(high, low, close, volume, fillna=False):
@@ -711,6 +752,7 @@ def volume_weighted_average_price(
     volume: pd.Series,
     window: int = 14,
     fillna: bool = False,
+    custom_typical_price: pd.Series = None,
 ):
     """Volume Weighted Average Price (VWAP)
 
@@ -729,12 +771,19 @@ def volume_weighted_average_price(
         volume(pandas.Series): dataset 'Volume' column.
         window(int): n period.
         fillna(bool): if True, fill nan values.
+        custom_typical_price(pandas.Series): custom typical price.
 
     Returns:
         pandas.Series: New feature generated.
     """
 
     indicator = VolumeWeightedAveragePrice(
-        high=high, low=low, close=close, volume=volume, window=window, fillna=fillna
+        high=high,
+        low=low,
+        close=close,
+        volume=volume,
+        window=window,
+        fillna=fillna,
+        custom_typical_price=custom_typical_price,
     )
     return indicator.volume_weighted_average_price()
