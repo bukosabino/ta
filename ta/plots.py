@@ -1,8 +1,7 @@
 import pandas as pd
 import streamlit as st
 import plotly.graph_objects as go
-from datetime import datetime
-from datetime import timedelta, date
+from datetime import timedelta
 from plotly.subplots import make_subplots
 
 
@@ -165,13 +164,12 @@ class PlotlyPlot:
         endDate = self._time.iloc[-1]
         currentDate = startDate
         dateArray = []
-        index = 0
         while currentDate <= endDate:
-            if currentDate != self._time.iloc[index]:
-                dateArray.append(currentDate)
-            else:
-                index += 1
+            dateArray.append(currentDate)
             currentDate += timedelta(days=1)
+        dateArray = [i.strftime('%Y-%m-%d') for i in dateArray]
+        currentDates = self._time.apply(lambda x: x.strftime('%Y-%m-%d')).values
+        dateArray = [i for i in dateArray if i not in currentDates]
         return dateArray
 
     def show(self):
@@ -180,7 +178,6 @@ class PlotlyPlot:
         Show the plots
         """
         excludeDates = self._getExcludeDates()
-        excludeDates = [i.strftime("%Y-%m-%d") for i in excludeDates]
         self._fig.update_layout(
             autosize=True,
             width=700,
@@ -258,7 +255,6 @@ class StreamlitPlot(PlotlyPlot):
         Show the plots
         """
         excludeDates = self._getExcludeDates()
-        excludeDates = [i.strftime("%Y-%m-%d") for i in excludeDates]
         self._fig.update_layout(
             autosize=True,
             width=700,
