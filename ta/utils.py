@@ -128,9 +128,9 @@ def numba_sma_fillna(arr, window_arr, out):
         out[i] = asum / count
 
 
-# the @guvectorize decorator does not work with pylint
-# pylint: disable=no-value-for-parameter
 def _sma(series: pd.Series, periods: int, fillna: bool = False) -> pd.Series:
+    # the @guvectorize decorator does not work with pylint
+    # pylint: disable=locally-disabled, useless-suppression, no-value-for-parameter
     """Helperfunction to use the the fill na functionality, using the two numba guvectorized functions
 
     Args:
