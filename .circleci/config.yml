@@ -14,6 +14,7 @@ jobs:
             python3 -m venv venv
             . venv/bin/activate
             pip install -r requirements-test.txt
+            pip install pycodestyle
       - run:
           name: Run linter
           command: |
