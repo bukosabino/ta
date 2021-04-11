@@ -113,9 +113,13 @@ df = pd.read_csv('ta/tests/data/datas.csv', sep=',')
 # Clean NaN values
 df = dropna(df)
 
-# Add all ta features
-df = add_all_ta_features(
-    df, open="Open", high="High", low="Low", close="Close", volume="Volume_BTC")
+# Add all TA features
+# Price data will be read from columns named "Open", "High", "Low", "Close", and "Volume" by default
+df = add_all_ta_features(df)
+
+# Add all TA features
+# Read price data from specified columns
+df = add_all_ta_features(df, open="FirstPrice", high="HighestPrice", low="LowestPrice", close="LastPrice", volume="TradeVolume")
 ```
 
 
