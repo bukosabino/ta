@@ -8,7 +8,7 @@
 import numpy as np
 import pandas as pd
 
-from ta.utils import IndicatorMixin, _ema
+from ta.utils import IndicatorMixin, _ema, _dema
 
 
 class RSIIndicator(IndicatorMixin):
@@ -689,6 +689,78 @@ class PercentagePriceOscillator(IndicatorMixin):
             ppo_hist_series, name=f"PPO_hist_{self._window_fast}_{self._window_slow}"
         )
 
+
+class ZeroLagPercentagePriceOscillator(IndicatorMixin):
+    """
+    The Percentage Price Oscillator (PPO) is a momentum oscillator that measures
+    the difference between two moving averages as a percentage of the larger moving average.
+
+    https://school.stockcharts.com/doku.php?id=technical_indicators:price_oscillators_ppo
+
+    Args:
+        close(pandas.Series): dataset 'Price' column.
+        window_slow(int): n period long-term.
+        window_fast(int): n period short-term.
+        window_sign(int): n period to signal.
+        fillna(bool): if True, fill nan values.
+    """
+
+    def __init__(
+        self,
+        close: pd.Series,
+        window_slow: int = 26,
+        window_fast: int = 12,
+        window_sign: int = 9,
+        fillna: bool = False,
+    ):
+        self._close = close
+        self._window_slow = window_slow
+        self._window_fast = window_fast
+        self._window_sign = window_sign
+        self._fillna = fillna
+        self._run()
+
+    def _run(self):
+        _demafast = _dema(self._close, self._window_fast, self._fillna)
+        _demaslow = _dema(self._close, self._window_slow, self._fillna)
+        self._ppo = ((_demafast - _demaslow) / _demaslow) * 100
+        self._ppo_signal = _dema(self._ppo, self._window_sign, self._fillna)
+        self._ppo_hist = self._ppo - self._ppo_signal
+
+    def ppo(self):
+        """Percentage Price Oscillator Line
+
+        Returns:
+            pandas.Series: New feature generated.
+        """
+        ppo_series = self._check_fillna(self._ppo, value=0)
+        return pd.Series(
+            ppo_series, name=f"ZeroLagPPO_{self._window_fast}_{self._window_slow}"
+        )
+
+    def ppo_signal(self):
+        """Percentage Price Oscillator Signal Line
+
+        Returns:
+            pandas.Series: New feature generated.
+        """
+
+        ppo_signal_series = self._check_fillna(self._ppo_signal, value=0)
+        return pd.Series(
+            ppo_signal_series, name=f"ZeroLagPPO_sign_{self._window_fast}_{self._window_slow}"
+        )
+
+    def ppo_hist(self):
+        """Percentage Price Oscillator Histogram
+
+        Returns:
+            pandas.Series: New feature generated.
+        """
+
+        ppo_hist_series = self._check_fillna(self._ppo_hist, value=0)
+        return pd.Series(
+            ppo_hist_series, name=f"ZeroLagPPO_hist_{self._window_fast}_{self._window_slow}"
+        )
 
 class PercentageVolumeOscillator(IndicatorMixin):
     """
