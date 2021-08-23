@@ -1,5 +1,5 @@
 -r requirements.txt
 
 # examples to use
-jupyterlab==1.2.3
+jupyterlab==1.2.21
 matplotlib==3.1.1
