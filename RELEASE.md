@@ -1,5 +1,6 @@
 | Date | Version | Comment |
 | ------------- | ------------- | ------------- |
+| 2021/11/18 | 0.8.0 | Add option to get just the most efficient indicators (vectorized), also solved some security dependency |
 | 2020/11/27 | 0.7.0 | Cleaning code (prospector, black) https://github.com/bukosabino/ta/pull/209 |
 | 2020/11/17 | 0.6.1 | Fixing Wrapper https://github.com/bukosabino/ta/pull/204 |
 | 2020/11/09 | 0.6.0 | Adding new indicators (Ulcer Index, Weighted Moving Average, Schaff Trend Cycle, Stochastic RSI, Percentage Price Oscillator, Percentage Volume Oscillator) https://github.com/bukosabino/ta/pull/167; Update wrapper https://github.com/bukosabino/ta/pull/166 |

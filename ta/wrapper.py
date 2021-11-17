@@ -69,6 +69,7 @@ def add_volume_ta(
     volume: str,
     fillna: bool = False,
     colprefix: str = "",
+    vectorized: bool = False,
 ) -> pd.DataFrame:
     """Add volume technical analysis features to dataframe.
 
@@ -80,6 +81,7 @@ def add_volume_ta(
         volume (str): Name of 'volume' column.
         fillna(bool): if True, fill nan values.
         colprefix(str): Prefix column names inserted
+        vectorized(bool): if True, use only vectorized functions indicators
 
     Returns:
         pandas.core.frame.DataFrame: Dataframe with new features.
@@ -105,16 +107,6 @@ def add_volume_ta(
         close=df[close], volume=df[volume], window=13, fillna=fillna
     ).force_index()
 
-    # Money Flow Indicator
-    df[f"{colprefix}volume_mfi"] = MFIIndicator(
-        high=df[high],
-        low=df[low],
-        close=df[close],
-        volume=df[volume],
-        window=14,
-        fillna=fillna,
-    ).money_flow_index()
-
     # Ease of Movement
     indicator_eom = EaseOfMovementIndicator(
         high=df[high], low=df[low], volume=df[volume], window=14, fillna=fillna
@@ -127,11 +119,6 @@ def add_volume_ta(
         close=df[close], volume=df[volume], fillna=fillna
     ).volume_price_trend()
 
-    # Negative Volume Index
-    df[f"{colprefix}volume_nvi"] = NegativeVolumeIndexIndicator(
-        close=df[close], volume=df[volume], fillna=fillna
-    ).negative_volume_index()
-
     # Volume Weighted Average Price
     df[f"{colprefix}volume_vwap"] = VolumeWeightedAveragePrice(
         high=df[high],
@@ -141,6 +128,22 @@ def add_volume_ta(
         window=14,
         fillna=fillna,
     ).volume_weighted_average_price()
+
+    if not vectorized:
+        # Money Flow Indicator
+        df[f"{colprefix}volume_mfi"] = MFIIndicator(
+            high=df[high],
+            low=df[low],
+            close=df[close],
+            volume=df[volume],
+            window=14,
+            fillna=fillna,
+        ).money_flow_index()
+
+        # Negative Volume Index
+        df[f"{colprefix}volume_nvi"] = NegativeVolumeIndexIndicator(
+            close=df[close], volume=df[volume], fillna=fillna
+        ).negative_volume_index()
 
     return df
 
@@ -152,6 +155,7 @@ def add_volatility_ta(
     close: str,
     fillna: bool = False,
     colprefix: str = "",
+    vectorized: bool = False,
 ) -> pd.DataFrame:
     """Add volatility technical analysis features to dataframe.
 
@@ -162,15 +166,11 @@ def add_volatility_ta(
         close (str): Name of 'close' column.
         fillna(bool): if True, fill nan values.
         colprefix(str): Prefix column names inserted
+        vectorized(bool): if True, use only vectorized functions indicators
 
     Returns:
         pandas.core.frame.DataFrame: Dataframe with new features.
     """
-
-    # Average True Range
-    df[f"{colprefix}volatility_atr"] = AverageTrueRange(
-        close=df[close], high=df[high], low=df[low], window=10, fillna=fillna
-    ).average_true_range()
 
     # Bollinger Bands
     indicator_bb = BollingerBands(
@@ -206,10 +206,16 @@ def add_volatility_ta(
     df[f"{colprefix}volatility_dcw"] = indicator_dc.donchian_channel_wband()
     df[f"{colprefix}volatility_dcp"] = indicator_dc.donchian_channel_pband()
 
-    # Ulcer Index
-    df[f"{colprefix}volatility_ui"] = UlcerIndex(
-        close=df[close], window=14, fillna=fillna
-    ).ulcer_index()
+    if not vectorized:
+        # Average True Range
+        df[f"{colprefix}volatility_atr"] = AverageTrueRange(
+            close=df[close], high=df[high], low=df[low], window=10, fillna=fillna
+        ).average_true_range()
+
+        # Ulcer Index
+        df[f"{colprefix}volatility_ui"] = UlcerIndex(
+            close=df[close], window=14, fillna=fillna
+        ).ulcer_index()
 
     return df
 
@@ -221,6 +227,7 @@ def add_trend_ta(
     close: str,
     fillna: bool = False,
     colprefix: str = "",
+    vectorized: bool = False,
 ) -> pd.DataFrame:
     """Add trend technical analysis features to dataframe.
 
@@ -231,6 +238,7 @@ def add_trend_ta(
         close (str): Name of 'close' column.
         fillna(bool): if True, fill nan values.
         colprefix(str): Prefix column names inserted
+        vectorized(bool): if True, use only vectorized functions indicators
 
     Returns:
         pandas.core.frame.DataFrame: Dataframe with new features.
@@ -260,14 +268,6 @@ def add_trend_ta(
         close=df[close], window=26, fillna=fillna
     ).ema_indicator()
 
-    # Average Directional Movement Index (ADX)
-    indicator_adx = ADXIndicator(
-        high=df[high], low=df[low], close=df[close], window=14, fillna=fillna
-    )
-    df[f"{colprefix}trend_adx"] = indicator_adx.adx()
-    df[f"{colprefix}trend_adx_pos"] = indicator_adx.adx_pos()
-    df[f"{colprefix}trend_adx_neg"] = indicator_adx.adx_neg()
-
     # Vortex Indicator
     indicator_vortex = VortexIndicator(
         high=df[high], low=df[low], close=df[close], window=14, fillna=fillna
@@ -285,16 +285,6 @@ def add_trend_ta(
     df[f"{colprefix}trend_mass_index"] = MassIndex(
         high=df[high], low=df[low], window_fast=9, window_slow=25, fillna=fillna
     ).mass_index()
-
-    # CCI Indicator
-    df[f"{colprefix}trend_cci"] = CCIIndicator(
-        high=df[high],
-        low=df[low],
-        close=df[close],
-        window=20,
-        constant=0.015,
-        fillna=fillna,
-    ).cci()
 
     # DPO Indicator
     df[f"{colprefix}trend_dpo"] = DPOIndicator(
@@ -333,38 +323,6 @@ def add_trend_ta(
     df[f"{colprefix}trend_ichimoku_base"] = indicator_ichi.ichimoku_base_line()
     df[f"{colprefix}trend_ichimoku_a"] = indicator_ichi.ichimoku_a()
     df[f"{colprefix}trend_ichimoku_b"] = indicator_ichi.ichimoku_b()
-    indicator_ichi_visual = IchimokuIndicator(
-        high=df[high],
-        low=df[low],
-        window1=9,
-        window2=26,
-        window3=52,
-        visual=True,
-        fillna=fillna,
-    )
-    df[f"{colprefix}trend_visual_ichimoku_a"] = indicator_ichi_visual.ichimoku_a()
-    df[f"{colprefix}trend_visual_ichimoku_b"] = indicator_ichi_visual.ichimoku_b()
-
-    # Aroon Indicator
-    indicator_aroon = AroonIndicator(close=df[close], window=25, fillna=fillna)
-    df[f"{colprefix}trend_aroon_up"] = indicator_aroon.aroon_up()
-    df[f"{colprefix}trend_aroon_down"] = indicator_aroon.aroon_down()
-    df[f"{colprefix}trend_aroon_ind"] = indicator_aroon.aroon_indicator()
-
-    # PSAR Indicator
-    indicator_psar = PSARIndicator(
-        high=df[high],
-        low=df[low],
-        close=df[close],
-        step=0.02,
-        max_step=0.20,
-        fillna=fillna,
-    )
-    # df[f'{colprefix}trend_psar'] = indicator.psar()
-    df[f"{colprefix}trend_psar_up"] = indicator_psar.psar_up()
-    df[f"{colprefix}trend_psar_down"] = indicator_psar.psar_down()
-    df[f"{colprefix}trend_psar_up_indicator"] = indicator_psar.psar_up_indicator()
-    df[f"{colprefix}trend_psar_down_indicator"] = indicator_psar.psar_down_indicator()
 
     # Schaff Trend Cycle (STC)
     df[f"{colprefix}trend_stc"] = STCIndicator(
@@ -377,6 +335,59 @@ def add_trend_ta(
         fillna=fillna,
     ).stc()
 
+    if not vectorized:
+        # Average Directional Movement Index (ADX)
+        indicator_adx = ADXIndicator(
+            high=df[high], low=df[low], close=df[close], window=14, fillna=fillna
+        )
+        df[f"{colprefix}trend_adx"] = indicator_adx.adx()
+        df[f"{colprefix}trend_adx_pos"] = indicator_adx.adx_pos()
+        df[f"{colprefix}trend_adx_neg"] = indicator_adx.adx_neg()
+
+        # CCI Indicator
+        df[f"{colprefix}trend_cci"] = CCIIndicator(
+            high=df[high],
+            low=df[low],
+            close=df[close],
+            window=20,
+            constant=0.015,
+            fillna=fillna,
+        ).cci()
+
+        # Ichimoku Visual Indicator
+        indicator_ichi_visual = IchimokuIndicator(
+            high=df[high],
+            low=df[low],
+            window1=9,
+            window2=26,
+            window3=52,
+            visual=True,
+            fillna=fillna,
+        )
+        df[f"{colprefix}trend_visual_ichimoku_a"] = indicator_ichi_visual.ichimoku_a()
+        df[f"{colprefix}trend_visual_ichimoku_b"] = indicator_ichi_visual.ichimoku_b()
+
+        # Aroon Indicator
+        indicator_aroon = AroonIndicator(close=df[close], window=25, fillna=fillna)
+        df[f"{colprefix}trend_aroon_up"] = indicator_aroon.aroon_up()
+        df[f"{colprefix}trend_aroon_down"] = indicator_aroon.aroon_down()
+        df[f"{colprefix}trend_aroon_ind"] = indicator_aroon.aroon_indicator()
+
+        # PSAR Indicator
+        indicator_psar = PSARIndicator(
+            high=df[high],
+            low=df[low],
+            close=df[close],
+            step=0.02,
+            max_step=0.20,
+            fillna=fillna,
+        )
+        # df[f'{colprefix}trend_psar'] = indicator.psar()
+        df[f"{colprefix}trend_psar_up"] = indicator_psar.psar_up()
+        df[f"{colprefix}trend_psar_down"] = indicator_psar.psar_down()
+        df[f"{colprefix}trend_psar_up_indicator"] = indicator_psar.psar_up_indicator()
+        df[f"{colprefix}trend_psar_down_indicator"] = indicator_psar.psar_down_indicator()
+
     return df
 
 
@@ -388,6 +399,7 @@ def add_momentum_ta(
     volume: str,
     fillna: bool = False,
     colprefix: str = "",
+    vectorized: bool = False,
 ) -> pd.DataFrame:
     """Add trend technical analysis features to dataframe.
 
@@ -399,6 +411,7 @@ def add_momentum_ta(
         volume (str): Name of 'volume' column.
         fillna(bool): if True, fill nan values.
         colprefix(str): Prefix column names inserted
+        vectorized(bool): if True, use only vectorized functions indicators
 
     Returns:
         pandas.core.frame.DataFrame: Dataframe with new features.
@@ -458,11 +471,6 @@ def add_momentum_ta(
         high=df[high], low=df[low], window1=5, window2=34, fillna=fillna
     ).awesome_oscillator()
 
-    # KAMA
-    df[f"{colprefix}momentum_kama"] = KAMAIndicator(
-        close=df[close], window=10, pow1=2, pow2=30, fillna=fillna
-    ).kama()
-
     # Rate Of Change
     df[f"{colprefix}momentum_roc"] = ROCIndicator(
         close=df[close], window=12, fillna=fillna
@@ -484,11 +492,20 @@ def add_momentum_ta(
     df[f"{colprefix}momentum_ppo_signal"] = indicator_pvo.pvo_signal()
     df[f"{colprefix}momentum_ppo_hist"] = indicator_pvo.pvo_hist()
 
+    if not vectorized:
+        # KAMA
+        df[f"{colprefix}momentum_kama"] = KAMAIndicator(
+            close=df[close], window=10, pow1=2, pow2=30, fillna=fillna
+        ).kama()
+
     return df
 
 
 def add_others_ta(
-    df: pd.DataFrame, close: str, fillna: bool = False, colprefix: str = ""
+    df: pd.DataFrame,
+    close: str,
+    fillna: bool = False,
+    colprefix: str = "",
 ) -> pd.DataFrame:
     """Add others analysis features to dataframe.
 
@@ -528,6 +545,7 @@ def add_all_ta_features(
     volume: str,
     fillna: bool = False,
     colprefix: str = "",
+    vectorized: bool = False,
 ) -> pd.DataFrame:
     """Add all technical analysis features to dataframe.
 
@@ -540,6 +558,7 @@ def add_all_ta_features(
         volume (str): Name of 'volume' column.
         fillna(bool): if True, fill nan values.
         colprefix(str): Prefix column names inserted
+        vectorized(bool): if True, use only vectorized functions indicators
 
     Returns:
         pandas.core.frame.DataFrame: Dataframe with new features.
@@ -552,12 +571,25 @@ def add_all_ta_features(
         volume=volume,
         fillna=fillna,
         colprefix=colprefix,
+        vectorized=vectorized,
     )
     df = add_volatility_ta(
-        df=df, high=high, low=low, close=close, fillna=fillna, colprefix=colprefix
+        df=df,
+        high=high,
+        low=low,
+        close=close,
+        fillna=fillna,
+        colprefix=colprefix,
+        vectorized=vectorized,
     )
     df = add_trend_ta(
-        df=df, high=high, low=low, close=close, fillna=fillna, colprefix=colprefix
+        df=df,
+        high=high,
+        low=low,
+        close=close,
+        fillna=fillna,
+        colprefix=colprefix,
+        vectorized=vectorized,
     )
     df = add_momentum_ta(
         df=df,
@@ -567,6 +599,9 @@ def add_all_ta_features(
         volume=volume,
         fillna=fillna,
         colprefix=colprefix,
+        vectorized=vectorized,
     )
-    df = add_others_ta(df=df, close=close, fillna=fillna, colprefix=colprefix)
+    df = add_others_ta(
+        df=df, close=close, fillna=fillna, colprefix=colprefix
+    )
     return df
