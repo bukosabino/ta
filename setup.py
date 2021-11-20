@@ -19,6 +19,7 @@ setup(
     download_url="https://github.com/bukosabino/ta/tarball/0.8.0",
     keywords=["technical analysis", "python3", "pandas"],
     license="The MIT License (MIT)",
+    license_files=["LICENSE"],
     classifiers=[
         "Intended Audience :: Financial and Insurance Industry",
         "Programming Language :: Python :: 3.6",
