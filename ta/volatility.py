@@ -47,7 +47,7 @@ class AverageTrueRange(IndicatorMixin):
         close_shift = self._close.shift(1)
         true_range = self._true_range(self._high, self._low, close_shift)
         atr = np.zeros(len(self._close))
-        atr[self._window - 1] = true_range[0 : self._window].mean()
+        atr[self._window - 1] = true_range[0: self._window].mean()
         for i in range(self._window, len(atr)):
             atr[i] = (atr[i - 1] * (self._window - 1) + true_range.iloc[i]) / float(
                 self._window

@@ -63,6 +63,26 @@ class TestWrapper(unittest.TestCase):
             .all()
         )
 
+        self.assertTrue(df_with_ta.shape[1] == 91)
+
+    def test_only_vectorized(self):
+        # Clean nan values
+        df = ta.utils.dropna(self._df)
+
+        # Add all ta features filling nans values
+        df_vectorized = ta.add_all_ta_features(
+            df=df,
+            open="Open",
+            high="High",
+            low="Low",
+            close="Close",
+            volume="Volume_BTC",
+            fillna=True,
+            vectorized=True
+        )
+
+        self.assertTrue(df_vectorized.shape[1] == 73)
+
 
 if __name__ == "__main__":
     unittest.main()
