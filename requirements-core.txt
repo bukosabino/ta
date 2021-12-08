@@ -1,2 +1,4 @@
-numpy==1.17.4
-pandas==0.25.3
+llvmlite==0.33.0; python_version >= "3.6"
+numba==0.50.1; python_version >= "3.6"
+numpy==1.17.4; python_version >= "3.6" and python_full_version >= "3.5.3"
+pandas==0.25.3; python_full_version >= "3.5.3"

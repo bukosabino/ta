@@ -9,7 +9,7 @@
 
 # Technical Analysis Library in Python
 
-It is a Technical Analysis library useful to do feature engineering from financial time series datasets (Open, Close, High, Low, Volume). It is built on Pandas and Numpy.
+It is a Technical Analysis library useful to do feature engineering from financial time series datasets (Open, Close, High, Low, Volume). It is built on Pandas, Numpy and Numba.
 
 ![Bollinger Bands graph example](static/figure.png)
 
@@ -176,6 +176,8 @@ Thank you to [OpenSistemas](https://opensistemas.com)! It is because of your con
 
 * https://en.wikipedia.org/wiki/Technical_analysis
 * https://pandas.pydata.org
+* https://numpy.org/
+* https://numba.pydata.org
 * https://github.com/FreddieWitherden/ta
 * https://github.com/femtotrader/pandas_talib
 
