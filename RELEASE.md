@@ -1,5 +1,6 @@
 | Date | Version | Comment |
 | ------------- | ------------- | ------------- |
+| 2022/01/09 | 0.8.1 | Fixing bug on name columns (PVO - PPO) |
 | 2021/11/18 | 0.8.0 | Add option to get just the most efficient indicators (vectorized), also solved some security dependency |
 | 2020/11/27 | 0.7.0 | Cleaning code (prospector, black) https://github.com/bukosabino/ta/pull/209 |
 | 2020/11/17 | 0.6.1 | Fixing Wrapper https://github.com/bukosabino/ta/pull/204 |
