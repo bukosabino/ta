@@ -488,9 +488,9 @@ def add_momentum_ta(
     indicator_pvo = PercentageVolumeOscillator(
         volume=df[volume], window_slow=26, window_fast=12, window_sign=9, fillna=fillna
     )
-    df[f"{colprefix}momentum_ppo"] = indicator_pvo.pvo()
-    df[f"{colprefix}momentum_ppo_signal"] = indicator_pvo.pvo_signal()
-    df[f"{colprefix}momentum_ppo_hist"] = indicator_pvo.pvo_hist()
+    df[f"{colprefix}momentum_pvo"] = indicator_pvo.pvo()
+    df[f"{colprefix}momentum_pvo_signal"] = indicator_pvo.pvo_signal()
+    df[f"{colprefix}momentum_pvo_hist"] = indicator_pvo.pvo_hist()
 
     if not vectorized:
         # KAMA
