@@ -4,9 +4,9 @@ from distutils.core import setup
 setup(
     name="ta",
     packages=["ta"],
-    version="0.7.0",
+    version="0.9.0",
     description="Technical Analysis Library in Python",
-    long_description="It is a Technical Analysis library to financial time series datasets. You can use to do feature engineering. It is builded on Python Pandas library.",
+    long_description="It is a Technical Analysis library to financial time series datasets. You can use to do feature engineering. It is built on Python Pandas library.",
     author="Dario Lopez Padial (Bukosabino)",
     author_email="Bukosabino@gmail.com",
     url="https://github.com/bukosabino/ta",
@@ -16,9 +16,10 @@ setup(
         "numpy",
         "pandas",
     ],
-    download_url="https://github.com/bukosabino/ta/tarball/0.7.0",
+    download_url="https://github.com/bukosabino/ta/tarball/0.9.0",
     keywords=["technical analysis", "python3", "pandas"],
     license="The MIT License (MIT)",
+    license_files=["LICENSE"],
     classifiers=[
         "Intended Audience :: Financial and Insurance Industry",
         "Programming Language :: Python :: 3.6",

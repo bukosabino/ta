@@ -765,12 +765,14 @@ class ADXIndicator(IndicatorMixin):
             pandas.Series: New feature generated.tr
         """
         dip = np.zeros(len(self._trs))
-        for i in range(len(self._trs)):
-            dip[i] = 100 * (self._dip[i] / self._trs[i])
+
+        for idx, value in enumerate(self._trs):
+            dip[idx] = 100 * (self._dip[idx] / value)
 
         din = np.zeros(len(self._trs))
-        for i in range(len(self._trs)):
-            din[i] = 100 * (self._din[i] / self._trs[i])
+
+        for idx, value in enumerate(self._trs):
+            din[idx] = 100 * (self._din[idx] / value)
 
         directional_index = 100 * np.abs((dip - din) / (dip + din))
 
