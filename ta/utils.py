@@ -20,7 +20,7 @@ class IndicatorMixin:
         """Check if fillna flag is True.
 
         Args:
-            series(pandas.Series): dataset 'Close' column.
+            series(pandas.Series): calculated indicator series.
             value(int): value to fill gaps; if -1 fill values using 'backfill' mode.
 
         Returns:
@@ -30,7 +30,7 @@ class IndicatorMixin:
             series_output = series.copy(deep=False)
             series_output = series_output.replace([np.inf, -np.inf], np.nan)
             if isinstance(value, int) and value == -1:
-                series = series_output.fillna(method="ffill").fillna(value=-1)
+                series = series_output.fillna(method="ffill").fillna(method='bfill')
             else:
                 series = series_output.fillna(method="ffill").fillna(value)
         return series
@@ -61,7 +61,7 @@ def _sma(series, periods: int, fillna: bool = False):
     return series.rolling(window=periods, min_periods=min_periods).mean()
 
 
-def _ema(series, periods, fillna=False):
+def _ema(series, periods: int, fillna: bool = False):
     min_periods = 0 if fillna else periods
     return series.ewm(span=periods, min_periods=min_periods, adjust=False).mean()
 
