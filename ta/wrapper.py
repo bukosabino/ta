@@ -40,6 +40,7 @@ from ta.trend import (
     STCIndicator,
     TRIXIndicator,
     VortexIndicator,
+    SuperTrendIndicator,
 )
 from ta.volatility import (
     AverageTrueRange,
@@ -245,6 +246,7 @@ def add_trend_ta(
     """
 
     # MACD
+
     indicator_macd = MACD(
         close=df[close], window_slow=26, window_fast=12, window_sign=9, fillna=fillna
     )
@@ -335,6 +337,11 @@ def add_trend_ta(
         fillna=fillna,
     ).stc()
 
+    ST = SuperTrendIndicator(close=df[close],
+                             low=df[low],
+                             high=df[high])
+    df[f'{colprefix}ST'] = ST.get_supertrend()
+    df[f'{colprefix}ST_strategy'] = ST.get_supertrend_strategy_returns()
     if not vectorized:
         # Average Directional Movement Index (ADX)
         indicator_adx = ADXIndicator(

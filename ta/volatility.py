@@ -29,12 +29,12 @@ class AverageTrueRange(IndicatorMixin):
     """
 
     def __init__(
-        self,
-        high: pd.Series,
-        low: pd.Series,
-        close: pd.Series,
-        window: int = 14,
-        fillna: bool = False,
+            self,
+            high: pd.Series,
+            low: pd.Series,
+            close: pd.Series,
+            window: int = 14,
+            fillna: bool = False,
     ):
         self._high = high
         self._low = low
@@ -77,11 +77,11 @@ class BollingerBands(IndicatorMixin):
     """
 
     def __init__(
-        self,
-        close: pd.Series,
-        window: int = 20,
-        window_dev: int = 2,
-        fillna: bool = False,
+            self,
+            close: pd.Series,
+            window: int = 20,
+            window_dev: int = 2,
+            fillna: bool = False,
     ):
         self._close = close
         self._window = window
@@ -200,14 +200,14 @@ class KeltnerChannel(IndicatorMixin):
     """
 
     def __init__(
-        self,
-        high: pd.Series,
-        low: pd.Series,
-        close: pd.Series,
-        window: int = 20,
-        window_atr: int = 10,
-        fillna: bool = False,
-        original_version: bool = True,
+            self,
+            high: pd.Series,
+            low: pd.Series,
+            close: pd.Series,
+            window: int = 20,
+            window_atr: int = 10,
+            fillna: bool = False,
+            original_version: bool = True,
     ):
         self._high = high
         self._low = low
@@ -223,18 +223,18 @@ class KeltnerChannel(IndicatorMixin):
         if self._original_version:
             self._tp = (
                 ((self._high + self._low + self._close) / 3.0)
-                .rolling(self._window, min_periods=min_periods)
-                .mean()
+                    .rolling(self._window, min_periods=min_periods)
+                    .mean()
             )
             self._tp_high = (
                 (((4 * self._high) - (2 * self._low) + self._close) / 3.0)
-                .rolling(self._window, min_periods=0)
-                .mean()
+                    .rolling(self._window, min_periods=0)
+                    .mean()
             )
             self._tp_low = (
                 (((-2 * self._high) + (4 * self._low) + self._close) / 3.0)
-                .rolling(self._window, min_periods=0)
-                .mean()
+                    .rolling(self._window, min_periods=0)
+                    .mean()
             )
         else:
             self._tp = self._close.ewm(
@@ -340,13 +340,13 @@ class DonchianChannel(IndicatorMixin):
     """
 
     def __init__(
-        self,
-        high: pd.Series,
-        low: pd.Series,
-        close: pd.Series,
-        window: int = 20,
-        offset: int = 0,
-        fillna: bool = False,
+            self,
+            high: pd.Series,
+            low: pd.Series,
+            close: pd.Series,
+            window: int = 20,
+            offset: int = 0,
+            fillna: bool = False,
     ):
         self._offset = offset
         self._close = close
@@ -639,7 +639,7 @@ def bollinger_lband_indicator(close, window=20, window_dev=2, fillna=False):
 
 
 def keltner_channel_mband(
-    high, low, close, window=20, window_atr=10, fillna=False, original_version=True
+        high, low, close, window=20, window_atr=10, fillna=False, original_version=True
 ):
     """Keltner channel (KC)
 
@@ -674,7 +674,7 @@ def keltner_channel_mband(
 
 
 def keltner_channel_hband(
-    high, low, close, window=20, window_atr=10, fillna=False, original_version=True
+        high, low, close, window=20, window_atr=10, fillna=False, original_version=True
 ):
     """Keltner channel (KC)
 
@@ -709,7 +709,7 @@ def keltner_channel_hband(
 
 
 def keltner_channel_lband(
-    high, low, close, window=20, window_atr=10, fillna=False, original_version=True
+        high, low, close, window=20, window_atr=10, fillna=False, original_version=True
 ):
     """Keltner channel (KC)
 
@@ -744,7 +744,7 @@ def keltner_channel_lband(
 
 
 def keltner_channel_wband(
-    high, low, close, window=20, window_atr=10, fillna=False, original_version=True
+        high, low, close, window=20, window_atr=10, fillna=False, original_version=True
 ):
     """Keltner Channel Band Width
 
@@ -777,7 +777,7 @@ def keltner_channel_wband(
 
 
 def keltner_channel_pband(
-    high, low, close, window=20, window_atr=10, fillna=False, original_version=True
+        high, low, close, window=20, window_atr=10, fillna=False, original_version=True
 ):
     """Keltner Channel Percentage Band
 
@@ -810,7 +810,7 @@ def keltner_channel_pband(
 
 
 def keltner_channel_hband_indicator(
-    high, low, close, window=20, window_atr=10, fillna=False, original_version=True
+        high, low, close, window=20, window_atr=10, fillna=False, original_version=True
 ):
     """Keltner Channel High Band Indicator (KC)
 
@@ -846,7 +846,7 @@ def keltner_channel_hband_indicator(
 
 
 def keltner_channel_lband_indicator(
-    high, low, close, window=20, window_atr=10, fillna=False, original_version=True
+        high, low, close, window=20, window_atr=10, fillna=False, original_version=True
 ):
     """Keltner Channel Low Band Indicator (KC)
 
