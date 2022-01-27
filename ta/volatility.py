@@ -145,7 +145,7 @@ class BollingerBands(IndicatorMixin):
         Returns:
             pandas.Series: New feature generated.
         """
-        pband = (self._close - self._lband) / (self._hband - self._lband)
+        pband = (self._close - self._lband) / (self._hband - self._lband).where(self._hband != self._lband, np.nan)
         pband = self._check_fillna(pband, value=0)
         return pd.Series(pband, name="bbipband")
 
