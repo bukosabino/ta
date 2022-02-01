@@ -238,6 +238,40 @@ class WMAIndicator(IndicatorMixin):
         return pd.Series(wma, name=f"wma_{self._window}")
 
 
+class SSMAIndicator(IndicatorMixin):
+    """Smoothed Simple Moving Averge
+
+    The Smoothed Moving Average (SMMA) aims to reduce noise rather than reduce lag.
+    It reduce the fluctuations and plots the prevailing trend by reducing noice.
+    The SMMA can be used to confirm trends and define areas of support and resistance.
+
+    https://www.tradingview.com/ideas/smma/
+
+    Args:
+        close(pandas.Series): dataset 'Close' column.
+        window(int): n period.
+        fillna(bool): if True, fill nan values.
+    """
+
+    def __init__(self, close: pd.Series, window: int = 7, fillna: bool = False):
+        self._close = close
+        self._window = window
+        self._fillna = fillna
+        self._run()
+
+    def _run(self):
+        self._ssma = self._close.ewm(alpha=1.0 / self._window, min_periods=0).mean()
+
+    def ssma(self) -> pd.Series:
+        """Smoothed Simple Moving Average (SSMA)
+
+        Returns:
+            pandas.Series: New feature generated.
+        """
+        ssma = self._check_fillna(self._ssma, value=0)
+        return pd.Series(ssma, name=f"ssma_{self._window}")
+
+
 class TRIXIndicator(IndicatorMixin):
     """Trix (TRIX)
 
@@ -718,7 +752,7 @@ class ADXIndicator(IndicatorMixin):
 
         self._trs_initial = np.zeros(self._window - 1)
         self._trs = np.zeros(len(self._close) - (self._window - 1))
-        self._trs[0] = diff_directional_movement.dropna()[0 : self._window].sum()
+        self._trs[0] = diff_directional_movement.dropna()[0: self._window].sum()
         diff_directional_movement = diff_directional_movement.reset_index(drop=True)
 
         for i in range(1, len(self._trs) - 1):
@@ -734,7 +768,7 @@ class ADXIndicator(IndicatorMixin):
         neg = abs(((diff_down > diff_up) & (diff_down > 0)) * diff_down)
 
         self._dip = np.zeros(len(self._close) - (self._window - 1))
-        self._dip[0] = pos.dropna()[0 : self._window].sum()
+        self._dip[0] = pos.dropna()[0: self._window].sum()
 
         pos = pos.reset_index(drop=True)
 
@@ -746,7 +780,7 @@ class ADXIndicator(IndicatorMixin):
             )
 
         self._din = np.zeros(len(self._close) - (self._window - 1))
-        self._din[0] = neg.dropna()[0 : self._window].sum()
+        self._din[0] = neg.dropna()[0: self._window].sum()
 
         neg = neg.reset_index(drop=True)
 
@@ -776,7 +810,7 @@ class ADXIndicator(IndicatorMixin):
         directional_index = 100 * np.abs((dip - din) / (dip + din))
 
         adx_series = np.zeros(len(self._trs))
-        adx_series[self._window] = directional_index[0 : self._window].mean()
+        adx_series[self._window] = directional_index[0: self._window].mean()
 
         for i in range(self._window + 1, len(adx_series)):
             adx_series[i] = (
@@ -1117,6 +1151,139 @@ class STCIndicator(IndicatorMixin):
         return pd.Series(stc_series, name="stc")
 
 
+class AlligatorIndicator(IndicatorMixin):
+    """Williams Alligator Indicator
+
+    The Alligator indicator uses three smoothed moving averages,
+    set at five, eight, and 13 periods.
+
+    https://www.investopedia.com/articles/trading/072115/exploring-williams-alligator-indicator.asp#:~:text=The%20Williams%20Alligator%20indicator%20is,that%20uses%20smoothed%20moving%20averages.&text=It%20uses%20three%20moving%20averages,and%20Lips%20of%20the%20Alligator.
+
+    Args:
+        high(pandas.Series): dataset 'High' column.
+        low(pandas.Series): dataset 'Low' column.
+        window_jaw(int): n period jaw length.
+        window_teeth(int): n period teeth length.
+        window_lips(int): n period lips length.
+        offset_jaw(int): offset of jaw.
+        offset_teeth(int): offset of teeth.
+        offset_lips(int): offset of lips.
+        fillna(bool): if True, fill nan values.
+    """
+    def __init__(self,
+                 high: pd.Series,
+                 low: pd.Series,
+                 window_jaw: int = 13,
+                 window_teeth: int = 8,
+                 window_lips: int = 5,
+                 offset_jaw: int = 8,
+                 offset_teeth: int = 5,
+                 offset_lips: int = 3,
+                 fillna: bool = False):
+        self._high = high
+        self._low = low
+        self._window_jaw = window_jaw
+        self._window_teeth = window_teeth
+        self._window_lips = window_lips
+        self._offset_jaw = offset_jaw
+        self._offset_teeth = offset_teeth
+        self._offset_lips = offset_lips
+        self._fillna = fillna
+        self._run()
+
+    def _smma_indicator(self, _window, _offset):
+        _smma = np.full(len(self._median), np.nan)
+        _smma[_window] = self._median.iloc[:_window].mean()
+        for i in range(_window + 1, len(self._median)):
+            _smma[i] = (_smma[i-1] * (_window-1) + self._median[i]) / _window
+        smma = pd.Series(_smma)
+        return smma.shift(_offset)
+
+    def _run(self):
+        self._median = (self._high + self._low) / 2
+        self._alligator_jaw = self._smma_indicator(self._window_jaw, self._offset_jaw)
+        self._alligator_teeth = self._smma_indicator(self._window_teeth, self._offset_teeth)
+        self._alligator_lips = self._smma_indicator(self._window_lips, self._offset_lips)
+
+    def alligator_jaw(self) -> pd.Series:
+        """Alligator Jaw
+
+        Returns:
+            pandas.Series: New feature generated.
+        """
+        alligator_jaw_series = self._check_fillna(self._alligator_jaw, value=0)
+        return pd.Series(alligator_jaw_series, name=f"alligator_jaw_{self._window_jaw}")
+
+    def alligator_teeth(self) -> pd.Series:
+        """Alligator Jaw
+
+        Returns:
+            pandas.Series: New feature generated.
+        """
+        alligator_teeth_series = self._check_fillna(self._alligator_teeth, value=0)
+        return pd.Series(alligator_teeth_series, name=f"alligator_teeth_{self._window_teeth}")
+
+    def alligator_lips(self) -> pd.Series:
+        """Alligator Jaw
+
+        Returns:
+            pandas.Series: New feature generated.
+        """
+        alligator_lips_series = self._check_fillna(self._alligator_lips, value=0)
+        return pd.Series(alligator_lips_series, name=f"alligator_jaw_{self._window_lips}")
+
+
+class FractalsIndicator(IndicatorMixin):
+    """Williams Fractals Indicator
+
+    The Fractals indicator identify bullish and bearish turning point
+    by checking patterns
+
+    https://www.investopedia.com/articles/trading/06/fractals.asp
+
+    Args:
+        high(pandas.Series): dataset 'High' column.
+        low(pandas.Series): dataset 'Low' column.
+        window(int): n period jaw length.
+        fillna(bool): if True, fill nan values.
+    """
+    def __init__(self,
+                 high: pd.Series,
+                 low: pd.Series,
+                 window: int = 2,
+                 fillna: bool = False):
+        self._high = high
+        self._low = low
+        self._window = window
+        self._fillna = fillna
+        self._run()
+
+    def _run(self):
+        _window_size = 2 * self._window + 1
+        self._bear_fractal = self._high.rolling(_window_size, center=True)\
+                                       .apply(lambda x: -1 if max(x) <= x[self._window] else 0, raw=True)
+        self._bull_fractal = self._low.rolling(_window_size, center=True)\
+                                      .apply(lambda x: 1 if min(x) >= x[self._window] else 0, raw=True)
+
+    def fractal_bearish(self) -> pd.Series:
+        """Bearish fractal
+
+        Returns:
+            pandas.Series: New feature generated.
+        """
+        bear_fractal = self._check_fillna(self._bear_fractal, value=0)
+        return pd.Series(bear_fractal, name=f"bear_fractal_{self._window}")
+
+    def fractal_bullish(self) -> pd.Series:
+        """Bullish fractal
+
+        Returns:
+            pandas.Series: New feature generated.
+        """
+        bull_fractal = self._check_fillna(self._bull_fractal, value=0)
+        return pd.Series(bull_fractal, name=f"bear_fractal_{self._window}")
+
+
 def ema_indicator(close, window=12, fillna=False):
     """Exponential Moving Average (EMA)
 
@@ -1142,6 +1309,15 @@ def wma_indicator(close, window=9, fillna=False):
         pandas.Series: New feature generated.
     """
     return WMAIndicator(close=close, window=window, fillna=fillna).wma()
+
+
+def ssma_indicator(close, window=7, fillna=False):
+    """Smoothed Simple Moving Average (SSMA)
+
+    Returns:
+        pandas.Series: New feature generated.
+    """
+    return SSMAIndicator(close=close, window=window, fillna=fillna).ssma()
 
 
 def macd(close, window_slow=26, window_fast=12, fillna=False):
@@ -1857,3 +2033,172 @@ def psar_down_indicator(high, low, close, step=0.02, max_step=0.20, fillna=False
         high=high, low=low, close=close, step=step, max_step=max_step, fillna=fillna
     )
     return indicator.psar_down_indicator()
+
+
+def alligator_jaw_indicator(high,
+                            low,
+                            window_jaw=13,
+                            window_teeth=8,
+                            window_lips=5,
+                            offset_jaw=8,
+                            offset_teeth=5,
+                            offset_lips=3,
+                            fillna=False):
+    """Williams Alligator Jaw Indicator
+
+    The Alligator indicator uses three smoothed moving averages,
+    set at five, eight, and 13 periods.
+
+    https://www.investopedia.com/articles/trading/072115/exploring-williams-alligator-indicator.asp#:~:text=The%20Williams%20Alligator%20indicator%20is,that%20uses%20smoothed%20moving%20averages.&text=It%20uses%20three%20moving%20averages,and%20Lips%20of%20the%20Alligator.
+
+    Args:
+        high(pandas.Series): dataset 'High' column.
+        low(pandas.Series): dataset 'Low' column.
+        window_jaw(int): n period jaw length.
+        window_teeth(int): n period teeth length.
+        window_lips(int): n period lips length.
+        offset_jaw(int): offset of jaw.
+        offset_teeth(int): offset of teeth.
+        offset_lips(int): offset of lips.
+        fillna(bool): if True, fill nan values.
+    """
+    indicator = AlligatorIndicator(
+        high=high,
+        low=low,
+        window_jaw=window_jaw,
+        window_teeth=window_teeth,
+        window_lips=window_lips,
+        offset_jaw=offset_jaw,
+        offset_teeth=offset_teeth,
+        offset_lips=offset_lips,
+        fillna=fillna
+    )
+    return indicator.alligator_jaw()
+
+
+def alligator_teeth_indicator(high,
+                              low,
+                              window_jaw=13,
+                              window_teeth=8,
+                              window_lips=5,
+                              offset_jaw=8,
+                              offset_teeth=5,
+                              offset_lips=3,
+                              fillna=False):
+    """Williams Alligator Teeth Indicator
+
+    The Alligator indicator uses three smoothed moving averages,
+    set at five, eight, and 13 periods.
+
+    https://www.investopedia.com/articles/trading/072115/exploring-williams-alligator-indicator.asp#:~:text=The%20Williams%20Alligator%20indicator%20is,that%20uses%20smoothed%20moving%20averages.&text=It%20uses%20three%20moving%20averages,and%20Lips%20of%20the%20Alligator.
+
+    Args:
+        high(pandas.Series): dataset 'High' column.
+        low(pandas.Series): dataset 'Low' column.
+        window_jaw(int): n period jaw length.
+        window_teeth(int): n period teeth length.
+        window_lips(int): n period lips length.
+        offset_jaw(int): offset of jaw.
+        offset_teeth(int): offset of teeth.
+        offset_lips(int): offset of lips.
+        fillna(bool): if True, fill nan values.
+    """
+    indicator = AlligatorIndicator(
+        high=high,
+        low=low,
+        window_jaw=window_jaw,
+        window_teeth=window_teeth,
+        window_lips=window_lips,
+        offset_jaw=offset_jaw,
+        offset_teeth=offset_teeth,
+        offset_lips=offset_lips,
+        fillna=fillna
+    )
+    return indicator.alligator_teeth()
+
+
+def alligator_lips_indicator(high,
+                             low,
+                             window_jaw=13,
+                             window_teeth=8,
+                             window_lips=5,
+                             offset_jaw=8,
+                             offset_teeth=5,
+                             offset_lips=3,
+                             fillna=False):
+    """Williams Alligator Lips Indicator
+
+    The Alligator indicator uses three smoothed moving averages,
+    set at five, eight, and 13 periods.
+
+    https://www.investopedia.com/articles/trading/072115/exploring-williams-alligator-indicator.asp#:~:text=The%20Williams%20Alligator%20indicator%20is,that%20uses%20smoothed%20moving%20averages.&text=It%20uses%20three%20moving%20averages,and%20Lips%20of%20the%20Alligator.
+
+    Args:
+        high(pandas.Series): dataset 'High' column.
+        low(pandas.Series): dataset 'Low' column.
+        window_jaw(int): n period jaw length.
+        window_teeth(int): n period teeth length.
+        window_lips(int): n period lips length.
+        offset_jaw(int): offset of jaw.
+        offset_teeth(int): offset of teeth.
+        offset_lips(int): offset of lips.
+        fillna(bool): if True, fill nan values.
+    """
+    indicator = AlligatorIndicator(
+        high=high,
+        low=low,
+        window_jaw=window_jaw,
+        window_teeth=window_teeth,
+        window_lips=window_lips,
+        offset_jaw=offset_jaw,
+        offset_teeth=offset_teeth,
+        offset_lips=offset_lips,
+        fillna=fillna
+    )
+    return indicator.alligator_lips()
+
+
+def fractal_bearish_indicator(high, low, window=2, fillna=False):
+    """Williams Fractals Bearish Indicator
+
+    The Fractals indicator identify bullish and bearish turning point
+    by checking patterns
+
+    https://www.investopedia.com/articles/trading/06/fractals.asp
+
+    Args:
+        high(pandas.Series): dataset 'High' column.
+        low(pandas.Series): dataset 'Low' column.
+        window(int): n period jaw length.
+        fillna(bool): if True, fill nan values.
+    """
+    indicator = FractalsIndicator(
+        high=high,
+        low=low,
+        window=window,
+        fillna=fillna
+    )
+    return indicator.fractal_bearish()
+
+
+def fractal_bullish_indicator(high, low, window=2, fillna=False):
+    """Williams Fractals Bullish Indicator
+
+    The Fractals indicator identify bullish and bearish turning point
+    by checking patterns
+
+    https://www.investopedia.com/articles/trading/06/fractals.asp
+
+    Args:
+        high(pandas.Series): dataset 'High' column.
+        low(pandas.Series): dataset 'Low' column.
+        window(int): n period jaw length.
+        fillna(bool): if True, fill nan values.
+    """
+    indicator = FractalsIndicator(
+        high=high,
+        low=low,
+        window=window,
+        fillna=fillna
+    )
+    return indicator.fractal_bullish()
