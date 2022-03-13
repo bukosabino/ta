@@ -197,6 +197,7 @@ class KeltnerChannel(IndicatorMixin):
         original_version(bool): if True, use original version as the centerline (SMA of typical price)
             if False, use EMA of close as the centerline. More info:
             https://school.stockcharts.com/doku.php?id=technical_indicators:keltner_channels
+        n_atr: set high and low channels n ATRs away from the central moving average
     """
 
     def __init__(
@@ -208,6 +209,7 @@ class KeltnerChannel(IndicatorMixin):
         window_atr: int = 10,
         fillna: bool = False,
         original_version: bool = True,
+        n_atr: int = 2,
     ):
         self._high = high
         self._low = low
@@ -216,6 +218,7 @@ class KeltnerChannel(IndicatorMixin):
         self._window_atr = window_atr
         self._fillna = fillna
         self._original_version = original_version
+        self.n_atr = n_atr
         self._run()
 
     def _run(self):
@@ -247,8 +250,8 @@ class KeltnerChannel(IndicatorMixin):
                 window=self._window_atr,
                 fillna=self._fillna,
             ).average_true_range()
-            self._tp_high = self._tp + (2 * atr)
-            self._tp_low = self._tp - (2 * atr)
+            self._tp_high = self._tp + (n_atr * atr)
+            self._tp_low = self._tp - (n_atr * atr)
 
     def keltner_channel_mband(self) -> pd.Series:
         """Keltner Channel Middle Band
