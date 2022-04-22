@@ -1857,3 +1857,22 @@ def psar_down_indicator(high, low, close, step=0.02, max_step=0.20, fillna=False
         high=high, low=low, close=close, step=step, max_step=max_step, fillna=fillna
     )
     return indicator.psar_down_indicator()
+
+class BOPIndicator(IndicatorMixin):
+
+    def __init__(self, close: pd.Series, open: pd.Series, high: pd.Series, low: pd.Series, fillna: bool = False):
+        self._close = close
+        self._open = open
+        self._high = high
+        self._low = low
+        self._fillna = fillna
+        self._run()
+
+    def _run(self):
+        top = self._close - self._open
+        bottom = self._high - self._low
+        self.BOP = sma_indicator(top/bottom)
+
+    def bop(self) -> pd.Series:
+        bop = self._check_fillna(self._bop, value=0)
+        return pd.Series(bop, name='BOPIndicator')
