@@ -1871,7 +1871,7 @@ class BOPIndicator(IndicatorMixin):
     def _run(self):
         top = self._close - self._open
         bottom = self._high - self._low
-        self.BOP = sma_indicator(top/bottom)
+        self._bop = sma_indicator(top/bottom)
 
     def bop(self) -> pd.Series:
         bop = self._check_fillna(self._bop, value=0)
