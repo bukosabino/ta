@@ -321,7 +321,9 @@ class KAMAIndicator(IndicatorMixin):
         min_periods = 0 if self._fillna else self._window
         er_num = abs(close_values - np.roll(close_values, self._window))
         er_den = vol.rolling(self._window, min_periods=min_periods).sum()
-        efficiency_ratio = er_num / er_den
+        efficiency_ratio = np.divide(
+            er_num, er_den, out=np.zeros_like(er_num), where=er_den != 0
+        )
 
         smoothing_constant = (
             (
