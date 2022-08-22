@@ -148,6 +148,10 @@ class MACD(IndicatorMixin):
         )
 
 
+class SuperTrend (IndicatorMixin):
+    ...
+
+
 class EMAIndicator(IndicatorMixin):
     """EMA - Exponential Moving Average
 
