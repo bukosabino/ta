@@ -1,6 +1,7 @@
 | Date | Version | Comment |
 | ------------- | ------------- | ------------- |
-|  |  | Fixing future warning https://github.com/bukosabino/ta/pull/293 |
+| 2022/08/23 | 0.10.2 | Fixing bug on KAMA indicator https://github.com/bukosabino/ta/pull/303 |
+| 2022/04/16 | 0.10.1 | Fixing future warning https://github.com/bukosabino/ta/pull/293 |
 | 2022/04/16 | 0.10.0 | Customize Keltner Channel ATRs multiplier |
 | 2022/01/09 | 0.9.0 | Fixing wrong name version |
 | 2022/01/09 | 0.8.2 | Bumping pandas and numpy because of a external vulnerability issue |
