@@ -808,7 +808,7 @@ class ADXIndicator(IndicatorMixin):
             pandas.Series: New feature generated.
         """
         dip = np.zeros(len(self._close))
-        for i in range(1, len(self._trs) - 1):
+        for i in range(0, len(self._trs) - 1):
             dip[i + self._window] = 100 * (self._dip[i] / self._trs[i])
 
         adx_pos_series = self._check_fillna(
@@ -823,7 +823,7 @@ class ADXIndicator(IndicatorMixin):
             pandas.Series: New feature generated.
         """
         din = np.zeros(len(self._close))
-        for i in range(1, len(self._trs) - 1):
+        for i in range(0, len(self._trs) - 1):
             din[i + self._window] = 100 * (self._din[i] / self._trs[i])
 
         adx_neg_series = self._check_fillna(
