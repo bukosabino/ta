@@ -114,8 +114,8 @@ df = pd.read_csv('ta/tests/data/datas.csv', sep=',')
 df = dropna(df)
 
 # Add all ta features
-df = add_all_ta_features(
-    df, open="Open", high="High", low="Low", close="Close", volume="Volume_BTC")
+df = add_all_ta_features_parallel(
+    df, open="Open", high="High", low="Low", close="Close", volume="Volume_BTC", n_jobs=-1)
 ```
 
 
