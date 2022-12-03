@@ -8,7 +8,7 @@
 
 import numpy as np
 import pandas as pd
-
+from typing import Union
 from ta.utils import IndicatorMixin, _ema
 
 
@@ -267,7 +267,7 @@ class VolumePriceTrendIndicator(IndicatorMixin):
         fillna(bool): if True, fill nan values.
     """
 
-    def __init__(self, close: pd.Series, volume: pd.Series, fillna: bool = False, smoothing_factor: int|None = None, dropnans:bool = False):
+    def __init__(self, close: pd.Series, volume: pd.Series, fillna: bool = False, smoothing_factor: Union[int,None] = None, dropnans:bool = False):
         self._close = close
         self._volume = volume
         self._fillna = fillna #This should never be used here like it was before `self._close.shift(1, fill_value=self._close.mean()`. That thing ruins indicator until it's influence will be miserable.
