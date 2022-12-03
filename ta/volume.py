@@ -267,18 +267,31 @@ class VolumePriceTrendIndicator(IndicatorMixin):
         fillna(bool): if True, fill nan values.
     """
 
-    def __init__(self, close: pd.Series, volume: pd.Series, fillna: bool = False):
+    def __init__(self, close: pd.Series, volume: pd.Series, fillna: bool = False, smoothing_factor: int|None = None, dropnans:bool = False):
         self._close = close
         self._volume = volume
-        self._fillna = fillna
+        self._fillna = fillna #This should never be used here like it was before `self._close.shift(1, fill_value=self._close.mean()`. That thing ruins indicator until it's influence will be miserable.
+        
+        self._smoothing_factor = smoothing_factor
+        if not isinstance(self._smoothing_factor, (int, float)): raise TypeError("Smoothing factor must be an integer.")# Float in case of 10. or something like this
+        else:
+            if self._smoothing_factor != int(self._smoothing_factor): 
+                print("You have provided smoothing factor as float such that not equal to integer! We will force it to be an integer.")
+                self._smoothing_factor = int(self._smoothing_factor)
+        
+            if self._smoothing_factor <= 1: raise ValueError("Smoothing factor must be bigger than 1.")
+            
+        self._dropnans = dropnans
+        if not isinstance(self._dropnans, bool): raise TypeError("dropnans must be boolean.")
+        
         self._run()
 
     def _run(self):
-        vpt = self._volume * (
-            (self._close - self._close.shift(1, fill_value=self._close.mean()))
-            / self._close.shift(1, fill_value=self._close.mean())
-        )
-        self._vpt = vpt.shift(1, fill_value=vpt.mean()) + vpt
+        self._vpt = (self._closes.pct_change() * self._volume).cumsum()
+        if self._smoothing_factor:
+            min_periods = 0 if self._fillna else self._window 
+            self._vpt = self._vpt.rolling(self._smoothing_factor, min_periods=min_periods).mean()
+        if self._dropnans: self._vpt = self._vpt.dropna()
 
     def volume_price_trend(self) -> pd.Series:
         """Volume-price trend (VPT)
