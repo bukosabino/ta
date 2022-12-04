@@ -288,7 +288,7 @@ class VolumePriceTrendIndicator(IndicatorMixin):
         self._run()
 
     def _run(self):
-        self._vpt = (self._closes.pct_change().fillna(self._close.mean()) * self._volume).cumsum() #.fillna(self._close.mean()) is BAD
+        self._vpt = (self._close.pct_change().fillna(self._close.mean()) * self._volume).cumsum() #.fillna(self._close.mean()) is BAD
         if self._smoothing_factor:
             min_periods = 0 if self._fillna else self._window 
             self._vpt = self._vpt.rolling(self._smoothing_factor, min_periods=min_periods).mean()
