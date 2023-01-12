@@ -1134,6 +1134,7 @@ class STCIndicator(IndicatorMixin):
         return pd.Series(stc_series, name="stc")
 
 
+
 class PivotPointsIndicator(IndicatorMixin):
     """
         Pivot Points
