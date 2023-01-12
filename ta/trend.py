@@ -1134,6 +1134,129 @@ class STCIndicator(IndicatorMixin):
         return pd.Series(stc_series, name="stc")
 
 
+class PivotPointsIndicator(IndicatorMixin):
+    """
+        Pivot Points
+
+        A pivot point is used to 
+        determine the overall trend of the market over different time frames. On the subsequent day, trading above the 
+        pivot point is thought to indicate ongoing bullish sentiment, while trading below 
+        the pivot point indicates bearish sentiment. it also includes other 
+        support and resistance levels that are projected based on the pivot point 
+        calculation.
+
+        https://www.investopedia.com/terms/p/pivotpoint.asp
+
+        Args:
+            high(pandas.Series): dataset 'High' column.
+            low(pandas.Series): dataset 'Low' column.
+            close(pandas.Series): dataset 'Close' column.
+            fillna(bool): if True, fill nan values.
+    """
+
+    def __init__(
+        self,
+        high:pd.Series,
+        low:pd.Series,
+        close:pd.Series,
+        fillna: bool = False,
+    ) -> pd.Series:
+        self._high = high
+        self._low = low
+        self._close = close
+        self._fillna=fillna
+
+        self._pivots=pd.DataFrame(columns=['pp','s1','r1','s2','r2','s3','r3'])
+        self._run()
+
+    def _run(self):
+        if len(self._high)==len(self._low)==len(self._close) and len(self._high)!=0:
+            
+            tmp_df=pd.concat([self._high,self._low,self._close],axis=1,join='inner')
+            tmp_df.columns=["High","Low","Close"]
+            
+            self._pivots["pp"]=(tmp_df['High']+tmp_df["Low"]+tmp_df["Close"])/3
+            self._pivots["s1"]=2*self._pivots["pp"]-tmp_df["High"]
+            self._pivots["r1"]=2*self._pivots["pp"]-tmp_df["Low"]
+            self._pivots["s2"]=self._pivots["pp"]-(tmp_df["High"]-tmp_df["Low"])
+            self._pivots["r2"]=self._pivots["pp"]+(tmp_df["High"]-tmp_df["Low"])
+            self._pivots["s3"]=self._pivots["pp"]-2*(tmp_df["High"]-tmp_df["Low"])
+            self._pivots["r3"]=self._pivots["pp"]+2*(tmp_df["High"]-tmp_df["Low"])
+
+        else:
+            raise ValueError("Mismatching size windows")
+    
+    def pp(self)-> pd.Series:
+        """Central Pivot Point
+
+        Returns:
+            pandas.Series: New feature generated.
+        """
+        pp=self._check_fillna(series=self._pivots['pp'],value=-1)
+
+        return pd.Series(pp,name="pp")
+
+    def s1(self)-> pd.Series:
+        """Support 1
+
+        Returns:
+            pandas.Series: New feature generated.
+        """
+        s1=self._check_fillna(series=self._pivots['s1'],value=-1)
+
+        return pd.Series(s1,name="s1")
+
+    def s2(self)-> pd.Series:
+        """Support 2
+
+        Returns:
+            pandas.Series: New feature generated.
+        """
+        s2=self._check_fillna(series=self._pivots['s2'],value=-1)
+
+        return pd.Series(s2,name="s2")
+    
+    def s3(self)-> pd.Series:
+        """Support 3
+
+        Returns:
+            pandas.Series: New feature generated.
+        """
+        s3=self._check_fillna(series=self._pivots['s3'],value=-1)
+
+        return pd.Series(s3,name="s3")
+
+    def r1(self)-> pd.Series:
+        """Resistance 1
+
+        Returns:
+            pandas.Series: New feature generated.
+        """
+        r1=self._check_fillna(series=self._pivots['r1'],value=-1)
+
+        return pd.Series(r1,name="r1")
+
+    def r2(self)-> pd.Series:
+        """Resistance 2
+
+        Returns:
+            pandas.Series: New feature generated.
+        """
+        r2=self._check_fillna(series=self._pivots['r2'],value=-1)
+
+        return pd.Series(r2,name="r2")
+
+    def r3(self)-> pd.Series:
+        """Resistance 3
+
+        Returns:
+            pandas.Series: New feature generated.
+        """
+        r3=self._check_fillna(series=self._pivots['r3'],value=-1)
+
+        return pd.Series(r3,name="r3")  
+
+
 def ema_indicator(close, window=12, fillna=False):
     """Exponential Moving Average (EMA)
 
