@@ -23,26 +23,31 @@ class AroonIndicator(IndicatorMixin):
     https://www.investopedia.com/terms/a/aroon.asp
 
     Args:
-        close(pandas.Series): dataset 'Close' column.
+        high(pandas.Series): dataset 'high' column.
+        low(pandas.Series): dataset 'low' column.
         window(int): n period.
         fillna(bool): if True, fill nan values.
     """
 
-    def __init__(self, close: pd.Series, window: int = 25, fillna: bool = False):
-        self._close = close
+    def __init__(self, high: pd.Series, low: pd.Series, window: int = 25, fillna: bool = False):
+        self._high = high
+        self._low = low
         self._window = window
         self._fillna = fillna
         self._run()
 
     def _run(self):
-        min_periods = 0 if self._fillna else self._window
-        rolling_close = self._close.rolling(
-            self._window, min_periods=min_periods)
-        self._aroon_up = rolling_close.apply(
-            lambda x: float(np.argmax(x) + 1) / self._window * 100, raw=True
+        #  window-size + current time point = self._window+1
+        min_periods = 1 if self._fillna else self._window+1
+        rolling_high = self._high.rolling(
+            self._window+1, min_periods=min_periods)
+        rolling_low = self._low.rolling(
+            self._window+1, min_periods=min_periods)
+        self._aroon_up = rolling_high.apply(
+            lambda x: float(np.argmax(x)) / self._window * 100, raw=True
         )
-        self._aroon_down = rolling_close.apply(
-            lambda x: float(np.argmin(x) + 1) / self._window * 100, raw=True
+        self._aroon_down = rolling_low.apply(
+            lambda x: float(np.argmin(x)) / self._window * 100, raw=True
         )
 
     def aroon_up(self) -> pd.Series:
