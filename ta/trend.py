@@ -727,7 +727,7 @@ class ADXIndicator(IndicatorMixin):
 
         self._trs_initial = np.zeros(self._window - 1)
         self._trs = np.zeros(len(self._close) - (self._window - 1))
-        self._trs[0] = diff_directional_movement.dropna()[
+        self._trs[0] = diff_directional_movement.dropna().iloc[
             0: self._window].sum()
         diff_directional_movement = diff_directional_movement.reset_index(
             drop=True)
