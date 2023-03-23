@@ -17,6 +17,7 @@ The library has implemented 43 indicators:
 
 ## Volume
 
+
 ID | Name | Class | defs
 -- |-- |-- |-- |
 1 | Money Flow Index (MFI) | [MFIIndicator](https://technical-analysis-library-in-python.readthedocs.io/en/latest/ta.html#ta.volume.MFIIndicator) | [money_flow_index](https://technical-analysis-library-in-python.readthedocs.io/en/latest/ta.html#ta.volume.money_flow_index)
