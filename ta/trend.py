@@ -942,7 +942,7 @@ class PSARIndicator(IndicatorMixin):
         self._fillna = fillna
         self._run()
 
-    def _run(self):  # noqa
+    def _run(self):  # noqa: MC0001
         up_trend = True
         acceleration_factor = self._step
         up_trend_high = self._high.iloc[0]

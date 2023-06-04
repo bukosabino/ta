@@ -538,7 +538,7 @@ def add_others_ta(
 
 def add_all_ta_features(
     df: pd.DataFrame,
-    open: str,  # noqa
+    open: str,  # pylint: disable=redefined-builtin,unused-argument
     high: str,
     low: str,
     close: str,

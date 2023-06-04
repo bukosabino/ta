@@ -2,13 +2,13 @@ init:
 	pip install -r requirements.txt
 
 isort:
-	isort --check-only --recursive ta test
+	isort --check-only ta test
 
 format: isort
-	black --target-version py36 ta test
+	black --target-version py38 ta test
 
 isort-fix:
-	isort --recursive ta test
+	isort ta test
 
 lint: isort
 	prospector test/
