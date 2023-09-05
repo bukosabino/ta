@@ -26,7 +26,7 @@ class DailyReturnIndicator(IndicatorMixin):
 
     def _run(self):
         self._dr = (
-            self._close / self._close.shift(1, fill_value=self._close.mean())
+            self._close / self._close.shift(1, fill_value=1)
         ) - 1
         self._dr *= 100
 
