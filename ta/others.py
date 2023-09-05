@@ -25,9 +25,7 @@ class DailyReturnIndicator(IndicatorMixin):
         self._run()
 
     def _run(self):
-        self._dr = (
-            self._close / self._close.shift(1, fill_value=1)
-        ) - 1
+        self._dr = (self._close / self._close.shift(1)) - 1
         self._dr *= 100
 
     def daily_return(self) -> pd.Series:
