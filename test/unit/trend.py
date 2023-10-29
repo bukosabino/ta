@@ -38,13 +38,13 @@ class TestADXIndicator(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls._df = pd.read_csv(cls._filename, sep=",")
-        cls._params = dict(
-            high=cls._df["High"],
-            low=cls._df["Low"],
-            close=cls._df["Close"],
-            window=14,
-            fillna=False,
-        )
+        cls._params = {
+            "high": cls._df["High"],
+            "low": cls._df["Low"],
+            "close": cls._df["Close"],
+            "window": 14,
+            "fillna": False,
+        }
         cls._indicator = ADXIndicator(**cls._params)
 
     @classmethod
@@ -104,13 +104,13 @@ class TestMACDIndicator(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls._df = pd.read_csv(cls._filename, sep=",")
-        cls._params = dict(
-            close=cls._df["Close"],
-            window_slow=26,
-            window_fast=12,
-            window_sign=9,
-            fillna=False,
-        )
+        cls._params = {
+            "close": cls._df["Close"],
+            "window_slow": 26,
+            "window_fast": 12,
+            "window_sign": 9,
+            "fillna": False,
+        }
         cls._indicator = MACD(**cls._params)
 
     @classmethod
@@ -172,14 +172,14 @@ class TestCCIIndicator(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls._df = pd.read_csv(cls._filename, sep=",")
-        cls._params = dict(
-            high=cls._df["High"],
-            low=cls._df["Low"],
-            close=cls._df["Close"],
-            window=20,
-            constant=0.015,
-            fillna=False,
-        )
+        cls._params = {
+            "high": cls._df["High"],
+            "low": cls._df["Low"],
+            "close": cls._df["Close"],
+            "window": 20,
+            "constant": 0.015,
+            "fillna": False,
+        }
         cls._indicator = CCIIndicator(**cls._params)
 
     @classmethod
@@ -211,13 +211,13 @@ class TestVortexIndicator(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls._df = pd.read_csv(cls._filename, sep=",")
-        cls._params = dict(
-            high=cls._df["High"],
-            low=cls._df["Low"],
-            close=cls._df["Close"],
-            window=14,
-            fillna=False,
-        )
+        cls._params = {
+            "high": cls._df["High"],
+            "low": cls._df["Low"],
+            "close": cls._df["Close"],
+            "window": 14,
+            "fillna": False,
+        }
         cls._indicator = VortexIndicator(**cls._params)
 
     @classmethod
@@ -263,12 +263,12 @@ class TestPSARIndicator(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls._df = pd.read_csv(cls._filename, sep=",")
-        cls._params = dict(
-            high=cls._df["High"],
-            low=cls._df["Low"],
-            close=cls._df["Close"],
-            fillna=False,
-        )
+        cls._params = {
+            "high": cls._df["High"],
+            "low": cls._df["Low"],
+            "close": cls._df["Close"],
+            "fillna": False,
+        }
         cls._indicator = PSARIndicator(**cls._params)
 
     @classmethod
@@ -343,15 +343,15 @@ class TestSTCIndicator(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls._df = pd.read_csv(cls._filename, sep=",")
-        cls._params = dict(
-            close=cls._df["Close"],
-            window_slow=50,
-            window_fast=23,
-            cycle=10,
-            smooth1=3,
-            smooth2=3,
-            fillna=False,
-        )
+        cls._params = {
+            "close": cls._df["Close"],
+            "window_slow": 50,
+            "window_fast": 23,
+            "cycle": 10,
+            "smooth1": 3,
+            "smooth2": 3,
+            "fillna": False,
+        }
         cls._indicator = STCIndicator(**cls._params)
 
     @classmethod
@@ -380,7 +380,7 @@ class TestWMAIndicator(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls._df = pd.read_csv(cls._filename, sep=",")
-        cls._params = dict(close=cls._df["Close"], window=9, fillna=False)
+        cls._params = {"close": cls._df['Close'], "window": 9, "fillna": False}
         cls._indicator = WMAIndicator(**cls._params)
 
     @classmethod

@@ -41,7 +41,7 @@ class TestRateOfChangeIndicator(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls._df = pd.read_csv(cls._filename, sep=",")
-        cls._params = dict(close=cls._df["Close"], window=12, fillna=False)
+        cls._params = {"close": cls._df['Close'], "window": 12, "fillna": False}
         cls._indicator = ROCIndicator(**cls._params)
 
     @classmethod
@@ -74,7 +74,7 @@ class TestRSIIndicator(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls._df = pd.read_csv(cls._filename, sep=",")
-        cls._params = dict(close=cls._df["Close"], window=14, fillna=False)
+        cls._params = {"close": cls._df['Close'], "window": 14, "fillna": False}
         cls._indicator = RSIIndicator(**cls._params)
 
     @classmethod
@@ -106,9 +106,7 @@ class TestStochRSIIndicator(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls._df = pd.read_csv(cls._filename, sep=",")
-        cls._params = dict(
-            close=cls._df["Close"], window=14, smooth1=3, smooth2=3, fillna=False
-        )
+        cls._params = {"close": cls._df['Close'], "window": 14, "smooth1": 3, "smooth2": 3, "fillna": False}
         cls._indicator = StochRSIIndicator(**cls._params)
 
     @classmethod
@@ -140,18 +138,18 @@ class TestUltimateOscillator(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls._df = pd.read_csv(cls._filename, sep=",")
-        cls._params = dict(
-            high=cls._df["High"],
-            low=cls._df["Low"],
-            close=cls._df["Close"],
-            window1=7,
-            window2=14,
-            window3=28,
-            weight1=4.0,
-            weight2=2.0,
-            weight3=1.0,
-            fillna=False,
-        )
+        cls._params = {
+            "high": cls._df['High'],
+            "low": cls._df['Low'],
+            "close": cls._df['Close'],
+            "window1": 7,
+            "window2": 14,
+            "window3": 28,
+            "weight1": 4.0,
+            "weight2": 2.0,
+            "weight3": 1.0,
+            "fillna": False,
+        }
         cls._indicator = UltimateOscillator(**cls._params)
 
     @classmethod
@@ -183,14 +181,14 @@ class TestStochasticOscillator(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls._df = pd.read_csv(cls._filename, sep=",")
-        cls._params = dict(
-            high=cls._df["High"],
-            low=cls._df["Low"],
-            close=cls._df["Close"],
-            window=14,
-            smooth_window=3,
-            fillna=False,
-        )
+        cls._params = {
+            "high": cls._df["High"],
+            "low": cls._df["Low"],
+            "close": cls._df["Close"],
+            "window": 14,
+            "smooth_window": 3,
+            "fillna": False,
+        }
         cls._indicator = StochasticOscillator(**cls._params)
 
     @classmethod
@@ -236,13 +234,13 @@ class TestWilliamsRIndicator(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls._df = pd.read_csv(cls._filename, sep=",")
-        cls._params = dict(
-            high=cls._df["High"],
-            low=cls._df["Low"],
-            close=cls._df["Close"],
-            lbp=14,
-            fillna=False,
-        )
+        cls._params = {
+            "high": cls._df["High"],
+            "low": cls._df["Low"],
+            "close": cls._df["Close"],
+            "lbp": 14,
+            "fillna": False,
+        }
         cls._indicator = WilliamsRIndicator(**cls._params)
 
     @classmethod
@@ -274,9 +272,9 @@ class TestKAMAIndicator(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls._df = pd.read_csv(cls._filename, sep=",")
-        cls._params = dict(
-            close=cls._df["Close"], window=10, pow1=2, pow2=30, fillna=False
-        )
+        cls._params = {
+            "close": cls._df["Close"], "window": 10, "pow1": 2, "pow2": 30, "fillna": False
+        }
         cls._indicator = KAMAIndicator(**cls._params)
 
     @classmethod
@@ -308,9 +306,9 @@ class TestTSIIndicator(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls._df = pd.read_csv(cls._filename, sep=",")
-        cls._params = dict(
-            close=cls._df["Close"], window_slow=25, window_fast=13, fillna=False
-        )
+        cls._params = {
+            "close": cls._df["Close"], "window_slow": 25, "window_fast": 13, "fillna": False
+        }
         cls._indicator = TSIIndicator(**cls._params)
 
     @classmethod
@@ -349,13 +347,13 @@ class TestPercentagePriceOscillator(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls._df = pd.read_csv(cls._filename, sep=",")
-        cls._params = dict(
-            close=cls._df["Close"],
-            window_slow=26,
-            window_fast=12,
-            window_sign=9,
-            fillna=True,
-        )
+        cls._params = {
+            "close": cls._df["Close"],
+            "window_slow": 26,
+            "window_fast": 12,
+            "window_sign": 9,
+            "fillna": True,
+        }
         cls._indicator = PercentagePriceOscillator(**cls._params)
 
     @classmethod
@@ -416,13 +414,13 @@ class TestPercentageVolumeOscillator(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls._df = pd.read_csv(cls._filename, sep=",")
-        cls._params = dict(
-            volume=cls._df["Volume"],
-            window_slow=26,
-            window_fast=12,
-            window_sign=9,
-            fillna=True,
-        )
+        cls._params = {
+            "volume": cls._df["Volume"],
+            "window_slow": 26,
+            "window_fast": 12,
+            "window_sign": 9,
+            "fillna": True,
+        }
         cls._indicator = PercentageVolumeOscillator(**cls._params)
 
     @classmethod
