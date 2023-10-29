@@ -30,14 +30,14 @@ class IndicatorMixin:
             series_output = series.copy(deep=False)
             series_output = series_output.replace([np.inf, -np.inf], np.nan)
             if isinstance(value, int) and value == -1:
-                series = series_output.fillna(method="ffill").fillna(method="bfill")
+                series = series_output.ffill().bfill()
             else:
-                series = series_output.fillna(method="ffill").fillna(value)
+                series = series_output.ffill().fillna(value)
         return series
 
     @staticmethod
     def _true_range(
-        high: pd.Series, low: pd.Series, prev_close: pd.Series
+            high: pd.Series, low: pd.Series, prev_close: pd.Series
     ) -> pd.Series:
         tr1 = high - low
         tr2 = (high - prev_close).abs()
