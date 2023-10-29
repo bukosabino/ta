@@ -1,0 +1,106 @@
+version: 2
+
+jobs:
+  test_py36: &test-template  # See https://discuss.circleci.com/t/run-tests-on-multiple-versions-of-python/15462/2
+    docker:
+      - image: circleci/python:3.6
+    working_directory: ~/ta
+    steps:
+      - checkout
+      - run:
+          name: Install dependencies
+          command: |
+            pip install --upgrade pip
+            python3 -m venv venv
+            . venv/bin/activate
+            pip install -r requirements-test.txt
+      - run:
+          name: Run linter
+          command: |
+            . venv/bin/activate
+            pycodestyle --max-line-length=119 ta && isort --check-only --recursive ta
+      - run:
+          name: Run test
+          command: |
+            . venv/bin/activate
+            python -m unittest discover
+
+  test_py35:
+    <<: *test-template
+    docker:
+      - image: circleci/python:3.5
+
+  test_py37:
+    <<: *test-template
+    docker:
+      - image: circleci/python:3.7
+
+  test_py38:
+    <<: *test-template
+    docker:
+      - image: circleci/python:3.8
+
+  coverage:
+    docker:
+      - image: circleci/python:3.7
+    working_directory: ~/ta
+    steps:
+      - checkout
+      - run:
+          name: Install dependencies
+          command: |
+            pip install --upgrade pip
+            python3 -m venv venv
+            . venv/bin/activate
+            sudo pip install -r requirements-coverage.txt
+      - run:
+          name: Run coverage
+          command: |
+            coverage run tests.py
+            coverage report -m
+      - run:
+          name: Publish coverage
+          command: |
+            export COVERALLS_REPO_TOKEN=ec4rvBLjmegWPIejLkGXntb92iyWF7tnR
+            coveralls
+
+  doc:
+    docker:
+      - image: circleci/python:3.7
+    working_directory: ~/ta
+    steps:
+      - checkout
+      - run:
+          name: Install dependencies
+          command: |
+            pip install --upgrade pip
+            python3 -m venv venv
+            . venv/bin/activate
+            sudo pip install -r requirements-doc.txt
+      - run:
+          name: Build documentation
+          command: |
+            cd docs
+            make html
+
+workflows:
+  version: 2
+  build:
+    jobs:
+      - test_py36
+      # - test_py38  # not working yet
+      # - test_py37
+      # - test_py35
+      - coverage
+      - doc
+
+
+###########################################
+# Testing CircleCI in local
+###########################################
+# circleci local execute --job test_py36
+# circleci local execute --job test_py37
+# circleci local execute --job test_py38
+# circleci local execute --job test_py35
+# circleci local execute --job coverage
+# circleci local execute --job doc
