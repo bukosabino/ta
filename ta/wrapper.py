@@ -368,7 +368,9 @@ def add_trend_ta(
         df[f"{colprefix}trend_visual_ichimoku_b"] = indicator_ichi_visual.ichimoku_b()
 
         # Aroon Indicator
-        indicator_aroon = AroonIndicator(high=df[high], low=df[low], window=25, fillna=fillna)
+        indicator_aroon = AroonIndicator(
+            high=df[high], low=df[low], window=25, fillna=fillna
+        )
         df[f"{colprefix}trend_aroon_up"] = indicator_aroon.aroon_up()
         df[f"{colprefix}trend_aroon_down"] = indicator_aroon.aroon_down()
         df[f"{colprefix}trend_aroon_ind"] = indicator_aroon.aroon_indicator()
