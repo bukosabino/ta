@@ -6,7 +6,6 @@ import ta
 
 
 class TestWrapper(unittest.TestCase):
-
     _filename = "test/data/datas.csv"
 
     @classmethod
@@ -78,7 +77,7 @@ class TestWrapper(unittest.TestCase):
             close="Close",
             volume="Volume_BTC",
             fillna=True,
-            vectorized=True
+            vectorized=True,
         )
 
         self.assertTrue(df_vectorized.shape[1] == 76)

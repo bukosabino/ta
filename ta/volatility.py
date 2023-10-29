@@ -47,7 +47,7 @@ class AverageTrueRange(IndicatorMixin):
         close_shift = self._close.shift(1)
         true_range = self._true_range(self._high, self._low, close_shift)
         atr = np.zeros(len(self._close))
-        atr[self._window - 1] = true_range[0: self._window].mean()
+        atr[self._window - 1] = true_range[0 : self._window].mean()
         for i in range(self._window, len(atr)):
             atr[i] = (atr[i - 1] * (self._window - 1) + true_range.iloc[i]) / float(
                 self._window
@@ -145,7 +145,9 @@ class BollingerBands(IndicatorMixin):
         Returns:
             pandas.Series: New feature generated.
         """
-        pband = (self._close - self._lband) / (self._hband - self._lband).where(self._hband != self._lband, np.nan)
+        pband = (self._close - self._lband) / (self._hband - self._lband).where(
+            self._hband != self._lband, np.nan
+        )
         pband = self._check_fillna(pband, value=0)
         return pd.Series(pband, name="bbipband")
 
@@ -451,7 +453,7 @@ class UlcerIndex(IndicatorMixin):
 
         def ui_function():
             def _ui_function(x):
-                return np.sqrt((x ** 2 / self._window).sum())
+                return np.sqrt((x**2 / self._window).sum())
 
             return _ui_function
 

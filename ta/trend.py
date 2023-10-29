@@ -23,26 +23,33 @@ class AroonIndicator(IndicatorMixin):
     https://www.investopedia.com/terms/a/aroon.asp
 
     Args:
-        close(pandas.Series): dataset 'Close' column.
+        high(pandas.Series): dataset 'High' column.
+        low(pandas.Series): dataset 'Low' column.
         window(int): n period.
         fillna(bool): if True, fill nan values.
     """
 
-    def __init__(self, close: pd.Series, window: int = 25, fillna: bool = False):
-        self._close = close
+    def __init__(self, high: pd.Series, low: pd.Series, window: int = 25, fillna: bool = False):
+        self._high = high
+        self._low = low
         self._window = window
         self._fillna = fillna
         self._run()
 
     def _run(self):
-        min_periods = 0 if self._fillna else self._window
-        rolling_close = self._close.rolling(
-            self._window, min_periods=min_periods)
-        self._aroon_up = rolling_close.apply(
-            lambda x: float(np.argmax(x) + 1) / self._window * 100, raw=True
+        # Note: window-size + current time point = self._window + 1
+        min_periods = 1 if self._fillna else self._window + 1
+
+        rolling_high = self._high.rolling(
+            self._window + 1, min_periods=min_periods)
+        self._aroon_up = rolling_high.apply(
+            lambda x: float(np.argmax(x)) / self._window * 100, raw=True
         )
-        self._aroon_down = rolling_close.apply(
-            lambda x: float(np.argmin(x) + 1) / self._window * 100, raw=True
+
+        rolling_low = self._low.rolling(
+            self._window + 1, min_periods=min_periods)
+        self._aroon_down = rolling_low.apply(
+            lambda x: float(np.argmin(x)) / self._window * 100, raw=True
         )
 
     def aroon_up(self) -> pd.Series:
@@ -316,8 +323,7 @@ class MassIndex(IndicatorMixin):
         ema1 = _ema(amplitude, self._window_fast, self._fillna)
         ema2 = _ema(ema1, self._window_fast, self._fillna)
         mass = ema1 / ema2
-        self._mass = mass.rolling(
-            self._window_slow, min_periods=min_periods).sum()
+        self._mass = mass.rolling(self._window_slow, min_periods=min_periods).sum()
 
     def mass_index(self) -> pd.Series:
         """Mass Index (MI)
@@ -370,13 +376,11 @@ class IchimokuIndicator(IndicatorMixin):
         min_periods_n2 = 0 if self._fillna else self._window2
         self._conv = 0.5 * (
             self._high.rolling(self._window1, min_periods=min_periods_n1).max()
-            + self._low.rolling(self._window1,
-                                min_periods=min_periods_n1).min()
+            + self._low.rolling(self._window1, min_periods=min_periods_n1).min()
         )
         self._base = 0.5 * (
             self._high.rolling(self._window2, min_periods=min_periods_n2).max()
-            + self._low.rolling(self._window2,
-                                min_periods=min_periods_n2).min()
+            + self._low.rolling(self._window2, min_periods=min_periods_n2).min()
         )
 
     def ichimoku_conversion_line(self) -> pd.Series:
@@ -493,8 +497,7 @@ class KSTIndicator(IndicatorMixin):
             (
                 (
                     self._close
-                    - self._close.shift(self._r1,
-                                        fill_value=self._close.mean())
+                    - self._close.shift(self._r1, fill_value=self._close.mean())
                 )
                 / self._close.shift(self._r1, fill_value=self._close.mean())
             )
@@ -505,8 +508,7 @@ class KSTIndicator(IndicatorMixin):
             (
                 (
                     self._close
-                    - self._close.shift(self._r2,
-                                        fill_value=self._close.mean())
+                    - self._close.shift(self._r2, fill_value=self._close.mean())
                 )
                 / self._close.shift(self._r2, fill_value=self._close.mean())
             )
@@ -517,8 +519,7 @@ class KSTIndicator(IndicatorMixin):
             (
                 (
                     self._close
-                    - self._close.shift(self._r3,
-                                        fill_value=self._close.mean())
+                    - self._close.shift(self._r3, fill_value=self._close.mean())
                 )
                 / self._close.shift(self._r3, fill_value=self._close.mean())
             )
@@ -529,8 +530,7 @@ class KSTIndicator(IndicatorMixin):
             (
                 (
                     self._close
-                    - self._close.shift(self._r4,
-                                        fill_value=self._close.mean())
+                    - self._close.shift(self._r4, fill_value=self._close.mean())
                 )
                 / self._close.shift(self._r4, fill_value=self._close.mean())
             )
@@ -657,8 +657,7 @@ class CCIIndicator(IndicatorMixin):
         typical_price = (self._high + self._low + self._close) / 3.0
         self._cci = (
             typical_price
-            - typical_price.rolling(self._window,
-                                    min_periods=min_periods).mean()
+            - typical_price.rolling(self._window, min_periods=min_periods).mean()
         ) / (
             self._constant
             * typical_price.rolling(self._window, min_periods=min_periods).apply(
@@ -727,10 +726,8 @@ class ADXIndicator(IndicatorMixin):
 
         self._trs_initial = np.zeros(self._window - 1)
         self._trs = np.zeros(len(self._close) - (self._window - 1))
-        self._trs[0] = diff_directional_movement.dropna().iloc[
-            0: self._window].sum()
-        diff_directional_movement = diff_directional_movement.reset_index(
-            drop=True)
+        self._trs[0] = diff_directional_movement.dropna().iloc[0: self._window].sum()
+        diff_directional_movement = diff_directional_movement.reset_index(drop=True)
 
         for i in range(1, len(self._trs) - 1):
             self._trs[i] = (
@@ -787,12 +784,11 @@ class ADXIndicator(IndicatorMixin):
         directional_index = 100 * np.abs((dip - din) / (dip + din))
 
         adx_series = np.zeros(len(self._trs))
-        adx_series[self._window] = directional_index[0: self._window].mean()
+        adx_series[self._window] = directional_index[0 : self._window].mean()
 
         for i in range(self._window + 1, len(adx_series)):
             adx_series[i] = (
-                (adx_series[i - 1] * (self._window - 1)) +
-                directional_index[i - 1]
+                (adx_series[i - 1] * (self._window - 1)) + directional_index[i - 1]
             ) / float(self._window)
 
         adx_series = np.concatenate((self._trs_initial, adx_series), axis=0)
@@ -871,10 +867,8 @@ class VortexIndicator(IndicatorMixin):
         trn = true_range.rolling(self._window, min_periods=min_periods).sum()
         vmp = np.abs(self._high - self._low.shift(1))
         vmm = np.abs(self._low - self._high.shift(1))
-        self._vip = vmp.rolling(
-            self._window, min_periods=min_periods).sum() / trn
-        self._vin = vmm.rolling(
-            self._window, min_periods=min_periods).sum() / trn
+        self._vip = vmp.rolling(self._window, min_periods=min_periods).sum() / trn
+        self._vin = vmm.rolling(self._window, min_periods=min_periods).sum() / trn
 
     def vortex_indicator_pos(self):
         """+VI
@@ -960,8 +954,7 @@ class PSARIndicator(IndicatorMixin):
 
             if up_trend:
                 self._psar.iloc[i] = self._psar.iloc[i - 1] + (
-                    acceleration_factor *
-                    (up_trend_high - self._psar.iloc[i - 1])
+                    acceleration_factor * (up_trend_high - self._psar.iloc[i - 1])
                 )
 
                 if min_low < self._psar.iloc[i]:
@@ -984,8 +977,7 @@ class PSARIndicator(IndicatorMixin):
                         self._psar.iloc[i] = low1
             else:
                 self._psar.iloc[i] = self._psar.iloc[i - 1] - (
-                    acceleration_factor *
-                    (self._psar.iloc[i - 1] - down_trend_low)
+                    acceleration_factor * (self._psar.iloc[i - 1] - down_trend_low)
                 )
 
                 if max_high > self._psar.iloc[i]:
@@ -1108,7 +1100,6 @@ class STCIndicator(IndicatorMixin):
         self._run()
 
     def _run(self):
-
         _emafast = _ema(self._close, self._window_fast, self._fillna)
         _emaslow = _ema(self._close, self._window_slow, self._fillna)
         _macd = _emafast - _emaslow
@@ -1120,8 +1111,7 @@ class STCIndicator(IndicatorMixin):
 
         _stoch_d_min = _stoch_d.rolling(window=self._cycle).min()
         _stoch_d_max = _stoch_d.rolling(window=self._cycle).max()
-        _stoch_kd = 100 * (_stoch_d - _stoch_d_min) / \
-            (_stoch_d_max - _stoch_d_min)
+        _stoch_kd = 100 * (_stoch_d - _stoch_d_min) / (_stoch_d_max - _stoch_d_min)
         self._stc = _ema(_stoch_kd, self._smooth2, self._fillna)
 
     def stc(self):
@@ -1739,7 +1729,7 @@ def ichimoku_b(high, low, window2=26, window3=52, visual=False, fillna=False):
     ).ichimoku_b()
 
 
-def aroon_up(close, window=25, fillna=False):
+def aroon_up(high, low, window=25, fillna=False):
     """Aroon Indicator (AI)
 
     Identify when trends are likely to change direction (uptrend).
@@ -1749,7 +1739,8 @@ def aroon_up(close, window=25, fillna=False):
     https://www.investopedia.com/terms/a/aroon.asp
 
     Args:
-        close(pandas.Series): dataset 'Close' column.
+        high(pandas.Series): dataset 'High' column.
+        low(pandas.Series): dataset 'Low' column.
         window(int): n period.
         fillna(bool): if True, fill nan values.
 
@@ -1757,10 +1748,10 @@ def aroon_up(close, window=25, fillna=False):
         pandas.Series: New feature generated.
 
     """
-    return AroonIndicator(close=close, window=window, fillna=fillna).aroon_up()
+    return AroonIndicator(high=high, low=low, window=window, fillna=fillna).aroon_up()
 
 
-def aroon_down(close, window=25, fillna=False):
+def aroon_down(high, low, window=25, fillna=False):
     """Aroon Indicator (AI)
 
     Identify when trends are likely to change direction (downtrend).
@@ -1770,14 +1761,15 @@ def aroon_down(close, window=25, fillna=False):
     https://www.investopedia.com/terms/a/aroon.asp
 
     Args:
-        close(pandas.Series): dataset 'Close' column.
+        high(pandas.Series): dataset 'High' column.
+        low(pandas.Series): dataset 'Low' column.
         window(int): n period.
         fillna(bool): if True, fill nan values.
 
     Returns:
         pandas.Series: New feature generated.
     """
-    return AroonIndicator(close=close, window=window, fillna=fillna).aroon_down()
+    return AroonIndicator(high=high, low=low, window=window, fillna=fillna).aroon_down()
 
 
 def psar_up(high, low, close, step=0.02, max_step=0.20, fillna=False):
