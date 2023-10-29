@@ -11,8 +11,8 @@ isort-fix:
 	isort --recursive ta test
 
 lint: isort
-	prospector test/
-	prospector ta/
+	prospector --no-autodetect test/
+	prospector --no-autodetect ta/
 
 test: lint
 	coverage run -m unittest discover

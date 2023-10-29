@@ -29,9 +29,11 @@ class TestOnBalanceVolumeIndicator(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls._df = pd.read_csv(cls._filename, sep=",")
-        cls._params = dict(
-            close=cls._df["Close"], volume=cls._df["Volume"], fillna=False
-        )
+        cls._params = {
+            "close": cls._df["Close"],
+            "volume": cls._df["Volume"],
+            "fillna": False,
+        }
         cls._indicator = OnBalanceVolumeIndicator(**cls._params)
 
     @classmethod
@@ -63,9 +65,12 @@ class TestForceIndexIndicator(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls._df = pd.read_csv(cls._filename, sep=",")
-        cls._params = dict(
-            close=cls._df["Close"], volume=cls._df["Volume"], window=13, fillna=False
-        )
+        cls._params = {
+            "close": cls._df["Close"],
+            "volume": cls._df["Volume"],
+            "window": 13,
+            "fillna": False,
+        }
         cls._indicator = ForceIndexIndicator(**cls._params)
 
     @classmethod
@@ -97,13 +102,13 @@ class TestEaseOfMovementIndicator(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls._df = pd.read_csv(cls._filename, sep=",")
-        cls._params = dict(
-            high=cls._df["High"],
-            low=cls._df["Low"],
-            volume=cls._df["Volume"],
-            window=14,
-            fillna=False,
-        )
+        cls._params = {
+            "high": cls._df["High"],
+            "low": cls._df["Low"],
+            "volume": cls._df["Volume"],
+            "window": 14,
+            "fillna": False,
+        }
         cls._indicator = EaseOfMovementIndicator(**cls._params)
 
     @classmethod
@@ -149,13 +154,13 @@ class TestAccDistIndexIndicator(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls._df = pd.read_csv(cls._filename, sep=",")
-        cls._params = dict(
-            high=cls._df["High"],
-            low=cls._df["Low"],
-            close=cls._df["Close"],
-            volume=cls._df["Volume"],
-            fillna=False,
-        )
+        cls._params = {
+            "high": cls._df["High"],
+            "low": cls._df["Low"],
+            "close": cls._df["Close"],
+            "volume": cls._df["Volume"],
+            "fillna": False,
+        }
         cls._indicator = AccDistIndexIndicator(**cls._params)
 
     @classmethod
@@ -187,14 +192,14 @@ class TestMFIIndicator(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls._df = pd.read_csv(cls._filename, sep=",")
-        cls._params = dict(
-            high=cls._df["High"],
-            low=cls._df["Low"],
-            close=cls._df["Close"],
-            volume=cls._df["Volume"],
-            window=14,
-            fillna=False,
-        )
+        cls._params = {
+            "high": cls._df["High"],
+            "low": cls._df["Low"],
+            "close": cls._df["Close"],
+            "volume": cls._df["Volume"],
+            "window": 14,
+            "fillna": False,
+        }
         cls._indicator = MFIIndicator(**cls._params)
 
     @classmethod
@@ -226,13 +231,13 @@ class TestVolumeWeightedAveragePrice(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls._df = pd.read_csv(cls._filename, sep=",")
-        cls._params = dict(
-            high=cls._df["High"],
-            low=cls._df["Low"],
-            close=cls._df["Close"],
-            volume=cls._df["Volume"],
-            fillna=False,
-        )
+        cls._params = {
+            "high": cls._df["High"],
+            "low": cls._df["Low"],
+            "close": cls._df["Close"],
+            "volume": cls._df["Volume"],
+            "fillna": False,
+        }
         cls._indicator = VolumeWeightedAveragePrice(**cls._params)
 
     @classmethod
