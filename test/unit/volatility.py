@@ -43,13 +43,13 @@ class TestAverageTrueRange(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls._df = pd.read_csv(cls._filename, sep=",")
-        cls._params = dict(
-            high=cls._df["High"],
-            low=cls._df["Low"],
-            close=cls._df["Close"],
-            window=14,
-            fillna=False,
-        )
+        cls._params = {
+            "high": cls._df["High"],
+            "low": cls._df["Low"],
+            "close": cls._df["Close"],
+            "window": 14,
+            "fillna": False,
+        }
         cls._indicator = AverageTrueRange(**cls._params)
 
     @classmethod
@@ -82,13 +82,13 @@ class TestAverageTrueRange2(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls._df = pd.read_csv(cls._filename, sep=",")
-        cls._params = dict(
-            high=cls._df["High"],
-            low=cls._df["Low"],
-            close=cls._df["Close"],
-            window=10,
-            fillna=False,
-        )
+        cls._params = {
+            "high": cls._df["High"],
+            "low": cls._df["Low"],
+            "close": cls._df["Close"],
+            "window": 10,
+            "fillna": False,
+        }
         cls._indicator = AverageTrueRange(**cls._params)
 
     @classmethod
@@ -120,9 +120,12 @@ class TestBollingerBands(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls._df = pd.read_csv(cls._filename, sep=",")
-        cls._params = dict(
-            close=cls._df["Close"], window=20, window_dev=2, fillna=False
-        )
+        cls._params = {
+            "close": cls._df["Close"],
+            "window": 20,
+            "window_dev": 2,
+            "fillna": False,
+        }
         cls._indicator = BollingerBands(**cls._params)
 
     @classmethod
@@ -239,14 +242,14 @@ class TestDonchianChannel(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls._df = pd.read_csv(cls._filename, sep=",")
-        cls._params = dict(
-            high=cls._df["high"],
-            low=cls._df["low"],
-            close=cls._df["close"],
-            window=20,
-            offset=0,
-            fillna=False,
-        )
+        cls._params = {
+            "high": cls._df["high"],
+            "low": cls._df["low"],
+            "close": cls._df["close"],
+            "window": 20,
+            "offset": 0,
+            "fillna": False,
+        }
         cls._indicator = DonchianChannel(**cls._params)
 
     @classmethod
@@ -335,14 +338,14 @@ class TestDonchianChannel2(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls._df = pd.read_csv(cls._filename, sep=",")
-        cls._params = dict(
-            high=cls._df["high"],
-            low=cls._df["low"],
-            close=cls._df["close"],
-            window=20,
-            offset=1,
-            fillna=False,
-        )
+        cls._params = {
+            "high": cls._df["high"],
+            "low": cls._df["low"],
+            "close": cls._df["close"],
+            "window": 20,
+            "offset": 1,
+            "fillna": False,
+        }
         cls._indicator = DonchianChannel(**cls._params)
 
     @classmethod
@@ -431,15 +434,15 @@ class TestKeltnerChannel(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls._df = pd.read_csv(cls._filename, sep=",")
-        cls._params = dict(
-            high=cls._df["High"],
-            low=cls._df["Low"],
-            close=cls._df["Close"],
-            window=20,
-            window_atr=10,
-            fillna=False,
-            original_version=False,
-        )
+        cls._params = {
+            "high": cls._df["High"],
+            "low": cls._df["Low"],
+            "close": cls._df["Close"],
+            "window": 20,
+            "window_atr": 10,
+            "fillna": False,
+            "original_version": False,
+        }
         cls._indicator = KeltnerChannel(**cls._params)
 
     @classmethod
@@ -556,7 +559,7 @@ class TestUlcerIndex(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls._df = pd.read_csv(cls._filename, sep=",")
-        cls._params = dict(close=cls._df["Close"], window=14, fillna=False)
+        cls._params = {"close": cls._df["Close"], "window": 14, "fillna": False}
         cls._indicator = UlcerIndex(**cls._params)
 
     @classmethod

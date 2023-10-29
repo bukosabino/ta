@@ -18,12 +18,17 @@ jobs:
           name: Run linter
           command: |
             . venv/bin/activate
-            make lint
+            pycodestyle --max-line-length=119 ta && isort --check-only --recursive ta
       - run:
           name: Run test
           command: |
             . venv/bin/activate
             python -m unittest discover
+
+  test_py35:
+    <<: *test-template
+    docker:
+      - image: circleci/python:3.5
 
   test_py37:
     <<: *test-template
@@ -51,7 +56,7 @@ jobs:
       - run:
           name: Run coverage
           command: |
-            coverage run -m unittest discover
+            coverage run tests.py
             coverage report -m
       - run:
           name: Publish coverage
@@ -82,9 +87,9 @@ workflows:
   version: 2
   build:
     jobs:
-      # - test_py36
-      - test_py37
+      - test_py36
       # - test_py38  # not working yet
+      # - test_py37
       # - test_py35
       - coverage
       - doc
