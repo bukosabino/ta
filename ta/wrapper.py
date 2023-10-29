@@ -386,7 +386,9 @@ def add_trend_ta(
         df[f"{colprefix}trend_psar_up"] = indicator_psar.psar_up()
         df[f"{colprefix}trend_psar_down"] = indicator_psar.psar_down()
         df[f"{colprefix}trend_psar_up_indicator"] = indicator_psar.psar_up_indicator()
-        df[f"{colprefix}trend_psar_down_indicator"] = indicator_psar.psar_down_indicator()
+        df[
+            f"{colprefix}trend_psar_down_indicator"
+        ] = indicator_psar.psar_down_indicator()
 
     return df
 
@@ -601,7 +603,5 @@ def add_all_ta_features(
         colprefix=colprefix,
         vectorized=vectorized,
     )
-    df = add_others_ta(
-        df=df, close=close, fillna=fillna, colprefix=colprefix
-    )
+    df = add_others_ta(df=df, close=close, fillna=fillna, colprefix=colprefix)
     return df
