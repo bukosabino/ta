@@ -1721,7 +1721,7 @@ def ichimoku_b(high, low, window2=26, window3=52, visual=False, fillna=False):
     ).ichimoku_b()
 
 
-def aroon_up(close, window=25, fillna=False):
+def aroon_up(high, low, window=25, fillna=False):
     """Aroon Indicator (AI)
 
     Identify when trends are likely to change direction (uptrend).
@@ -1731,7 +1731,8 @@ def aroon_up(close, window=25, fillna=False):
     https://www.investopedia.com/terms/a/aroon.asp
 
     Args:
-        close(pandas.Series): dataset 'Close' column.
+        high(pandas.Series): dataset 'High' column.
+        low(pandas.Series): dataset 'Low' column.
         window(int): n period.
         fillna(bool): if True, fill nan values.
 
@@ -1739,10 +1740,10 @@ def aroon_up(close, window=25, fillna=False):
         pandas.Series: New feature generated.
 
     """
-    return AroonIndicator(close=close, window=window, fillna=fillna).aroon_up()
+    return AroonIndicator(high=high, low=low, window=window, fillna=fillna).aroon_up()
 
 
-def aroon_down(close, window=25, fillna=False):
+def aroon_down(high, low, window=25, fillna=False):
     """Aroon Indicator (AI)
 
     Identify when trends are likely to change direction (downtrend).
@@ -1752,14 +1753,15 @@ def aroon_down(close, window=25, fillna=False):
     https://www.investopedia.com/terms/a/aroon.asp
 
     Args:
-        close(pandas.Series): dataset 'Close' column.
+        high(pandas.Series): dataset 'High' column.
+        low(pandas.Series): dataset 'Low' column.
         window(int): n period.
         fillna(bool): if True, fill nan values.
 
     Returns:
         pandas.Series: New feature generated.
     """
-    return AroonIndicator(close=close, window=window, fillna=fillna).aroon_down()
+    return AroonIndicator(high=high, low=low, window=window, fillna=fillna).aroon_down()
 
 
 def psar_up(high, low, close, step=0.02, max_step=0.20, fillna=False):

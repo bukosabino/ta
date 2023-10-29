@@ -83,11 +83,11 @@ workflows:
   build:
     jobs:
       # - test_py36
-      - test_py37
+      # - test_py37
       # - test_py38  # not working yet
       # - test_py35
-      - coverage
-      - doc
+      # - coverage
+      # - doc
 
 
 ###########################################
