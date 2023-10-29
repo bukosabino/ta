@@ -29,7 +29,11 @@ class TestOnBalanceVolumeIndicator(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls._df = pd.read_csv(cls._filename, sep=",")
-        cls._params = {"close": cls._df['Close'], "volume": cls._df['Volume'], "fillna": False}
+        cls._params = {
+            "close": cls._df["Close"],
+            "volume": cls._df["Volume"],
+            "fillna": False,
+        }
         cls._indicator = OnBalanceVolumeIndicator(**cls._params)
 
     @classmethod
@@ -61,7 +65,12 @@ class TestForceIndexIndicator(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls._df = pd.read_csv(cls._filename, sep=",")
-        cls._params = {"close": cls._df['Close'], "volume": cls._df['Volume'], "window": 13, "fillna": False}
+        cls._params = {
+            "close": cls._df["Close"],
+            "volume": cls._df["Volume"],
+            "window": 13,
+            "fillna": False,
+        }
         cls._indicator = ForceIndexIndicator(**cls._params)
 
     @classmethod

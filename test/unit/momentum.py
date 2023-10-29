@@ -41,7 +41,7 @@ class TestRateOfChangeIndicator(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls._df = pd.read_csv(cls._filename, sep=",")
-        cls._params = {"close": cls._df['Close'], "window": 12, "fillna": False}
+        cls._params = {"close": cls._df["Close"], "window": 12, "fillna": False}
         cls._indicator = ROCIndicator(**cls._params)
 
     @classmethod
@@ -74,7 +74,7 @@ class TestRSIIndicator(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls._df = pd.read_csv(cls._filename, sep=",")
-        cls._params = {"close": cls._df['Close'], "window": 14, "fillna": False}
+        cls._params = {"close": cls._df["Close"], "window": 14, "fillna": False}
         cls._indicator = RSIIndicator(**cls._params)
 
     @classmethod
@@ -106,7 +106,13 @@ class TestStochRSIIndicator(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls._df = pd.read_csv(cls._filename, sep=",")
-        cls._params = {"close": cls._df['Close'], "window": 14, "smooth1": 3, "smooth2": 3, "fillna": False}
+        cls._params = {
+            "close": cls._df["Close"],
+            "window": 14,
+            "smooth1": 3,
+            "smooth2": 3,
+            "fillna": False,
+        }
         cls._indicator = StochRSIIndicator(**cls._params)
 
     @classmethod
@@ -139,9 +145,9 @@ class TestUltimateOscillator(unittest.TestCase):
     def setUpClass(cls):
         cls._df = pd.read_csv(cls._filename, sep=",")
         cls._params = {
-            "high": cls._df['High'],
-            "low": cls._df['Low'],
-            "close": cls._df['Close'],
+            "high": cls._df["High"],
+            "low": cls._df["Low"],
+            "close": cls._df["Close"],
             "window1": 7,
             "window2": 14,
             "window3": 28,
@@ -273,7 +279,11 @@ class TestKAMAIndicator(unittest.TestCase):
     def setUpClass(cls):
         cls._df = pd.read_csv(cls._filename, sep=",")
         cls._params = {
-            "close": cls._df["Close"], "window": 10, "pow1": 2, "pow2": 30, "fillna": False
+            "close": cls._df["Close"],
+            "window": 10,
+            "pow1": 2,
+            "pow2": 30,
+            "fillna": False,
         }
         cls._indicator = KAMAIndicator(**cls._params)
 
@@ -307,7 +317,10 @@ class TestTSIIndicator(unittest.TestCase):
     def setUpClass(cls):
         cls._df = pd.read_csv(cls._filename, sep=",")
         cls._params = {
-            "close": cls._df["Close"], "window_slow": 25, "window_fast": 13, "fillna": False
+            "close": cls._df["Close"],
+            "window_slow": 25,
+            "window_fast": 13,
+            "fillna": False,
         }
         cls._indicator = TSIIndicator(**cls._params)
 

@@ -374,13 +374,12 @@ class TestSTCIndicator(unittest.TestCase):
 
 
 class TestWMAIndicator(unittest.TestCase):
-
     _filename = "test/data/cs-wma.csv"
 
     @classmethod
     def setUpClass(cls):
         cls._df = pd.read_csv(cls._filename, sep=",")
-        cls._params = {"close": cls._df['Close'], "window": 9, "fillna": False}
+        cls._params = {"close": cls._df["Close"], "window": 9, "fillna": False}
         cls._indicator = WMAIndicator(**cls._params)
 
     @classmethod

@@ -120,7 +120,12 @@ class TestBollingerBands(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls._df = pd.read_csv(cls._filename, sep=",")
-        cls._params = {"close": cls._df['Close'], "window": 20, "window_dev": 2, "fillna": False}
+        cls._params = {
+            "close": cls._df["Close"],
+            "window": 20,
+            "window_dev": 2,
+            "fillna": False,
+        }
         cls._indicator = BollingerBands(**cls._params)
 
     @classmethod
@@ -554,7 +559,7 @@ class TestUlcerIndex(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls._df = pd.read_csv(cls._filename, sep=",")
-        cls._params = {"close": cls._df['Close'], "window": 14, "fillna": False}
+        cls._params = {"close": cls._df["Close"], "window": 14, "fillna": False}
         cls._indicator = UlcerIndex(**cls._params)
 
     @classmethod
