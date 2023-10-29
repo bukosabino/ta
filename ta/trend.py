@@ -29,7 +29,9 @@ class AroonIndicator(IndicatorMixin):
         fillna(bool): if True, fill nan values.
     """
 
-    def __init__(self, high: pd.Series, low: pd.Series, window: int = 25, fillna: bool = False):
+    def __init__(
+        self, high: pd.Series, low: pd.Series, window: int = 25, fillna: bool = False
+    ):
         self._high = high
         self._low = low
         self._window = window
@@ -40,14 +42,12 @@ class AroonIndicator(IndicatorMixin):
         # Note: window-size + current time point = self._window + 1
         min_periods = 1 if self._fillna else self._window + 1
 
-        rolling_high = self._high.rolling(
-            self._window + 1, min_periods=min_periods)
+        rolling_high = self._high.rolling(self._window + 1, min_periods=min_periods)
         self._aroon_up = rolling_high.apply(
             lambda x: float(np.argmax(x)) / self._window * 100, raw=True
         )
 
-        rolling_low = self._low.rolling(
-            self._window + 1, min_periods=min_periods)
+        rolling_low = self._low.rolling(self._window + 1, min_periods=min_periods)
         self._aroon_down = rolling_low.apply(
             lambda x: float(np.argmin(x)) / self._window * 100, raw=True
         )
@@ -726,7 +726,7 @@ class ADXIndicator(IndicatorMixin):
 
         self._trs_initial = np.zeros(self._window - 1)
         self._trs = np.zeros(len(self._close) - (self._window - 1))
-        self._trs[0] = diff_directional_movement.dropna().iloc[0: self._window].sum()
+        self._trs[0] = diff_directional_movement.dropna().iloc[0 : self._window].sum()
         diff_directional_movement = diff_directional_movement.reset_index(drop=True)
 
         for i in range(1, len(self._trs) - 1):
@@ -742,7 +742,7 @@ class ADXIndicator(IndicatorMixin):
         neg = abs(((diff_down > diff_up) & (diff_down > 0)) * diff_down)
 
         self._dip = np.zeros(len(self._close) - (self._window - 1))
-        self._dip[0] = pos.dropna().iloc[0: self._window].sum()
+        self._dip[0] = pos.dropna().iloc[0 : self._window].sum()
 
         pos = pos.reset_index(drop=True)
 
@@ -754,7 +754,7 @@ class ADXIndicator(IndicatorMixin):
             )
 
         self._din = np.zeros(len(self._close) - (self._window - 1))
-        self._din[0] = neg.dropna().iloc[0: self._window].sum()
+        self._din[0] = neg.dropna().iloc[0 : self._window].sum()
 
         neg = neg.reset_index(drop=True)
 
