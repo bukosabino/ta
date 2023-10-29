@@ -720,10 +720,10 @@ class ADXIndicator(IndicatorMixin):
             raise ValueError("window may not be 0")
 
         close_shift = self._close.shift(1)
-        
+
         pdm = _get_min_max(self._high, close_shift, "max")
         pdn = _get_min_max(self._low, close_shift, "min")
-        
+
         diff_directional_movement = pdm - pdn
 
         self._trs_initial = np.zeros(self._window - 1)
@@ -732,7 +732,11 @@ class ADXIndicator(IndicatorMixin):
         diff_directional_movement = diff_directional_movement.reset_index(drop=True)
 
         for i in range(1, len(self._trs) - 1):
-            self._trs[i] = (self._trs[i - 1] - (self._trs[i - 1] / float(self._window)) + diff_directional_movement[self._window + i])
+            self._trs[i] = (
+                self._trs[i - 1]
+                - (self._trs[i - 1] / float(self._window))
+                + diff_directional_movement[self._window + i]
+            )
 
         diff_up = self._high - self._high.shift(1)
         diff_down = self._low.shift(1) - self._low
@@ -746,7 +750,11 @@ class ADXIndicator(IndicatorMixin):
         pos = pos.reset_index(drop=True)
 
         for i in range(1, len(self._dip) - 1):
-            self._dip[i] = (self._dip[i - 1] - (self._dip[i - 1] / float(self._window)) + pos[self._window + i])
+            self._dip[i] = (
+                self._dip[i - 1]
+                - (self._dip[i - 1] / float(self._window))
+                + pos[self._window + i]
+            )
 
         self._din = np.zeros(len(self._close) - (self._window - 1))
         self._din[0] = neg.dropna().iloc[0 : self._window].sum()
@@ -754,7 +762,11 @@ class ADXIndicator(IndicatorMixin):
         neg = neg.reset_index(drop=True)
 
         for i in range(1, len(self._din) - 1):
-            self._din[i] = (self._din[i - 1] - (self._din[i - 1] / float(self._window)) + neg[self._window + i])
+            self._din[i] = (
+                self._din[i - 1]
+                - (self._din[i - 1] / float(self._window))
+                + neg[self._window + i]
+            )
 
     def adx(self) -> pd.Series:
         """Average Directional Index (ADX)
@@ -784,7 +796,9 @@ class ADXIndicator(IndicatorMixin):
 
         for idx in range(len(self._trs)):
             if dip[idx] + din[idx] != 0:
-                directional_index[idx] = 100 * np.abs((dip[idx] - din[idx]) / (dip[idx] + din[idx]))
+                directional_index[idx] = 100 * np.abs(
+                    (dip[idx] - din[idx]) / (dip[idx] + din[idx])
+                )
 
             else:
                 directional_index[idx] = 0
@@ -793,14 +807,15 @@ class ADXIndicator(IndicatorMixin):
         adx_series[self._window] = directional_index[0 : self._window].mean()
 
         for i in range(self._window + 1, len(adx_series)):
-            adx_series[i] = ((adx_series[i - 1] * (self._window - 1)) + directional_index[i - 1]) / float(self._window)
+            adx_series[i] = (
+                (adx_series[i - 1] * (self._window - 1)) + directional_index[i - 1]
+            ) / float(self._window)
 
         adx_series = np.concatenate((self._trs_initial, adx_series), axis=0)
         adx_series = pd.Series(data=adx_series, index=self._close.index)
         adx_series = self._check_fillna(adx_series, value=20)
 
         return pd.Series(adx_series, name="adx")
-
 
     def adx_pos(self) -> pd.Series:
         """Plus Directional Indicator (+DI)
@@ -817,10 +832,11 @@ class ADXIndicator(IndicatorMixin):
             else:
                 dip[i + self._window] = 0
 
-        adx_pos_series = self._check_fillna(pd.Series(dip, index=self._close.index), value=20)
-        
-        return pd.Series(adx_pos_series, name="adx_pos")
+        adx_pos_series = self._check_fillna(
+            pd.Series(dip, index=self._close.index), value=20
+        )
 
+        return pd.Series(adx_pos_series, name="adx_pos")
 
     def adx_neg(self) -> pd.Series:
         """Minus Directional Indicator (-DI)
@@ -837,10 +853,11 @@ class ADXIndicator(IndicatorMixin):
             else:
                 din[i + self._window] = 0
 
-        adx_neg_series = self._check_fillna(pd.Series(din, index=self._close.index), value=20)
-        
-        return pd.Series(adx_neg_series, name="adx_neg")
+        adx_neg_series = self._check_fillna(
+            pd.Series(din, index=self._close.index), value=20
+        )
 
+        return pd.Series(adx_neg_series, name="adx_neg")
 
 
 class VortexIndicator(IndicatorMixin):
