@@ -1,7 +1,6 @@
 import unittest
 
 import pandas as pd
-
 from ta.volatility import (
     AverageTrueRange,
     BollingerBands,

@@ -1,7 +1,6 @@
 import unittest
 
 import pandas as pd
-
 from ta.volume import (
     AccDistIndexIndicator,
     EaseOfMovementIndicator,
@@ -256,6 +255,15 @@ class TestVolumeWeightedAveragePrice(unittest.TestCase):
         result = self._indicator.volume_weighted_average_price()
         pd.testing.assert_series_equal(
             self._df[target].tail(), result.tail(), check_names=False
+        )
+
+    def test_vwap_stdev_bands(self):
+        bands = self._indicator.stdev_bands([2, -2])
+        pd.testing.assert_series_equal(
+            self._df["vwap_2stdev"].tail(), bands[0].tail(), check_names=False
+        )
+        pd.testing.assert_series_equal(
+            self._df["vwap_-2stdev"].tail(), bands[1].tail(), check_names=False
         )
 
 
