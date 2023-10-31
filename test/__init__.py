@@ -70,4 +70,5 @@ __all__ = [
     "TestMFIIndicator",
     "TestOnBalanceVolumeIndicator",
     "TestVolumeWeightedAveragePrice",
+    "TestVolumePriceTrendIndicator",
 ]
