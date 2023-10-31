@@ -9,6 +9,7 @@ from ta.volume import (
     MFIIndicator,
     OnBalanceVolumeIndicator,
     VolumeWeightedAveragePrice,
+    VolumePriceTrendIndicator,
     acc_dist_index,
     ease_of_movement,
     force_index,
@@ -16,6 +17,7 @@ from ta.volume import (
     on_balance_volume,
     sma_ease_of_movement,
     volume_weighted_average_price,
+    volume_price_trend
 )
 
 
@@ -253,6 +255,71 @@ class TestVolumeWeightedAveragePrice(unittest.TestCase):
             self._df[target].tail(), result.tail(), check_names=False
         )
 
+class TestVolumePriceTrendIndicator(unittest.TestCase):
+    """
+    Original VPT: https://en.wikipedia.org/wiki/Volume%E2%80%93price_trend
+    One more: https://www.barchart.com/education/technical-indicators/price_volume_trend
+    According to TradingView: PVT = [((CurrentClose - PreviousClose) / PreviousClose) x Volume] + PreviousPVT
+    
+    Smoothed version (by Alex Orekhov (everget)): https://ru.tradingview.com/script/3Ah2ALck-Price-Volume-Trend/
+    His script is using `pvt` (TradingView built-in variable) as described in TradingView documentation of PVT and just smoothing it with ema or sma by choice.
+    You can find smoothing here (13 row of script):
+    `signal = signalType == "EMA" ? ema(pvt, signalLength) : sma(pvt, signalLength)`
+    """
+
+    _filename = "test/data/cs-vpt.csv"
+
+    @classmethod
+    def setUpClass(cls):
+        cls._df = pd.read_csv(cls._filename, sep=",")
+        cls._params = dict( # default VPT params, unsmoothed
+            close=cls._df["Close"],
+            volume=cls._df["Volume"],
+            fillna=False,
+            smoothing_factor=None,
+            dropnans=False
+        )
+        cls._params_smoothed = dict( # smoothed VPT params
+            close=cls._df["Close"],
+            volume=cls._df["Volume"],
+            fillna=False,
+            smoothing_factor=14,
+            dropnans=False
+        )
+        cls._indicator_default = VolumePriceTrendIndicator(**cls._params)
+        cls._indicator_smoothed = VolumePriceTrendIndicator(**cls._params_smoothed)
+
+    @classmethod
+    def tearDownClass(cls):
+        del cls._df
+
+    def test_vpt1(self):
+        target = "unsmoothed vpt"
+        result = volume_price_trend(**self._params)
+        pd.testing.assert_series_equal(
+            self._df[target].tail(), result.tail(), check_names=False
+        )
+
+    def test_vpt2(self):
+        target = "unsmoothed vpt"
+        result = self._indicator_default.volume_price_trend()
+        pd.testing.assert_series_equal(
+            self._df[target].tail(), result.tail(), check_names=False
+        )
+
+    def test_vpt3(self):
+        target = "14-smoothed vpt"
+        result = volume_price_trend(**self._params_smoothed)
+        pd.testing.assert_series_equal(
+            self._df[target].tail(), result.tail(), check_names=False
+        )
+
+    def test_vpt4(self):
+        target = "14-smoothed vpt"
+        result = self._indicator_default.volume_price_trend()
+        pd.testing.assert_series_equal(
+            self._df[target].tail(), result.tail(), check_names=False
+        )
 
 if __name__ == "__main__":
     unittest.main()
