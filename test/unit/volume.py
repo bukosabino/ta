@@ -316,7 +316,7 @@ class TestVolumePriceTrendIndicator(unittest.TestCase):
 
     def test_vpt4(self):
         target = "14-smoothed vpt"
-        result = self._indicator_default.volume_price_trend()
+        result = self._indicator_smoothed.volume_price_trend()
         pd.testing.assert_series_equal(
             self._df[target].tail(), result.tail(), check_names=False
         )
