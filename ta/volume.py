@@ -6,6 +6,8 @@
 
 """
 
+import typing as tp
+
 import numpy as np
 import pandas as pd
 
@@ -269,7 +271,14 @@ class VolumePriceTrendIndicator(IndicatorMixin):
         dropnans(bool)=False: drop nans after indicator calculated.
     """
 
-    def __init__(self, close: pd.Series, volume: pd.Series, fillna: bool = False, smoothing_factor: int = None, dropnans:bool = False):
+    def __init__(
+        self,
+        close: pd.Series,
+        volume: pd.Series,
+        fillna: bool = False,
+        smoothing_factor: tp.Optional[int] = None,
+        dropnans: bool = False,
+    ):
         self._close = close
         self._volume = volume
         self._fillna = fillna
@@ -280,9 +289,12 @@ class VolumePriceTrendIndicator(IndicatorMixin):
     def _run(self):
         self._vpt = (self._close.pct_change() * self._volume).cumsum()
         if self._smoothing_factor:
-            min_periods = 0 if self._fillna else self._smoothing_factor 
-            self._vpt = self._vpt.rolling(self._smoothing_factor, min_periods=min_periods).mean()
-        if self._dropnans: self._vpt = self._vpt.dropna()
+            min_periods = 0 if self._fillna else self._smoothing_factor
+            self._vpt = self._vpt.rolling(
+                self._smoothing_factor, min_periods=min_periods
+            ).mean()
+        if self._dropnans:
+            self._vpt = self._vpt.dropna()
 
     def volume_price_trend(self) -> pd.Series:
         """Volume-price trend (VPT)
@@ -612,7 +624,9 @@ def sma_ease_of_movement(high, low, volume, window=14, fillna=False):
     ).sma_ease_of_movement()
 
 
-def volume_price_trend(close, volume, fillna=False, smoothing_factor: int=None, dropnans: bool=False):
+def volume_price_trend(
+    close, volume, fillna=False, smoothing_factor: tp.Optional[int] = None, dropnans: bool = False
+):
     """Volume-price trend (VPT)
 
     Is based on a running cumulative volume that adds or substracts a multiple
@@ -632,7 +646,11 @@ def volume_price_trend(close, volume, fillna=False, smoothing_factor: int=None, 
         pandas.Series: New feature generated.
     """
     return VolumePriceTrendIndicator(
-        close=close, volume=volume, fillna=fillna, smoothing_factor=smoothing_factor, dropnans=dropnans
+        close=close,
+        volume=volume,
+        fillna=fillna,
+        smoothing_factor=smoothing_factor,
+        dropnans=dropnans,
     ).volume_price_trend()
 
 
