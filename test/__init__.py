@@ -36,6 +36,7 @@ from test.unit.volume import (
     TestMFIIndicator,
     TestOnBalanceVolumeIndicator,
     TestVolumeWeightedAveragePrice,
+    TestVolumePriceTrendIndicator,
 )
 
 __all__ = [
@@ -70,4 +71,5 @@ __all__ = [
     "TestMFIIndicator",
     "TestOnBalanceVolumeIndicator",
     "TestVolumeWeightedAveragePrice",
+    "TestVolumePriceTrendIndicator",
 ]
