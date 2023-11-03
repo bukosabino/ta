@@ -42,7 +42,6 @@ class IndicatorMixin:
         h, l, c = high.values, low.values, prev_close.values
         tmp = np.max([h-l, np.abs(h-c), np.abs(l-c)], axis=0)
         tmp[0] = h[0] - l[0] # dunno about it.
-        
         return pd.Series(tmp, index=high.index, name='TR')
 
 
