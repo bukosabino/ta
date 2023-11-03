@@ -39,11 +39,12 @@ class IndicatorMixin:
     def _true_range(
         high: pd.Series, low: pd.Series, prev_close: pd.Series
     ) -> pd.Series:
-        tr1 = high - low
-        tr2 = (high - prev_close).abs()
-        tr3 = (low - prev_close).abs()
-        true_range = pd.DataFrame(data={"tr1": tr1, "tr2": tr2, "tr3": tr3}).max(axis=1)
-        return true_range
+        h, l, c = high.values, low.values, prev_close.values
+        tmp = np.max([h-l, np.abs(h-c), np.abs(l-c)], axis=0)
+        tmp[0] = h[0] - l[0] # dunno about it.
+        
+        return pd.Series(tmp, index=high.index, name='TR')
+
 
 
 def dropna(df: pd.DataFrame) -> pd.DataFrame:
