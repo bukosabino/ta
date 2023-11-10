@@ -3,3 +3,5 @@
 # doc
 Sphinx==2.2.1
 sphinx-rtd-theme==0.4.3
+docutils==0.17.1
+Jinja2<3.1

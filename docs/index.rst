@@ -6,10 +6,10 @@
 Welcome to Technical Analysis Library in Python's documentation!
 ================================================================
 
-It is a Technical Analysis library to financial time series datasets (open, close, high, low, volume). You can use it to do feature engineering from financial datasets. It is builded on Python Pandas library.
+It is a Technical Analysis library to financial time series datasets (open, close, high, low, volume). You can use it to do feature engineering from financial datasets. It is built on Python Pandas library.
 
 Installation (python >= v3.6)
-=========================
+================================================================
 
 .. code-block:: bash
 
@@ -25,16 +25,17 @@ Example adding all features:
 .. code-block:: python
 
     import pandas as pd
-    import ta
+    from ta import add_all_ta_features
+    from ta.utils import dropna
 
     # Load datas
     df = pd.read_csv('ta/tests/data/datas.csv', sep=',')
 
     # Clean NaN values
-    df = ta.utils.dropna(df)
+    df = dropna(df)
 
     # Add ta features filling NaN values
-    df = ta.add_all_ta_features(
+    df = add_all_ta_features(
         df, open="Open", high="High", low="Low", close="Close", volume="Volume_BTC", fillna=True)
 
 
@@ -43,16 +44,18 @@ Example adding a particular feature:
 .. code-block:: python
 
    import pandas as pd
-   import ta
+   from ta.utils import dropna
+   from ta.volatility import BollingerBands
+
 
    # Load datas
    df = pd.read_csv('ta/tests/data/datas.csv', sep=',')
 
    # Clean NaN values
-   df = ta.utils.dropna(df)
+   df = dropna(df)
 
    # Initialize Bollinger Bands Indicator
-   indicator_bb = ta.volatility.BollingerBands(close=df["Close"], n=20, ndev=2)
+   indicator_bb = BollingerBands(close=df["Close"], window=20, window_dev=2)
 
    # Add Bollinger Bands features
    df['bb_bbm'] = indicator_bb.bollinger_mavg()

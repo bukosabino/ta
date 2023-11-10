@@ -8,7 +8,7 @@
 import numpy as np
 import pandas as pd
 
-from ta.utils import IndicatorMixin
+from ta.utils import IndicatorMixin, _ema
 
 
 class RSIIndicator(IndicatorMixin):
@@ -23,24 +23,32 @@ class RSIIndicator(IndicatorMixin):
 
     Args:
         close(pandas.Series): dataset 'Close' column.
-        n(int): n period.
+        window(int): n period.
         fillna(bool): if True, fill nan values.
     """
-    def __init__(self, close: pd.Series, n: int = 14, fillna: bool = False):
+
+    def __init__(self, close: pd.Series, window: int = 14, fillna: bool = False):
         self._close = close
-        self._n = n
+        self._window = window
         self._fillna = fillna
         self._run()
 
     def _run(self):
         diff = self._close.diff(1)
-        up = diff.where(diff > 0, 0.0)
-        dn = -diff.where(diff < 0, 0.0)
-        min_periods = 0 if self._fillna else self._n
-        emaup = up.ewm(alpha=1/self._n, min_periods=min_periods, adjust=False).mean()
-        emadn = dn.ewm(alpha=1/self._n, min_periods=min_periods, adjust=False).mean()
-        rs = emaup / emadn
-        self._rsi = pd.Series(np.where(emadn == 0, 100, 100-(100/(1+rs))), index=self._close.index)
+        up_direction = diff.where(diff > 0, 0.0)
+        down_direction = -diff.where(diff < 0, 0.0)
+        min_periods = 0 if self._fillna else self._window
+        emaup = up_direction.ewm(
+            alpha=1 / self._window, min_periods=min_periods, adjust=False
+        ).mean()
+        emadn = down_direction.ewm(
+            alpha=1 / self._window, min_periods=min_periods, adjust=False
+        ).mean()
+        relative_strength = emaup / emadn
+        self._rsi = pd.Series(
+            np.where(emadn == 0, 100, 100 - (100 / (1 + relative_strength))),
+            index=self._close.index,
+        )
 
     def rsi(self) -> pd.Series:
         """Relative Strength Index (RSI)
@@ -48,8 +56,8 @@ class RSIIndicator(IndicatorMixin):
         Returns:
             pandas.Series: New feature generated.
         """
-        rsi = self._check_fillna(self._rsi, value=50)
-        return pd.Series(rsi, name='rsi')
+        rsi_series = self._check_fillna(self._rsi, value=50)
+        return pd.Series(rsi_series, name="rsi")
 
 
 class TSIIndicator(IndicatorMixin):
@@ -61,27 +69,44 @@ class TSIIndicator(IndicatorMixin):
 
     Args:
         close(pandas.Series): dataset 'Close' column.
-        r(int): high period.
-        s(int): low period.
+        window_slow(int): high period.
+        window_fast(int): low period.
         fillna(bool): if True, fill nan values.
     """
 
-    def __init__(self, close: pd.Series, r: int = 25, s: int = 13, fillna: bool = False):
+    def __init__(
+        self,
+        close: pd.Series,
+        window_slow: int = 25,
+        window_fast: int = 13,
+        fillna: bool = False,
+    ):
         self._close = close
-        self._r = r
-        self._s = s
+        self._window_slow = window_slow
+        self._window_fast = window_fast
         self._fillna = fillna
         self._run()
 
     def _run(self):
-        m = self._close - self._close.shift(1)
-        min_periods_r = 0 if self._fillna else self._r
-        min_periods_s = 0 if self._fillna else self._s
-        m1 = m.ewm(span=self._r, min_periods=min_periods_r, adjust=False).mean().ewm(
-            span=self._s, min_periods=min_periods_s, adjust=False).mean()
-        m2 = abs(m).ewm(span=self._r, min_periods=min_periods_r, adjust=False).mean().ewm(
-            span=self._s, min_periods=min_periods_s, adjust=False).mean()
-        self._tsi = m1 / m2
+        diff_close = self._close - self._close.shift(1)
+        min_periods_r = 0 if self._fillna else self._window_slow
+        min_periods_s = 0 if self._fillna else self._window_fast
+        smoothed = (
+            diff_close.ewm(
+                span=self._window_slow, min_periods=min_periods_r, adjust=False
+            )
+            .mean()
+            .ewm(span=self._window_fast, min_periods=min_periods_s, adjust=False)
+            .mean()
+        )
+        smoothed_abs = (
+            abs(diff_close)
+            .ewm(span=self._window_slow, min_periods=min_periods_r, adjust=False)
+            .mean()
+            .ewm(span=self._window_fast, min_periods=min_periods_s, adjust=False)
+            .mean()
+        )
+        self._tsi = smoothed / smoothed_abs
         self._tsi *= 100
 
     def tsi(self) -> pd.Series:
@@ -90,8 +115,8 @@ class TSIIndicator(IndicatorMixin):
         Returns:
             pandas.Series: New feature generated.
         """
-        tsi = self._check_fillna(self._tsi, value=0)
-        return pd.Series(tsi, name='tsi')
+        tsi_series = self._check_fillna(self._tsi, value=0)
+        return pd.Series(tsi_series, name="tsi")
 
 
 class UltimateOscillator(IndicatorMixin):
@@ -114,62 +139,79 @@ class UltimateOscillator(IndicatorMixin):
         high(pandas.Series): dataset 'High' column.
         low(pandas.Series): dataset 'Low' column.
         close(pandas.Series): dataset 'Close' column.
-        s(int): short period.
-        m(int): medium period.
-        len(int): long period.
-        ws(float): weight of short BP average for UO.
-        wm(float): weight of medium BP average for UO.
-        wl(float): weight of long BP average for UO.
+        window1(int): short period.
+        window2(int): medium period.
+        window3(int): long period.
+        weight1(float): weight of short BP average for UO.
+        weight2(float): weight of medium BP average for UO.
+        weight3(float): weight of long BP average for UO.
         fillna(bool): if True, fill nan values with 50.
     """
 
-    def __init__(self,
-                 high: pd.Series,
-                 low: pd.Series,
-                 close: pd.Series,
-                 s: int = 7,
-                 m: int = 14,
-                 len: int = 28,
-                 ws: float = 4.0,
-                 wm: float = 2.0,
-                 wl: float = 1.0,
-                 fillna: bool = False):
+    def __init__(
+        self,
+        high: pd.Series,
+        low: pd.Series,
+        close: pd.Series,
+        window1: int = 7,
+        window2: int = 14,
+        window3: int = 28,
+        weight1: float = 4.0,
+        weight2: float = 2.0,
+        weight3: float = 1.0,
+        fillna: bool = False,
+    ):
         self._high = high
         self._low = low
         self._close = close
-        self._s = s
-        self._m = m
-        self._len = len
-        self._ws = ws
-        self._wm = wm
-        self._wl = wl
+        self._window1 = window1
+        self._window2 = window2
+        self._window3 = window3
+        self._weight1 = weight1
+        self._weight2 = weight2
+        self._weight3 = weight3
         self._fillna = fillna
         self._run()
 
     def _run(self):
-        cs = self._close.shift(1)
-        tr = self._true_range(self._high, self._low, cs)
-        bp = self._close - pd.DataFrame({'low': self._low, 'close': cs}).min(axis=1, skipna=False)
-        min_periods_s = 0 if self._fillna else self._s
-        min_periods_m = 0 if self._fillna else self._m
-        min_periods_len = 0 if self._fillna else self._len
-        avg_s = bp.rolling(
-            self._s, min_periods=min_periods_s).sum() / tr.rolling(self._s, min_periods=min_periods_s).sum()
-        avg_m = bp.rolling(
-            self._m, min_periods=min_periods_m).sum() / tr.rolling(self._m, min_periods=min_periods_m).sum()
-        avg_l = bp.rolling(
-            self._len, min_periods=min_periods_len).sum() / tr.rolling(self._len, min_periods=min_periods_len).sum()
-        self._uo = (100.0 * ((self._ws * avg_s) + (self._wm * avg_m) + (self._wl * avg_l))
-                    / (self._ws + self._wm + self._wl))
+        close_shift = self._close.shift(1)
+        true_range = self._true_range(self._high, self._low, close_shift)
+        buying_pressure = self._close - pd.DataFrame(
+            {"low": self._low, "close": close_shift}
+        ).min(axis=1, skipna=False)
+        min_periods_s = 0 if self._fillna else self._window1
+        min_periods_m = 0 if self._fillna else self._window2
+        min_periods_len = 0 if self._fillna else self._window3
+        avg_s = (
+            buying_pressure.rolling(self._window1, min_periods=min_periods_s).sum()
+            / true_range.rolling(self._window1, min_periods=min_periods_s).sum()
+        )
+        avg_m = (
+            buying_pressure.rolling(self._window2, min_periods=min_periods_m).sum()
+            / true_range.rolling(self._window2, min_periods=min_periods_m).sum()
+        )
+        avg_l = (
+            buying_pressure.rolling(self._window3, min_periods=min_periods_len).sum()
+            / true_range.rolling(self._window3, min_periods=min_periods_len).sum()
+        )
+        self._uo = (
+            100.0
+            * (
+                (self._weight1 * avg_s)
+                + (self._weight2 * avg_m)
+                + (self._weight3 * avg_l)
+            )
+            / (self._weight1 + self._weight2 + self._weight3)
+        )
 
-    def uo(self) -> pd.Series:
+    def ultimate_oscillator(self) -> pd.Series:
         """Ultimate Oscillator
 
         Returns:
             pandas.Series: New feature generated.
         """
-        uo = self._check_fillna(self._uo, value=50)
-        return pd.Series(uo, name='uo')
+        ultimate_osc = self._check_fillna(self._uo, value=50)
+        return pd.Series(ultimate_osc, name="uo")
 
 
 class StochasticOscillator(IndicatorMixin):
@@ -186,30 +228,32 @@ class StochasticOscillator(IndicatorMixin):
         close(pandas.Series): dataset 'Close' column.
         high(pandas.Series): dataset 'High' column.
         low(pandas.Series): dataset 'Low' column.
-        n(int): n period.
-        d_n(int): sma period over stoch_k.
+        window(int): n period.
+        smooth_window(int): sma period over stoch_k.
         fillna(bool): if True, fill nan values.
     """
 
-    def __init__(self,
-                 high: pd.Series,
-                 low: pd.Series,
-                 close: pd.Series,
-                 n: int = 14,
-                 d_n: int = 3,
-                 fillna: bool = False):
+    def __init__(
+        self,
+        high: pd.Series,
+        low: pd.Series,
+        close: pd.Series,
+        window: int = 14,
+        smooth_window: int = 3,
+        fillna: bool = False,
+    ):
         self._close = close
         self._high = high
         self._low = low
-        self._n = n
-        self._d_n = d_n
+        self._window = window
+        self._smooth_window = smooth_window
         self._fillna = fillna
         self._run()
 
     def _run(self):
-        min_periods = 0 if self._fillna else self._n
-        smin = self._low.rolling(self._n, min_periods=min_periods).min()
-        smax = self._high.rolling(self._n, min_periods=min_periods).max()
+        min_periods = 0 if self._fillna else self._window
+        smin = self._low.rolling(self._window, min_periods=min_periods).min()
+        smax = self._high.rolling(self._window, min_periods=min_periods).max()
         self._stoch_k = 100 * (self._close - smin) / (smax - smin)
 
     def stoch(self) -> pd.Series:
@@ -219,7 +263,7 @@ class StochasticOscillator(IndicatorMixin):
             pandas.Series: New feature generated.
         """
         stoch_k = self._check_fillna(self._stoch_k, value=50)
-        return pd.Series(stoch_k, name='stoch_k')
+        return pd.Series(stoch_k, name="stoch_k")
 
     def stoch_signal(self) -> pd.Series:
         """Signal Stochastic Oscillator
@@ -227,10 +271,12 @@ class StochasticOscillator(IndicatorMixin):
         Returns:
             pandas.Series: New feature generated.
         """
-        min_periods = 0 if self._fillna else self._d_n
-        stoch_d = self._stoch_k.rolling(self._d_n, min_periods=min_periods).mean()
+        min_periods = 0 if self._fillna else self._smooth_window
+        stoch_d = self._stoch_k.rolling(
+            self._smooth_window, min_periods=min_periods
+        ).mean()
         stoch_d = self._check_fillna(stoch_d, value=50)
-        return pd.Series(stoch_d, name='stoch_k_signal')
+        return pd.Series(stoch_d, name="stoch_k_signal")
 
 
 class KAMAIndicator(IndicatorMixin):
@@ -247,15 +293,22 @@ class KAMAIndicator(IndicatorMixin):
 
     Args:
         close(pandas.Series): dataset 'Close' column.
-        n(int): n period.
+        window(int): n period.
         pow1(int): number of periods for the fastest EMA constant.
         pow2(int): number of periods for the slowest EMA constant.
         fillna(bool): if True, fill nan values.
     """
 
-    def __init__(self, close: pd.Series, n: int = 10, pow1: int = 2, pow2: int = 30, fillna: bool = False):
+    def __init__(
+        self,
+        close: pd.Series,
+        window: int = 10,
+        pow1: int = 2,
+        pow2: int = 30,
+        fillna: bool = False,
+    ):
         self._close = close
-        self._n = n
+        self._window = window
         self._pow1 = pow1
         self._pow2 = pow2
         self._fillna = fillna
@@ -265,26 +318,35 @@ class KAMAIndicator(IndicatorMixin):
         close_values = self._close.values
         vol = pd.Series(abs(self._close - np.roll(self._close, 1)))
 
-        min_periods = 0 if self._fillna else self._n
-        ER_num = abs(close_values - np.roll(close_values, self._n))
-        ER_den = vol.rolling(self._n, min_periods=min_periods).sum()
-        ER = ER_num / ER_den
+        min_periods = 0 if self._fillna else self._window
+        er_num = abs(close_values - np.roll(close_values, self._window))
+        er_den = vol.rolling(self._window, min_periods=min_periods).sum()
+        efficiency_ratio = np.divide(
+            er_num, er_den, out=np.zeros_like(er_num), where=er_den != 0
+        )
 
-        sc = ((ER*(2.0/(self._pow1+1)-2.0/(self._pow2+1.0))+2/(self._pow2+1.0)) ** 2.0).values
+        smoothing_constant = (
+            (
+                efficiency_ratio * (2.0 / (self._pow1 + 1) - 2.0 / (self._pow2 + 1.0))
+                + 2 / (self._pow2 + 1.0)
+            )
+            ** 2.0
+        ).values
 
-        self._kama = np.zeros(sc.size)
-        n = len(self._kama)
+        self._kama = np.zeros(smoothing_constant.size)
+        len_kama = len(self._kama)
         first_value = True
 
-        for i in range(n):
-            if np.isnan(sc[i]):
+        for i in range(len_kama):
+            if np.isnan(smoothing_constant[i]):
                 self._kama[i] = np.nan
+            elif first_value:
+                self._kama[i] = close_values[i]
+                first_value = False
             else:
-                if first_value:
-                    self._kama[i] = close_values[i]
-                    first_value = False
-                else:
-                    self._kama[i] = self._kama[i-1] + sc[i] * (close_values[i] - self._kama[i-1])
+                self._kama[i] = self._kama[i - 1] + smoothing_constant[i] * (
+                    close_values[i] - self._kama[i - 1]
+                )
 
     def kama(self) -> pd.Series:
         """Kaufman's Adaptive Moving Average (KAMA)
@@ -292,9 +354,9 @@ class KAMAIndicator(IndicatorMixin):
         Returns:
             pandas.Series: New feature generated.
         """
-        kama = pd.Series(self._kama, index=self._close.index)
-        kama = self._check_fillna(kama, value=self._close)
-        return pd.Series(kama, name='kama')
+        kama_series = pd.Series(self._kama, index=self._close.index)
+        kama_series = self._check_fillna(kama_series, value=self._close)
+        return pd.Series(kama_series, name="kama")
 
 
 class ROCIndicator(IndicatorMixin):
@@ -317,18 +379,21 @@ class ROCIndicator(IndicatorMixin):
 
     Args:
         close(pandas.Series): dataset 'Close' column.
-        n(int): n period.
+        window(int): n period.
         fillna(bool): if True, fill nan values.
     """
 
-    def __init__(self, close: pd.Series, n: int = 12, fillna: bool = False):
+    def __init__(self, close: pd.Series, window: int = 12, fillna: bool = False):
         self._close = close
-        self._n = n
+        self._window = window
         self._fillna = fillna
         self._run()
 
     def _run(self):
-        self._roc = ((self._close - self._close.shift(self._n)) / self._close.shift(self._n)) * 100
+        self._roc = (
+            (self._close - self._close.shift(self._window))
+            / self._close.shift(self._window)
+        ) * 100
 
     def roc(self) -> pd.Series:
         """Rate of Change (ROC)
@@ -336,8 +401,8 @@ class ROCIndicator(IndicatorMixin):
         Returns:
             pandas.Series: New feature generated.
         """
-        roc = self._check_fillna(self._roc)
-        return pd.Series(roc, name='roc')
+        roc_series = self._check_fillna(self._roc)
+        return pd.Series(roc_series, name="roc")
 
 
 class AwesomeOscillatorIndicator(IndicatorMixin):
@@ -369,34 +434,43 @@ class AwesomeOscillatorIndicator(IndicatorMixin):
     Args:
         high(pandas.Series): dataset 'High' column.
         low(pandas.Series): dataset 'Low' column.
-        s(int): short period.
-        len(int): long period.
+        window1(int): short period.
+        window2(int): long period.
         fillna(bool): if True, fill nan values with -50.
     """
 
-    def __init__(self, high: pd.Series, low: pd.Series, s: int = 5, len: int = 34, fillna: bool = False):
+    def __init__(
+        self,
+        high: pd.Series,
+        low: pd.Series,
+        window1: int = 5,
+        window2: int = 34,
+        fillna: bool = False,
+    ):
         self._high = high
         self._low = low
-        self._s = s
-        self._len = len
+        self._window1 = window1
+        self._window2 = window2
         self._fillna = fillna
         self._run()
 
     def _run(self):
-        mp = 0.5 * (self._high + self._low)
-        min_periods_s = 0 if self._fillna else self._s
-        min_periods_len = 0 if self._fillna else self._len
-        self._ao = mp.rolling(
-            self._s, min_periods=min_periods_s).mean() - mp.rolling(self._len, min_periods=min_periods_len).mean()
+        median_price = 0.5 * (self._high + self._low)
+        min_periods_s = 0 if self._fillna else self._window1
+        min_periods_len = 0 if self._fillna else self._window2
+        self._ao = (
+            median_price.rolling(self._window1, min_periods=min_periods_s).mean()
+            - median_price.rolling(self._window2, min_periods=min_periods_len).mean()
+        )
 
-    def ao(self) -> pd.Series:
+    def awesome_oscillator(self) -> pd.Series:
         """Awesome Oscillator
 
         Returns:
             pandas.Series: New feature generated.
         """
-        ao = self._check_fillna(self._ao, value=0)
-        return pd.Series(ao, name='ao')
+        ao_series = self._check_fillna(self._ao, value=0)
+        return pd.Series(ao_series, name="ao")
 
 
 class WilliamsRIndicator(IndicatorMixin):
@@ -437,7 +511,14 @@ class WilliamsRIndicator(IndicatorMixin):
         fillna(bool): if True, fill nan values with -50.
     """
 
-    def __init__(self, high: pd.Series, low: pd.Series, close: pd.Series, lbp: int = 14, fillna: bool = False):
+    def __init__(
+        self,
+        high: pd.Series,
+        low: pd.Series,
+        close: pd.Series,
+        lbp: int = 14,
+        fillna: bool = False,
+    ):
         self._high = high
         self._low = low
         self._close = close
@@ -447,21 +528,245 @@ class WilliamsRIndicator(IndicatorMixin):
 
     def _run(self):
         min_periods = 0 if self._fillna else self._lbp
-        hh = self._high.rolling(self._lbp, min_periods=min_periods).max()  # highest high over lookback period lbp
-        ll = self._low.rolling(self._lbp, min_periods=min_periods).min()  # lowest low over lookback period lbp
-        self._wr = -100 * (hh - self._close) / (hh - ll)
+        highest_high = self._high.rolling(
+            self._lbp, min_periods=min_periods
+        ).max()  # highest high over lookback period lbp
+        lowest_low = self._low.rolling(
+            self._lbp, min_periods=min_periods
+        ).min()  # lowest low over lookback period lbp
+        self._wr = -100 * (highest_high - self._close) / (highest_high - lowest_low)
 
-    def wr(self) -> pd.Series:
+    def williams_r(self) -> pd.Series:
         """Williams %R
 
         Returns:
             pandas.Series: New feature generated.
         """
-        wr = self._check_fillna(self._wr, value=-50)
-        return pd.Series(wr, name='wr')
+        wr_series = self._check_fillna(self._wr, value=-50)
+        return pd.Series(wr_series, name="wr")
 
 
-def rsi(close, n=14, fillna=False):
+class StochRSIIndicator(IndicatorMixin):
+    """Stochastic RSI
+
+    The StochRSI oscillator was developed to take advantage of both momentum
+    indicators in order to create a more sensitive indicator that is attuned to
+    a specific security's historical performance rather than a generalized analysis
+    of price change.
+
+    https://school.stockcharts.com/doku.php?id=technical_indicators:stochrsi
+    https://www.investopedia.com/terms/s/stochrsi.asp
+
+    Args:
+        close(pandas.Series): dataset 'Close' column.
+        window(int): n period
+        smooth1(int): moving average of Stochastic RSI
+        smooth2(int): moving average of %K
+        fillna(bool): if True, fill nan values.
+    """
+
+    def __init__(
+        self,
+        close: pd.Series,
+        window: int = 14,
+        smooth1: int = 3,
+        smooth2: int = 3,
+        fillna: bool = False,
+    ):
+        self._close = close
+        self._window = window
+        self._smooth1 = smooth1
+        self._smooth2 = smooth2
+        self._fillna = fillna
+        self._run()
+
+    def _run(self):
+        self._rsi = RSIIndicator(
+            close=self._close, window=self._window, fillna=self._fillna
+        ).rsi()
+        lowest_low_rsi = self._rsi.rolling(self._window).min()
+        self._stochrsi = (self._rsi - lowest_low_rsi) / (
+            self._rsi.rolling(self._window).max() - lowest_low_rsi
+        )
+        self._stochrsi_k = self._stochrsi.rolling(self._smooth1).mean()
+
+    def stochrsi(self):
+        """Stochastic RSI
+
+        Returns:
+            pandas.Series: New feature generated.
+        """
+        stochrsi_series = self._check_fillna(self._stochrsi)
+        return pd.Series(stochrsi_series, name="stochrsi")
+
+    def stochrsi_k(self):
+        """Stochastic RSI %k
+
+        Returns:
+            pandas.Series: New feature generated.
+        """
+        stochrsi_k_series = self._check_fillna(self._stochrsi_k)
+        return pd.Series(stochrsi_k_series, name="stochrsi_k")
+
+    def stochrsi_d(self):
+        """Stochastic RSI %d
+
+        Returns:
+            pandas.Series: New feature generated.
+        """
+        stochrsi_d_series = self._stochrsi_k.rolling(self._smooth2).mean()
+        stochrsi_d_series = self._check_fillna(stochrsi_d_series)
+        return pd.Series(stochrsi_d_series, name="stochrsi_d")
+
+
+class PercentagePriceOscillator(IndicatorMixin):
+    """
+    The Percentage Price Oscillator (PPO) is a momentum oscillator that measures
+    the difference between two moving averages as a percentage of the larger moving average.
+
+    https://school.stockcharts.com/doku.php?id=technical_indicators:price_oscillators_ppo
+
+    Args:
+        close(pandas.Series): dataset 'Price' column.
+        window_slow(int): n period long-term.
+        window_fast(int): n period short-term.
+        window_sign(int): n period to signal.
+        fillna(bool): if True, fill nan values.
+    """
+
+    def __init__(
+        self,
+        close: pd.Series,
+        window_slow: int = 26,
+        window_fast: int = 12,
+        window_sign: int = 9,
+        fillna: bool = False,
+    ):
+        self._close = close
+        self._window_slow = window_slow
+        self._window_fast = window_fast
+        self._window_sign = window_sign
+        self._fillna = fillna
+        self._run()
+
+    def _run(self):
+        _emafast = _ema(self._close, self._window_fast, self._fillna)
+        _emaslow = _ema(self._close, self._window_slow, self._fillna)
+        self._ppo = ((_emafast - _emaslow) / _emaslow) * 100
+        self._ppo_signal = _ema(self._ppo, self._window_sign, self._fillna)
+        self._ppo_hist = self._ppo - self._ppo_signal
+
+    def ppo(self):
+        """Percentage Price Oscillator Line
+
+        Returns:
+            pandas.Series: New feature generated.
+        """
+        ppo_series = self._check_fillna(self._ppo, value=0)
+        return pd.Series(
+            ppo_series, name=f"PPO_{self._window_fast}_{self._window_slow}"
+        )
+
+    def ppo_signal(self):
+        """Percentage Price Oscillator Signal Line
+
+        Returns:
+            pandas.Series: New feature generated.
+        """
+
+        ppo_signal_series = self._check_fillna(self._ppo_signal, value=0)
+        return pd.Series(
+            ppo_signal_series, name=f"PPO_sign_{self._window_fast}_{self._window_slow}"
+        )
+
+    def ppo_hist(self):
+        """Percentage Price Oscillator Histogram
+
+        Returns:
+            pandas.Series: New feature generated.
+        """
+
+        ppo_hist_series = self._check_fillna(self._ppo_hist, value=0)
+        return pd.Series(
+            ppo_hist_series, name=f"PPO_hist_{self._window_fast}_{self._window_slow}"
+        )
+
+
+class PercentageVolumeOscillator(IndicatorMixin):
+    """
+    The Percentage Volume Oscillator (PVO) is a momentum oscillator for volume.
+    The PVO measures the difference between two volume-based moving averages as a
+    percentage of the larger moving average.
+
+    https://school.stockcharts.com/doku.php?id=technical_indicators:percentage_volume_oscillator_pvo
+
+    Args:
+        volume(pandas.Series): dataset 'Volume' column.
+        window_slow(int): n period long-term.
+        window_fast(int): n period short-term.
+        window_sign(int): n period to signal.
+        fillna(bool): if True, fill nan values.
+    """
+
+    def __init__(
+        self,
+        volume: pd.Series,
+        window_slow: int = 26,
+        window_fast: int = 12,
+        window_sign: int = 9,
+        fillna: bool = False,
+    ):
+        self._volume = volume
+        self._window_slow = window_slow
+        self._window_fast = window_fast
+        self._window_sign = window_sign
+        self._fillna = fillna
+        self._run()
+
+    def _run(self):
+        _emafast = _ema(self._volume, self._window_fast, self._fillna)
+        _emaslow = _ema(self._volume, self._window_slow, self._fillna)
+        self._pvo = ((_emafast - _emaslow) / _emaslow) * 100
+        self._pvo_signal = _ema(self._pvo, self._window_sign, self._fillna)
+        self._pvo_hist = self._pvo - self._pvo_signal
+
+    def pvo(self) -> pd.Series:
+        """PVO Line
+
+        Returns:
+            pandas.Series: New feature generated.
+        """
+        pvo_series = self._check_fillna(self._pvo, value=0)
+        return pd.Series(
+            pvo_series, name=f"PVO_{self._window_fast}_{self._window_slow}"
+        )
+
+    def pvo_signal(self) -> pd.Series:
+        """Signal Line
+
+        Returns:
+            pandas.Series: New feature generated.
+        """
+
+        pvo_signal_series = self._check_fillna(self._pvo_signal, value=0)
+        return pd.Series(
+            pvo_signal_series, name=f"PVO_sign_{self._window_fast}_{self._window_slow}"
+        )
+
+    def pvo_hist(self) -> pd.Series:
+        """Histgram
+
+        Returns:
+            pandas.Series: New feature generated.
+        """
+
+        pvo_hist_series = self._check_fillna(self._pvo_hist, value=0)
+        return pd.Series(
+            pvo_hist_series, name=f"PVO_hist_{self._window_fast}_{self._window_slow}"
+        )
+
+
+def rsi(close, window=14, fillna=False) -> pd.Series:
     """Relative Strength Index (RSI)
 
     Compares the magnitude of recent gains and losses over a specified time
@@ -473,16 +778,16 @@ def rsi(close, n=14, fillna=False):
 
     Args:
         close(pandas.Series): dataset 'Close' column.
-        n(int): n period.
+        window(int): n period.
         fillna(bool): if True, fill nan values.
 
     Returns:
         pandas.Series: New feature generated.
     """
-    return RSIIndicator(close=close, n=n, fillna=fillna).rsi()
+    return RSIIndicator(close=close, window=window, fillna=fillna).rsi()
 
 
-def tsi(close, r=25, s=13, fillna=False):
+def tsi(close, window_slow=25, window_fast=13, fillna=False) -> pd.Series:
     """True strength index (TSI)
 
     Shows both trend direction and overbought/oversold conditions.
@@ -491,17 +796,30 @@ def tsi(close, r=25, s=13, fillna=False):
 
     Args:
         close(pandas.Series): dataset 'Close' column.
-        r(int): high period.
-        s(int): low period.
+        window_slow(int): high period.
+        window_fast(int): low period.
         fillna(bool): if True, fill nan values.
 
     Returns:
         pandas.Series: New feature generated.
     """
-    return TSIIndicator(close=close, r=r, s=s, fillna=fillna).tsi()
+    return TSIIndicator(
+        close=close, window_slow=window_slow, window_fast=window_fast, fillna=fillna
+    ).tsi()
 
 
-def uo(high, low, close, s=7, m=14, len=28, ws=4.0, wm=2.0, wl=1.0, fillna=False):
+def ultimate_oscillator(
+    high,
+    low,
+    close,
+    window1=7,
+    window2=14,
+    window3=28,
+    weight1=4.0,
+    weight2=2.0,
+    weight3=1.0,
+    fillna=False,
+) -> pd.Series:
     """Ultimate Oscillator
 
     Larry Williams' (1976) signal, a momentum oscillator designed to capture
@@ -521,12 +839,12 @@ def uo(high, low, close, s=7, m=14, len=28, ws=4.0, wm=2.0, wl=1.0, fillna=False
         high(pandas.Series): dataset 'High' column.
         low(pandas.Series): dataset 'Low' column.
         close(pandas.Series): dataset 'Close' column.
-        s(int): short period.
-        m(int): medium period.
-        len(int): long period.
-        ws(float): weight of short BP average for UO.
-        wm(float): weight of medium BP average for UO.
-        wl(float): weight of long BP average for UO.
+        window1(int): short period.
+        window2(int): medium period.
+        window3(int): long period.
+        weight1(float): weight of short BP average for UO.
+        weight2(float): weight of medium BP average for UO.
+        weight3(float): weight of long BP average for UO.
         fillna(bool): if True, fill nan values with 50.
 
     Returns:
@@ -534,10 +852,20 @@ def uo(high, low, close, s=7, m=14, len=28, ws=4.0, wm=2.0, wl=1.0, fillna=False
 
     """
     return UltimateOscillator(
-        high=high, low=low, close=close, s=s, m=m, len=len, ws=ws, wm=wm, wl=wl, fillna=fillna).uo()
+        high=high,
+        low=low,
+        close=close,
+        window1=window1,
+        window2=window2,
+        window3=window3,
+        weight1=weight1,
+        weight2=weight2,
+        weight3=weight3,
+        fillna=fillna,
+    ).ultimate_oscillator()
 
 
-def stoch(high, low, close, n=14, d_n=3, fillna=False):
+def stoch(high, low, close, window=14, smooth_window=3, fillna=False) -> pd.Series:
     """Stochastic Oscillator
 
     Developed in the late 1950s by George Lane. The stochastic
@@ -551,18 +879,27 @@ def stoch(high, low, close, n=14, d_n=3, fillna=False):
         high(pandas.Series): dataset 'High' column.
         low(pandas.Series): dataset 'Low' column.
         close(pandas.Series): dataset 'Close' column.
-        n(int): n period.
-        d_n(int): sma period over stoch_k
+        window(int): n period.
+        smooth_window(int): sma period over stoch_k
         fillna(bool): if True, fill nan values.
 
     Returns:
         pandas.Series: New feature generated.
     """
 
-    return StochasticOscillator(high=high, low=low, close=close, n=n, d_n=d_n, fillna=fillna).stoch()
+    return StochasticOscillator(
+        high=high,
+        low=low,
+        close=close,
+        window=window,
+        smooth_window=smooth_window,
+        fillna=fillna,
+    ).stoch()
 
 
-def stoch_signal(high, low, close, n=14, d_n=3, fillna=False):
+def stoch_signal(
+    high, low, close, window=14, smooth_window=3, fillna=False
+) -> pd.Series:
     """Stochastic Oscillator Signal
 
     Shows SMA of Stochastic Oscillator. Typically a 3 day SMA.
@@ -573,17 +910,24 @@ def stoch_signal(high, low, close, n=14, d_n=3, fillna=False):
         high(pandas.Series): dataset 'High' column.
         low(pandas.Series): dataset 'Low' column.
         close(pandas.Series): dataset 'Close' column.
-        n(int): n period.
-        d_n(int): sma period over stoch_k
+        window(int): n period.
+        smooth_window(int): sma period over stoch_k
         fillna(bool): if True, fill nan values.
 
     Returns:
         pandas.Series: New feature generated.
     """
-    return StochasticOscillator(high=high, low=low, close=close, n=n, d_n=d_n, fillna=fillna).stoch_signal()
+    return StochasticOscillator(
+        high=high,
+        low=low,
+        close=close,
+        window=window,
+        smooth_window=smooth_window,
+        fillna=fillna,
+    ).stoch_signal()
 
 
-def wr(high, low, close, lbp=14, fillna=False):
+def williams_r(high, low, close, lbp=14, fillna=False) -> pd.Series:
     """Williams %R
 
     From: http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:williams_r
@@ -624,10 +968,12 @@ def wr(high, low, close, lbp=14, fillna=False):
     Returns:
         pandas.Series: New feature generated.
     """
-    return WilliamsRIndicator(high=high, low=low, close=close, lbp=lbp, fillna=fillna).wr()
+    return WilliamsRIndicator(
+        high=high, low=low, close=close, lbp=lbp, fillna=fillna
+    ).williams_r()
 
 
-def ao(high, low, s=5, len=34, fillna=False):
+def awesome_oscillator(high, low, window1=5, window2=34, fillna=False) -> pd.Series:
     """Awesome Oscillator
 
     From: https://www.tradingview.com/wiki/Awesome_Oscillator_(AO)
@@ -656,17 +1002,19 @@ def ao(high, low, s=5, len=34, fillna=False):
     Args:
         high(pandas.Series): dataset 'High' column.
         low(pandas.Series): dataset 'Low' column.
-        s(int): short period.
-        len(int): long period.
+        window1(int): short period.
+        window2(int): long period.
         fillna(bool): if True, fill nan values with -50.
 
     Returns:
         pandas.Series: New feature generated.
     """
-    return AwesomeOscillatorIndicator(high=high, low=low, s=s, len=len, fillna=fillna).ao()
+    return AwesomeOscillatorIndicator(
+        high=high, low=low, window1=window1, window2=window2, fillna=fillna
+    ).awesome_oscillator()
 
 
-def kama(close, n=10, pow1=2, pow2=30, fillna=False):
+def kama(close, window=10, pow1=2, pow2=30, fillna=False) -> pd.Series:
     """Kaufman's Adaptive Moving Average (KAMA)
 
     Moving average designed to account for market noise or volatility. KAMA
@@ -680,7 +1028,7 @@ def kama(close, n=10, pow1=2, pow2=30, fillna=False):
 
     Args:
         close(pandas.Series): dataset 'Close' column.
-        n(int): n number of periods for the efficiency ratio.
+        window(int): n number of periods for the efficiency ratio.
         pow1(int): number of periods for the fastest EMA constant.
         pow2(int): number of periods for the slowest EMA constant.
         fillna(bool): if True, fill nan values.
@@ -688,10 +1036,12 @@ def kama(close, n=10, pow1=2, pow2=30, fillna=False):
     Returns:
         pandas.Series: New feature generated.
     """
-    return KAMAIndicator(close=close, n=n, pow1=pow1, pow2=pow2, fillna=fillna).kama()
+    return KAMAIndicator(
+        close=close, window=window, pow1=pow1, pow2=pow2, fillna=fillna
+    ).kama()
 
 
-def roc(close, n=12, fillna=False):
+def roc(close: pd.Series, window: int = 12, fillna: bool = False) -> pd.Series:
     """Rate of Change (ROC)
 
     The Rate-of-Change (ROC) indicator, which is also referred to as simply
@@ -711,11 +1061,292 @@ def roc(close, n=12, fillna=False):
 
     Args:
         close(pandas.Series): dataset 'Close' column.
-        n(int): n periods.
+        window(int): n periods.
         fillna(bool): if True, fill nan values.
 
     Returns:
         pandas.Series: New feature generated.
 
     """
-    return ROCIndicator(close=close, n=n, fillna=fillna).roc()
+    return ROCIndicator(close=close, window=window, fillna=fillna).roc()
+
+
+def stochrsi(
+    close: pd.Series,
+    window: int = 14,
+    smooth1: int = 3,
+    smooth2: int = 3,
+    fillna: bool = False,
+) -> pd.Series:
+    """Stochastic RSI
+
+    The StochRSI oscillator was developed to take advantage of both momentum
+    indicators in order to create a more sensitive indicator that is attuned to
+    a specific security's historical performance rather than a generalized analysis
+    of price change.
+
+    https://www.investopedia.com/terms/s/stochrsi.asp
+
+    Args:
+        close(pandas.Series): dataset 'Close' column.
+        window(int): n period
+        smooth1(int): moving average of Stochastic RSI
+        smooth2(int): moving average of %K
+        fillna(bool): if True, fill nan values.
+    Returns:
+            pandas.Series: New feature generated.
+    """
+    return StochRSIIndicator(
+        close=close, window=window, smooth1=smooth1, smooth2=smooth2, fillna=fillna
+    ).stochrsi()
+
+
+def stochrsi_k(
+    close: pd.Series,
+    window: int = 14,
+    smooth1: int = 3,
+    smooth2: int = 3,
+    fillna: bool = False,
+) -> pd.Series:
+    """Stochastic RSI %k
+
+    The StochRSI oscillator was developed to take advantage of both momentum
+    indicators in order to create a more sensitive indicator that is attuned to
+    a specific security's historical performance rather than a generalized analysis
+    of price change.
+
+    https://www.investopedia.com/terms/s/stochrsi.asp
+
+    Args:
+        close(pandas.Series): dataset 'Close' column.
+        window(int): n period
+        smooth1(int): moving average of Stochastic RSI
+        smooth2(int): moving average of %K
+        fillna(bool): if True, fill nan values.
+    Returns:
+            pandas.Series: New feature generated.
+    """
+    return StochRSIIndicator(
+        close=close, window=window, smooth1=smooth1, smooth2=smooth2, fillna=fillna
+    ).stochrsi_k()
+
+
+def stochrsi_d(
+    close: pd.Series,
+    window: int = 14,
+    smooth1: int = 3,
+    smooth2: int = 3,
+    fillna: bool = False,
+) -> pd.Series:
+    """Stochastic RSI %d
+
+    The StochRSI oscillator was developed to take advantage of both momentum
+    indicators in order to create a more sensitive indicator that is attuned to
+    a specific security's historical performance rather than a generalized analysis
+    of price change.
+
+    https://www.investopedia.com/terms/s/stochrsi.asp
+
+    Args:
+        close(pandas.Series): dataset 'Close' column.
+        window(int): n period
+        smooth1(int): moving average of Stochastic RSI
+        smooth2(int): moving average of %K
+        fillna(bool): if True, fill nan values.
+    Returns:
+            pandas.Series: New feature generated.
+    """
+    return StochRSIIndicator(
+        close=close, window=window, smooth1=smooth1, smooth2=smooth2, fillna=fillna
+    ).stochrsi_d()
+
+
+def ppo(
+    close: pd.Series,
+    window_slow: int = 26,
+    window_fast: int = 12,
+    window_sign: int = 9,
+    fillna: bool = False,
+) -> pd.Series:
+    """
+    The Percentage Price Oscillator (PPO) is a momentum oscillator that measures
+    the difference between two moving averages as a percentage of the larger moving average.
+
+    https://school.stockcharts.com/doku.php?id=technical_indicators:price_oscillators_ppo
+
+    Args:
+        close(pandas.Series): dataset 'Price' column.
+        window_slow(int): n period long-term.
+        window_fast(int): n period short-term.
+        window_sign(int): n period to signal.
+        fillna(bool): if True, fill nan values.
+    Returns:
+        pandas.Series: New feature generated.
+    """
+    return PercentagePriceOscillator(
+        close=close,
+        window_slow=window_slow,
+        window_fast=window_fast,
+        window_sign=window_sign,
+        fillna=fillna,
+    ).ppo()
+
+
+def ppo_signal(
+    close: pd.Series, window_slow=26, window_fast=12, window_sign=9, fillna=False
+) -> pd.Series:
+    """
+    The Percentage Price Oscillator (PPO) is a momentum oscillator that measures
+    the difference between two moving averages as a percentage of the larger moving average.
+
+    https://school.stockcharts.com/doku.php?id=technical_indicators:price_oscillators_ppo
+
+    Args:
+        close(pandas.Series): dataset 'Price' column.
+        window_slow(int): n period long-term.
+        window_fast(int): n period short-term.
+        window_sign(int): n period to signal.
+        fillna(bool): if True, fill nan values.
+    Returns:
+        pandas.Series: New feature generated.
+    """
+    return PercentagePriceOscillator(
+        close=close,
+        window_slow=window_slow,
+        window_fast=window_fast,
+        window_sign=window_sign,
+        fillna=fillna,
+    ).ppo_signal()
+
+
+def ppo_hist(
+    close: pd.Series,
+    window_slow: int = 26,
+    window_fast: int = 12,
+    window_sign: int = 9,
+    fillna: bool = False,
+) -> pd.Series:
+    """
+    The Percentage Price Oscillator (PPO) is a momentum oscillator that measures
+    the difference between two moving averages as a percentage of the larger moving average.
+
+    https://school.stockcharts.com/doku.php?id=technical_indicators:price_oscillators_ppo
+
+    Args:
+        close(pandas.Series): dataset 'Price' column.
+        window_slow(int): n period long-term.
+        window_fast(int): n period short-term.
+        window_sign(int): n period to signal.
+        fillna(bool): if True, fill nan values.
+    Returns:
+        pandas.Series: New feature generated.
+    """
+    return PercentagePriceOscillator(
+        close=close,
+        window_slow=window_slow,
+        window_fast=window_fast,
+        window_sign=window_sign,
+        fillna=fillna,
+    ).ppo_hist()
+
+
+def pvo(
+    volume: pd.Series,
+    window_slow: int = 26,
+    window_fast: int = 12,
+    window_sign: int = 9,
+    fillna: bool = False,
+) -> pd.Series:
+    """
+    The Percentage Volume Oscillator (PVO) is a momentum oscillator for volume.
+    The PVO measures the difference between two volume-based moving averages as a
+    percentage of the larger moving average.
+
+    https://school.stockcharts.com/doku.php?id=technical_indicators:percentage_volume_oscillator_pvo
+
+    Args:
+        volume(pandas.Series): dataset 'Volume' column.
+        window_slow(int): n period long-term.
+        window_fast(int): n period short-term.
+        window_sign(int): n period to signal.
+        fillna(bool): if True, fill nan values.
+    Returns:
+        pandas.Series: New feature generated.
+    """
+
+    indicator = PercentageVolumeOscillator(
+        volume=volume,
+        window_slow=window_slow,
+        window_fast=window_fast,
+        window_sign=window_sign,
+        fillna=fillna,
+    )
+    return indicator.pvo()
+
+
+def pvo_signal(
+    volume: pd.Series,
+    window_slow: int = 26,
+    window_fast: int = 12,
+    window_sign: int = 9,
+    fillna: bool = False,
+) -> pd.Series:
+    """
+    The Percentage Volume Oscillator (PVO) is a momentum oscillator for volume.
+    The PVO measures the difference between two volume-based moving averages as a
+    percentage of the larger moving average.
+
+    https://school.stockcharts.com/doku.php?id=technical_indicators:percentage_volume_oscillator_pvo
+
+    Args:
+        volume(pandas.Series): dataset 'Volume' column.
+        window_slow(int): n period long-term.
+        window_fast(int): n period short-term.
+        window_sign(int): n period to signal.
+        fillna(bool): if True, fill nan values.
+    Returns:
+        pandas.Series: New feature generated.
+    """
+
+    indicator = PercentageVolumeOscillator(
+        volume=volume,
+        window_slow=window_slow,
+        window_fast=window_fast,
+        window_sign=window_sign,
+        fillna=fillna,
+    )
+    return indicator.pvo_signal()
+
+
+def pvo_hist(
+    volume: pd.Series,
+    window_slow: int = 26,
+    window_fast: int = 12,
+    window_sign: int = 9,
+    fillna: bool = False,
+) -> pd.Series:
+    """
+    The Percentage Volume Oscillator (PVO) is a momentum oscillator for volume.
+    The PVO measures the difference between two volume-based moving averages as a
+    percentage of the larger moving average.
+
+    https://school.stockcharts.com/doku.php?id=technical_indicators:percentage_volume_oscillator_pvo
+
+    Args:
+        volume(pandas.Series): dataset 'Volume' column.
+        window_slow(int): n period long-term.
+        window_fast(int): n period short-term.
+        window_sign(int): n period to signal.
+        fillna(bool): if True, fill nan values.
+    Returns:
+        pandas.Series: New feature generated.
+    """
+
+    indicator = PercentageVolumeOscillator(
+        volume=volume,
+        window_slow=window_slow,
+        window_fast=window_fast,
+        window_sign=window_sign,
+        fillna=fillna,
+    )
+    return indicator.pvo_hist()
