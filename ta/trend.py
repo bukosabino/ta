@@ -8,7 +8,7 @@
 import numpy as np
 import pandas as pd
 
-from ta.utils import IndicatorMixin, _ema, _get_min_max, _sma
+from ta.utils import IndicatorMixin, _ema, _get_min_max, _sma, _dema
 
 
 class AroonIndicator(IndicatorMixin):
@@ -154,6 +154,78 @@ class MACD(IndicatorMixin):
             macd_diff_series, name=f"MACD_diff_{self._window_fast}_{self._window_slow}"
         )
 
+class ZeroLagMACD(IndicatorMixin):
+    """Zero Lag Moving Average Convergence Divergence (MACD)
+
+    Is a trend-following momentum indicator that shows the relationship between
+    two moving averages of prices.
+
+    https://school.stockcharts.com/doku.php?id=technical_indicators:moving_average_convergence_divergence_macd
+
+    Args:
+        close(pandas.Series): dataset 'Close' column.
+        window_fast(int): n period short-term.
+        window_slow(int): n period long-term.
+        window_sign(int): n period to signal.
+        fillna(bool): if True, fill nan values.
+    """
+
+    def __init__(
+        self,
+        close: pd.Series,
+        window_slow: int = 26,
+        window_fast: int = 12,
+        window_sign: int = 9,
+        fillna: bool = False,
+    ):
+        self._close = close
+        self._window_slow = window_slow
+        self._window_fast = window_fast
+        self._window_sign = window_sign
+        self._fillna = fillna
+        self._run()
+
+    def _run(self):
+        self._demafast = _dema(self._close, self._window_fast, self._fillna)
+        self._demaslow = _dema(self._close, self._window_slow, self._fillna)
+        self._macd = self._demafast - self._demaslow
+        self._macd_signal = _dema(self._macd, self._window_sign, self._fillna)
+        self._macd_diff = self._macd - self._macd_signal
+
+    def macd(self) -> pd.Series:
+        """MACD Line
+
+        Returns:
+            pandas.Series: New feature generated.
+        """
+        macd_series = self._check_fillna(self._macd, value=0)
+        return pd.Series(
+            macd_series, name=f"ZeroLagMACD_{self._window_fast}_{self._window_slow}"
+        )
+
+    def macd_signal(self) -> pd.Series:
+        """Signal Line
+
+        Returns:
+            pandas.Series: New feature generated.
+        """
+
+        macd_signal_series = self._check_fillna(self._macd_signal, value=0)
+        return pd.Series(
+            macd_signal_series,
+            name=f"ZeroLagMACD_sign_{self._window_fast}_{self._window_slow}",
+        )
+
+    def macd_diff(self) -> pd.Series:
+        """ZeroLagMACD Histogram
+
+        Returns:
+            pandas.Series: New feature generated.
+        """
+        macd_diff_series = self._check_fillna(self._macd_diff, value=0)
+        return pd.Series(
+            macd_diff_series, name=f"ZeroLagMACD_diff_{self._window_fast}_{self._window_slow}"
+        )
 
 class EMAIndicator(IndicatorMixin):
     """EMA - Exponential Moving Average
@@ -177,6 +249,30 @@ class EMAIndicator(IndicatorMixin):
         """
         ema_ = _ema(self._close, self._window, self._fillna)
         return pd.Series(ema_, name=f"ema_{self._window}")
+
+class DEMAIndicator(IndicatorMixin):
+    """DEMA - Double Exponential Moving Average
+
+    Args:
+        close(pandas.Series): dataset 'Close' column.
+        window(int): n period.
+        fillna(bool): if True, fill nan values.
+    """
+
+    def __init__(self, close: pd.Series, window: int = 14, fillna: bool = False):
+        self._close = close
+        self._window = window
+        self._fillna = fillna
+
+    def dema_indicator(self) -> pd.Series:
+        """Double Exponential Moving Average (DEMA)
+
+        Returns:
+            pandas.Series: New feature generated.
+        """
+
+        dema_ = _dema(self._close, self._window, self._fillna)
+        return pd.Series(dema_, name=f"dema_{self._window}")
 
 
 class SMAIndicator(IndicatorMixin):
@@ -1164,6 +1260,13 @@ def ema_indicator(close, window=12, fillna=False):
     """
     return EMAIndicator(close=close, window=window, fillna=fillna).ema_indicator()
 
+def dema_indicator(close, window=12, fillna=False):
+    """Double Exponential Moving Average (DEMA)
+
+    Returns:
+        pandas.Series: New feature generated.
+    """
+    return DEMAIndicator(close=close, window=window, fillna=fillna).dema_indicator()
 
 def sma_indicator(close, window=12, fillna=False):
     """Simple Moving Average (SMA)
