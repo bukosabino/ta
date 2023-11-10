@@ -1027,7 +1027,7 @@ class PSARIndicator(IndicatorMixin):
                     high1 = self._high.iloc[i - 1]
                     high2 = self._high.iloc[i - 2]
                     if high2 > self._psar.iloc[i]:
-                        self._psar[i] = high2
+                        self._psar.iloc[i] = high2
                     elif high1 > self._psar.iloc[i]:
                         self._psar.iloc[i] = high1
 
