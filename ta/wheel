@@ -1,0 +1,16 @@
+import subprocess
+import shutil
+from pathlib import Path
+import os
+
+# Clone TA-Lib repository
+ta_lib_url = "https://github.com/mrjbq7/ta-lib.git"
+clone_dir = "ta-lib"
+
+# Check if the directory exists and remove it
+if os.path.exists(clone_dir):
+    shutil.rmtree(clone_dir)
+
+subprocess.run(["git", "clone", ta_lib_url, clone_dir])
+
+# Rest of the script...
