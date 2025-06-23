@@ -10,6 +10,7 @@ from ta.volume import (
     OnBalanceVolumeIndicator,
     VolumePriceTrendIndicator,
     VolumeWeightedAveragePrice,
+    TwiggsMoneyFlowIndicator,
     acc_dist_index,
     ease_of_movement,
     force_index,
@@ -18,6 +19,7 @@ from ta.volume import (
     sma_ease_of_movement,
     volume_price_trend,
     volume_weighted_average_price,
+    twiggs_money_flow
 )
 
 
@@ -328,6 +330,43 @@ class TestVolumePriceTrendIndicator(unittest.TestCase):
     def test_vpt4(self):
         target = "14-smoothed vpt"
         result = self._indicator_smoothed.volume_price_trend()
+        pd.testing.assert_series_equal(
+            self._df[target].tail(), result.tail(), check_names=False
+        )
+
+
+class TestTMFIndicator(unittest.TestCase):
+    _filename = "test/data/cs-tmf.csv"
+
+    @classmethod
+    def setUpClass(cls):
+        cls._df = pd.read_csv(cls._filename, sep=",")
+        cls._params = {
+            "high": cls._df["High"],
+            "low": cls._df["Low"],
+            "close": cls._df["Close"],
+            "volume": cls._df["Volume"],
+            "window": 21,
+            "fillna": False,
+        }
+        cls._indicator = TwiggsMoneyFlowIndicator(**cls._params)
+
+    @classmethod
+    def tearDownClass(cls):
+        del cls._df
+
+    def test_mfi(self):
+        target = "TMF"
+        result = self._indicator.twiggs_money_flow()
+        result = result.round(4)
+        pd.testing.assert_series_equal(
+            self._df[target].tail(), result.tail(), check_names=False
+        )
+
+    def test_mfi2(self):
+        target = "TMF"
+        result = twiggs_money_flow(**self._params)
+        result = result.round(4)
         pd.testing.assert_series_equal(
             self._df[target].tail(), result.tail(), check_names=False
         )

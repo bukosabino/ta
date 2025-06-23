@@ -62,7 +62,7 @@ class TestWrapper(unittest.TestCase):
             .all()
         )
 
-        self.assertTrue(df_with_ta.shape[1] == 94)
+        self.assertEqual(df_with_ta.shape[1], 95)
 
     def test_only_vectorized(self):
         # Clean nan values
@@ -80,7 +80,7 @@ class TestWrapper(unittest.TestCase):
             vectorized=True,
         )
 
-        self.assertTrue(df_vectorized.shape[1] == 76)
+        self.assertEqual(df_vectorized.shape[1], 77)
 
 
 if __name__ == "__main__":

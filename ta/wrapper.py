@@ -58,6 +58,7 @@ from ta.volume import (
     OnBalanceVolumeIndicator,
     VolumePriceTrendIndicator,
     VolumeWeightedAveragePrice,
+    TwiggsMoneyFlowIndicator,
 )
 
 
@@ -144,6 +145,11 @@ def add_volume_ta(
         df[f"{colprefix}volume_nvi"] = NegativeVolumeIndexIndicator(
             close=df[close], volume=df[volume], fillna=fillna
         ).negative_volume_index()
+
+    # Twiggs Money Flow
+    df[f"{colprefix}volume_tmf"] = TwiggsMoneyFlowIndicator(
+        high=df[high], low=df[low], close=df[close], volume=df[volume], window=21, fillna=fillna
+    ).twiggs_money_flow()
 
     return df
 

@@ -11,7 +11,7 @@ import typing as tp
 import numpy as np
 import pandas as pd
 
-from ta.utils import IndicatorMixin, _ema
+from ta.utils import IndicatorMixin, _ema, _wilder_ma
 
 
 class AccDistIndexIndicator(IndicatorMixin):
@@ -489,6 +489,69 @@ class VolumeWeightedAveragePrice(IndicatorMixin):
         return pd.Series(vwap, name=f"vwap_{self._window}")
 
 
+class TwiggsMoneyFlowIndicator(IndicatorMixin):
+    """Twiggs Money Flow (TMF)
+
+    Twiggs Money Flow is Colin Twiggs' derivation of the popular Chaikin Money Flow indicator, 
+    which is in turn derived from the Accumulation Distribution line. 
+
+    https://www.incrediblecharts.com/indicators/twiggs_money_flow.php
+
+    Args:
+        high (pd.Series): dataset 'High' column
+        low (pd.Series): dataset 'Low' column
+        close (pd.Series): dataset 'Close' column
+        volume (pd.Series): dataset 'Volume' column
+        window (int): period for Wilder EMA
+        fillna (bool): if True, fill nan values
+    """
+
+    def __init__(
+        self,
+        high: pd.Series,
+        low: pd.Series,
+        close: pd.Series,
+        volume: pd.Series,
+        window: int = 21,
+        fillna: bool = False,
+    ):
+        self._high = high
+        self._low = low
+        self._close = close
+        self._volume = volume
+        self._window = window
+        self._fillna = fillna
+        self._run()
+
+    def _run(self):
+        prev_close = self._close.shift(1)
+
+        # True Range High = greater of: high today and close yesterday
+        trh = pd.concat([self._high, prev_close], axis=1).max(axis=1)
+        # True Range Low
+        trl = pd.concat([self._low, prev_close], axis=1).min(axis=1)
+
+        # Avoid division by zero
+        tr_range = trh - trl
+        tr_range[tr_range==0] = np.nan ; tr_range = tr_range.bfill()
+
+        # Accumulation/Distribution
+        ad = ((self._close - trl) - (trh - self._close)) / tr_range * self._volume
+
+        # Wilder's smoothing
+        ad_wilder = _wilder_ma(ad, self._window)
+        vol_wilder = _wilder_ma(self._volume, self._window)
+
+        # Final TMF
+        tmf = (ad_wilder / vol_wilder)
+        self._tmf = tmf
+
+    def twiggs_money_flow(self) -> pd.Series:
+        """Twiggs Money Flow (TMF)"""
+        tmf = self._check_fillna(self._tmf, value=0)
+        return pd.Series(tmf, name=f"tmf_{self._window}")
+
+
 def acc_dist_index(high, low, close, volume, fillna=False):
     """Accumulation/Distribution Index (ADI)
 
@@ -762,3 +825,28 @@ def volume_weighted_average_price(
         high=high, low=low, close=close, volume=volume, window=window, fillna=fillna
     )
     return indicator.volume_weighted_average_price()
+
+
+def twiggs_money_flow(high, low, close, volume, window=21, fillna=False):
+    """Twiggs Money Flow (TMF)
+
+    Twiggs Money Flow is Colin Twiggs' derivation of the popular Chaikin Money Flow indicator, 
+    which is in turn derived from the Accumulation Distribution line. 
+
+    https://www.incrediblecharts.com/indicators/twiggs_money_flow.php
+
+    Args:
+        high(pandas.Series): dataset 'High' column.
+        low(pandas.Series): dataset 'Low' column.
+        close(pandas.Series): dataset 'Close' column.
+        volume(pandas.Series): dataset 'Volume' column.
+        window(int): n period.
+        fillna(bool): if True, fill nan values.
+
+    Returns:
+        pandas.Series: New feature generated.
+    """
+
+    return TwiggsMoneyFlowIndicator(
+        high=high, low=low, close=close, volume=volume, window=window, fillna=fillna
+    ).twiggs_money_flow()
