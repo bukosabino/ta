@@ -13,6 +13,7 @@ jobs:
             pip install --upgrade pip
             python3 -m venv venv
             . venv/bin/activate
+            pip install --upgrade pip
             pip install -r requirements-test.txt
       - run:
           name: Run linter
@@ -56,7 +57,7 @@ jobs:
       - run:
           name: Run coverage
           command: |
-            coverage run tests.py
+            coverage run -m unittest discover
             coverage report -m
       - run:
           name: Publish coverage
