@@ -65,6 +65,10 @@ def _ema(series, periods: int, fillna: bool = False):
     min_periods = 0 if fillna else periods
     return series.ewm(span=periods, min_periods=min_periods, adjust=False).mean()
 
+def _dema(series, periods, fillna=False):
+    ema1_ = _ema(series, periods, fillna)
+    ema2_ = _ema(ema1_, periods, fillna)
+    return np.subtract ((2 * ema1_[:len(ema2_)]), ema2_)
 
 def _get_min_max(series1: pd.Series, series2: pd.Series, function: str = "min"):
     """Find min or max value between two lists for each index"""
