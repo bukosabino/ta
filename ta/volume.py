@@ -446,18 +446,18 @@ class VolumeWeightedAveragePrice(IndicatorMixin):
 
     def __init__(
         self,
+        date: pd.Series,
         high: pd.Series,
         low: pd.Series,
         close: pd.Series,
         volume: pd.Series,
-        window: int = 14,
         fillna: bool = False,
     ):
+        self._date = date
         self._high = high
         self._low = low
         self._close = close
         self._volume = volume
-        self._window = window
         self._fillna = fillna
         self._run()
 
@@ -469,13 +469,13 @@ class VolumeWeightedAveragePrice(IndicatorMixin):
         typical_price_volume = typical_price * self._volume
 
         # 3 total price * volume
-        min_periods = 0 if self._fillna else self._window
-        total_pv = typical_price_volume.rolling(
-            self._window, min_periods=min_periods
-        ).sum()
+        df_pv = pd.concat([self._date.dt.date, typical_price_volume, self._volume],
+                          keys=['Date', 'Price Volume', 'Volume'], axis=1)
+
+        total_pv = (df_pv.groupby(['Date'])['Price Volume'].cumsum(axis=0).reset_index()['Price Volume'])
 
         # 4 total volume
-        total_volume = self._volume.rolling(self._window, min_periods=min_periods).sum()
+        total_volume = (df_pv.groupby(['Date'])['Volume'].cumsum(axis=0).reset_index()['Volume'])
 
         self.vwap = total_pv / total_volume
 
@@ -486,7 +486,7 @@ class VolumeWeightedAveragePrice(IndicatorMixin):
             pandas.Series: New feature generated.
         """
         vwap = self._check_fillna(self.vwap)
-        return pd.Series(vwap, name=f"vwap_{self._window}")
+        return pd.Series(vwap, name=f"vwap")
 
 
 def acc_dist_index(high, low, close, volume, fillna=False):
