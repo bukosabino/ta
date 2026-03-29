@@ -26,7 +26,6 @@ from ta.others import (
     DailyReturnIndicator,
 )
 from ta.trend import (
-    MACD,
     ADXIndicator,
     AroonIndicator,
     CCIIndicator,
@@ -34,6 +33,7 @@ from ta.trend import (
     EMAIndicator,
     IchimokuIndicator,
     KSTIndicator,
+    MACD,
     MassIndex,
     PSARIndicator,
     SMAIndicator,
