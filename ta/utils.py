@@ -66,6 +66,11 @@ def _ema(series, periods: int, fillna: bool = False):
     return series.ewm(span=periods, min_periods=min_periods, adjust=False).mean()
 
 
+def _wilder_ma(series: pd.Series, window: int) -> pd.Series:
+    """Wilder's smoothing method (special EMA using alpha=1/window)"""
+    return series.ewm(alpha=1 / window, adjust=False).mean()
+
+
 def _get_min_max(series1: pd.Series, series2: pd.Series, function: str = "min"):
     """Find min or max value between two lists for each index"""
     series1 = np.array(series1)
