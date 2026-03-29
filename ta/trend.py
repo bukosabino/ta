@@ -728,7 +728,7 @@ class ADXIndicator(IndicatorMixin):
 
         self._trs_initial = np.zeros(self._window - 1)
         self._trs = np.zeros(len(self._close) - (self._window - 1))
-        self._trs[0] = diff_directional_movement.dropna().iloc[0 : self._window].sum()
+        self._trs[0] = diff_directional_movement.dropna().iloc[0:self._window].sum()
         diff_directional_movement = diff_directional_movement.reset_index(drop=True)
 
         for i in range(1, len(self._trs) - 1):
@@ -745,7 +745,7 @@ class ADXIndicator(IndicatorMixin):
         neg = abs(((diff_down > diff_up) & (diff_down > 0)) * diff_down)
 
         self._dip = np.zeros(len(self._close) - (self._window - 1))
-        self._dip[0] = pos.dropna().iloc[0 : self._window].sum()
+        self._dip[0] = pos.dropna().iloc[0:self._window].sum()
 
         pos = pos.reset_index(drop=True)
 
@@ -757,7 +757,7 @@ class ADXIndicator(IndicatorMixin):
             )
 
         self._din = np.zeros(len(self._close) - (self._window - 1))
-        self._din[0] = neg.dropna().iloc[0 : self._window].sum()
+        self._din[0] = neg.dropna().iloc[0:self._window].sum()
 
         neg = neg.reset_index(drop=True)
 
@@ -804,7 +804,7 @@ class ADXIndicator(IndicatorMixin):
                 directional_index[idx] = 0
 
         adx_series = np.zeros(len(self._trs))
-        adx_series[self._window] = directional_index[0 : self._window].mean()
+        adx_series[self._window] = directional_index[0:self._window].mean()
 
         for i in range(self._window + 1, len(adx_series)):
             adx_series[i] = (
@@ -1027,7 +1027,7 @@ class PSARIndicator(IndicatorMixin):
                     high1 = self._high.iloc[i - 1]
                     high2 = self._high.iloc[i - 2]
                     if high2 > self._psar.iloc[i]:
-                        self._psar[i] = high2
+                        self._psar.iloc[i] = high2
                     elif high1 > self._psar.iloc[i]:
                         self._psar.iloc[i] = high1
 
