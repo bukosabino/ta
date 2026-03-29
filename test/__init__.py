@@ -19,6 +19,7 @@ from test.unit.trend import (
     TestSTCIndicator,
     TestVortexIndicator,
     TestWMAIndicator,
+    TestPivotPointsIndicator
 )
 from test.unit.volatility import (
     TestAverageTrueRange,
@@ -58,6 +59,7 @@ __all__ = [
     "TestSTCIndicator",
     "TestVortexIndicator",
     "TestWMAIndicator",
+    "TestPivotPointsIndicator",
     "TestAverageTrueRange",
     "TestAverageTrueRange2",
     "TestBollingerBands",

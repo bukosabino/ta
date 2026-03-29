@@ -25,6 +25,7 @@ from ta.trend import (
     vortex_indicator_neg,
     vortex_indicator_pos,
     wma_indicator,
+    PivotPointsIndicator
 )
 
 
@@ -399,6 +400,40 @@ class TestWMAIndicator(unittest.TestCase):
         pd.testing.assert_series_equal(
             self._df[target].tail(), result.tail(), check_names=False
         )
+
+class TestPivotPointsIndicator(unittest.TestCase):
+    """
+    https://www.investopedia.com/terms/p/pivotpoint.asp
+    """
+    _filename="test/data/cs-pp.csv"
+
+    @classmethod
+    def setUpClass(cls):
+        cls._df = pd.read_csv(cls._filename, sep=",")
+        #calculate pivot points
+        cls._indicator=PivotPointsIndicator(cls._df['High'],cls._df['Low'],cls._df['Close'],fillna=True)
+    
+    @classmethod
+    def tearDownClass(cls):
+        del cls._df
+    
+    def test_pivot_point(self):
+        #assign calculated values to respective columns
+        self._df['pp']=self._indicator.pp()
+        self._df['s1']=self._indicator.s1()
+        self._df['s2']=self._indicator.s2()
+        self._df['s3']=self._indicator.s3()
+        self._df['r1']=self._indicator.r1()
+        self._df['r2']=self._indicator.r2()
+        self._df['r3']=self._indicator.r3()
+
+        pd.testing.assert_series_equal(self._df['pp'],self._df['pp_orig'],check_names=False)
+        pd.testing.assert_series_equal(self._df['s1'],self._df['s1_orig'],check_names=False)
+        pd.testing.assert_series_equal(self._df['s2'],self._df['s2_orig'],check_names=False)
+        pd.testing.assert_series_equal(self._df['s3'],self._df['s3_orig'],check_names=False)
+        pd.testing.assert_series_equal(self._df['r1'],self._df['r1_orig'],check_names=False)
+        pd.testing.assert_series_equal(self._df['r2'],self._df['r2_orig'],check_names=False)
+        pd.testing.assert_series_equal(self._df['r3'],self._df['r3_orig'],check_names=False)
 
 
 if __name__ == "__main__":
