@@ -83,7 +83,15 @@ class OnBalanceVolumeIndicator(IndicatorMixin):
         self._run()
 
     def _run(self):
-        obv = np.where(self._close < self._close.shift(1), -self._volume, self._volume)
+        close_prev = self._close.shift(1)
+        obv = np.zeros_like(self._volume) 
+
+        close_up_mask = self._close > close_prev
+        close_dn_mask = self._close < close_prev
+
+        obv[close_up_mask] = self._volume[close_up_mask]
+        obv[close_dn_mask] = -self._volume[close_dn_mask]
+
         self._obv = pd.Series(obv, index=self._close.index).cumsum()
 
     def on_balance_volume(self) -> pd.Series:
@@ -625,7 +633,11 @@ def sma_ease_of_movement(high, low, volume, window=14, fillna=False):
 
 
 def volume_price_trend(
-    close, volume, fillna=False, smoothing_factor: tp.Optional[int] = None, dropnans: bool = False
+    close,
+    volume,
+    fillna=False,
+    smoothing_factor: tp.Optional[int] = None,
+    dropnans: bool = False,
 ):
     """Volume-price trend (VPT)
 
