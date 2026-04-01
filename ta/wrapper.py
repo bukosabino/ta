@@ -40,6 +40,7 @@ from ta.trend import (
     STCIndicator,
     TRIXIndicator,
     VortexIndicator,
+    BOPIndicator,
 )
 from ta.volatility import (
     AverageTrueRange,
@@ -275,6 +276,12 @@ def add_trend_ta(
     df[f"{colprefix}trend_vortex_ind_pos"] = indicator_vortex.vortex_indicator_pos()
     df[f"{colprefix}trend_vortex_ind_neg"] = indicator_vortex.vortex_indicator_neg()
     df[f"{colprefix}trend_vortex_ind_diff"] = indicator_vortex.vortex_indicator_diff()
+
+    # BOP Indicator
+    indicator_bop = BOPIndicator(
+        close = df[close], open = df[open], high = df[high], low = df[low], fillna = fillna
+    )
+    df[f"{colprefix}trend_bop_ind"] = indicator_bop.bop()
 
     # TRIX Indicator
     df[f"{colprefix}trend_trix"] = TRIXIndicator(
