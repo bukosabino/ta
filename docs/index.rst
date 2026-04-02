@@ -68,6 +68,18 @@ Example adding a particular feature:
    # Add Bollinger Band low indicator
    df['bb_bbli'] = indicator_bb.bollinger_lband_indicator()
 
+Category notebooks (all 43 indicators)
+--------------------------------------
+
+The repository includes a 5-notebook category walkthrough for all indicators:
+
+* https://github.com/bukosabino/ta/blob/master/examples_to_use/category_notebooks/README.md
+* https://github.com/bukosabino/ta/blob/master/examples_to_use/category_notebooks/01_volume_indicators.ipynb
+* https://github.com/bukosabino/ta/blob/master/examples_to_use/category_notebooks/02_volatility_indicators.ipynb
+* https://github.com/bukosabino/ta/blob/master/examples_to_use/category_notebooks/03_trend_indicators.ipynb
+* https://github.com/bukosabino/ta/blob/master/examples_to_use/category_notebooks/04_momentum_indicators.ipynb
+* https://github.com/bukosabino/ta/blob/master/examples_to_use/category_notebooks/05_others_indicators.ipynb
+
 Motivation
 ==================
 
