@@ -228,7 +228,6 @@ Thank you to [OpenSistemas](https://opensistemas.com)! It is because of your con
 * Add [more technical analysis features](https://en.wikipedia.org/wiki/Technical_analysis).
 * Wrapper to get financial data.
 * Use of the Pandas multi-indexing techniques to calculate several indicators at the same time.
-* Use Plotly/Streamlit to visualize features
 
 
 # Changelog
