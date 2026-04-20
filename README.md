@@ -126,6 +126,14 @@ You can get code examples in [examples_to_use](https://github.com/bukosabino/ta/
 
 You can visualize the features in [this notebook](https://github.com/bukosabino/ta/blob/master/examples_to_use/visualize_features.ipynb).
 
+For a category-based walkthrough of all 43 indicators (Volume, Volatility, Trend, Momentum, Others), use:
+
+* [examples_to_use/category_notebooks/README.md](https://github.com/bukosabino/ta/blob/master/examples_to_use/category_notebooks/README.md)
+* [01_volume_indicators.ipynb](https://github.com/bukosabino/ta/blob/master/examples_to_use/category_notebooks/01_volume_indicators.ipynb)
+* [02_volatility_indicators.ipynb](https://github.com/bukosabino/ta/blob/master/examples_to_use/category_notebooks/02_volatility_indicators.ipynb)
+* [03_trend_indicators.ipynb](https://github.com/bukosabino/ta/blob/master/examples_to_use/category_notebooks/03_trend_indicators.ipynb)
+* [04_momentum_indicators.ipynb](https://github.com/bukosabino/ta/blob/master/examples_to_use/category_notebooks/04_momentum_indicators.ipynb)
+* [05_others_indicators.ipynb](https://github.com/bukosabino/ta/blob/master/examples_to_use/category_notebooks/05_others_indicators.ipynb)
 
 #### Example adding all features
 
