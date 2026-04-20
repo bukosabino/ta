@@ -30,7 +30,6 @@ Each notebook:
 - renders interactive Plotly charts in final cells
 
 No PNG files are written. Visual outputs remain embedded in notebook execution outputs.
-
 ## One-Go Indicator Generation (Single Script)
 
 Use this script if you want one complete feature table directly, without running all notebooks.
