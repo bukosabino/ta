@@ -44,12 +44,14 @@ class AroonIndicator(IndicatorMixin):
 
         rolling_high = self._high.rolling(self._window + 1, min_periods=min_periods)
         self._aroon_up = rolling_high.apply(
-            lambda x: float(np.argmax(x)) / self._window * 100, raw=True
+            lambda x: float(len(x) - 1 - np.argmax(x[::-1])) / self._window * 100,
+            raw=True,
         )
 
         rolling_low = self._low.rolling(self._window + 1, min_periods=min_periods)
         self._aroon_down = rolling_low.apply(
-            lambda x: float(np.argmin(x)) / self._window * 100, raw=True
+            lambda x: float(len(x) - 1 - np.argmin(x[::-1])) / self._window * 100,
+            raw=True,
         )
 
     def aroon_up(self) -> pd.Series:

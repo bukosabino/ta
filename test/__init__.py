@@ -13,6 +13,7 @@ from test.unit.momentum import (
 )
 from test.unit.trend import (
     TestADXIndicator,
+    TestAroonIndicator,
     TestCCIIndicator,
     TestMACDIndicator,
     TestPSARIndicator,
@@ -52,6 +53,7 @@ __all__ = [
     "TestUltimateOscillator",
     "TestWilliamsRIndicator",
     "TestADXIndicator",
+    "TestAroonIndicator",
     "TestCCIIndicator",
     "TestMACDIndicator",
     "TestPSARIndicator",

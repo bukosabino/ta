@@ -5,6 +5,7 @@ import pandas as pd
 from ta.trend import (
     MACD,
     ADXIndicator,
+    AroonIndicator,
     CCIIndicator,
     PSARIndicator,
     STCIndicator,
@@ -13,6 +14,8 @@ from ta.trend import (
     adx,
     adx_neg,
     adx_pos,
+    aroon_down,
+    aroon_up,
     cci,
     macd,
     macd_diff,
@@ -398,6 +401,58 @@ class TestWMAIndicator(unittest.TestCase):
         result = wma_indicator(**self._params)
         pd.testing.assert_series_equal(
             self._df[target].tail(), result.tail(), check_names=False
+        )
+
+
+class TestAroonIndicator(unittest.TestCase):
+    """Aroon Up/Down.
+
+    Aroon Up  = ((N - periods since the N-period high) / N) * 100
+    Aroon Down = ((N - periods since the N-period low) / N) * 100
+
+    "Periods since the high/low" must be counted from the most recent
+    occurrence of the extreme. In particular, when the current bar sets (or
+    ties) the N-period high, Aroon Up must be 100 (0 periods since the high).
+
+    https://www.investopedia.com/terms/a/aroon.asp
+    """
+
+    def setUp(self):
+        self._window = 4
+        # last window+1 (=5) highs: [8, 10, 9, 7, 10] -> current bar ties the
+        # period high (10) -> 0 periods since high -> Aroon Up = 100.
+        self._high = pd.Series([5.0, 8.0, 10.0, 9.0, 7.0, 10.0])
+        # last window+1 lows: [6, 4, 5, 7, 4] -> current bar ties the period
+        # low (4) -> 0 periods since low -> Aroon Down = 100.
+        self._low = pd.Series([9.0, 6.0, 4.0, 5.0, 7.0, 4.0])
+        self._params = {
+            "high": self._high,
+            "low": self._low,
+            "window": self._window,
+            "fillna": False,
+        }
+        self._indicator = AroonIndicator(**self._params)
+
+    def test_aroon_up_current_bar_ties_high(self):
+        result = self._indicator.aroon_up()
+        # current bar ties the period high -> 100
+        self.assertAlmostEqual(result.iloc[-1], 100.0)
+        # previous bar: unique high 3 bars back within its window -> 50
+        self.assertAlmostEqual(result.iloc[-2], 50.0)
+
+    def test_aroon_down_current_bar_ties_low(self):
+        result = self._indicator.aroon_down()
+        self.assertAlmostEqual(result.iloc[-1], 100.0)
+        self.assertAlmostEqual(result.iloc[-2], 50.0)
+
+    def test_aroon_functional_matches_class(self):
+        pd.testing.assert_series_equal(
+            aroon_up(**self._params), self._indicator.aroon_up(), check_names=False
+        )
+        pd.testing.assert_series_equal(
+            aroon_down(**self._params),
+            self._indicator.aroon_down(),
+            check_names=False,
         )
 
 
