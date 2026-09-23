@@ -331,11 +331,17 @@ class TestTSIIndicator(unittest.TestCase):
     def test_tsi(self):
         target = "TSI"
         result = self._indicator.tsi()
+        # check_less_precise was removed from pandas' assert_series_equal.
+        # check_exact=False + rtol=1e-3 tolerates the ~0.01% gap between
+        # this fixture and the current computation (the old flag's exact
+        # 3-decimal-place semantics didn't survive translation cleanly -
+        # rtol is the closer match to what this test actually needs).
         pd.testing.assert_series_equal(
             self._df[target].tail(),
             result.tail(),
             check_names=False,
-            check_less_precise=True,
+            check_exact=False,
+            rtol=1e-3,
         )
 
     def test_tsi2(self):
@@ -345,7 +351,8 @@ class TestTSIIndicator(unittest.TestCase):
             self._df[target].tail(),
             result.tail(),
             check_names=False,
-            check_less_precise=True,
+            check_exact=False,
+            rtol=1e-3,
         )
 
 
