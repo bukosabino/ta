@@ -1,5 +1,6 @@
 import unittest
 
+import numpy as np
 import pandas as pd
 
 from ta.momentum import (
@@ -61,6 +62,34 @@ class TestRateOfChangeIndicator(unittest.TestCase):
         pd.testing.assert_series_equal(
             self._df[target].tail(), result.tail(), check_names=False
         )
+
+
+class TestRSIMissingValues(unittest.TestCase):
+    """A NaN price must leave RSI undefined, not read as a zero move (which gave RSI = 100)."""
+
+    def test_all_nan_input_gives_nan(self):
+        result = RSIIndicator(pd.Series([np.nan] * 40), window=14).rsi()
+        self.assertTrue(result.isna().all())
+
+    def test_nan_rows_stay_nan_and_others_are_unaffected(self):
+        rng = np.random.default_rng(3)
+        close = pd.Series(100 + np.cumsum(rng.normal(0, 1, 80)))
+        gappy = close.copy()
+        gappy.iloc[30:36] = np.nan
+        result = RSIIndicator(gappy, window=14).rsi()
+        clean = RSIIndicator(close, window=14).rsi()
+        # the NaN price and the change right after it are undefined
+        self.assertTrue(result.iloc[30:37].isna().all())
+        # before the gap, nothing changes
+        pd.testing.assert_series_equal(result.iloc[:30], clean.iloc[:30])
+        # after the gap, RSI is a real number again within 0..100
+        self.assertTrue(result.iloc[40:].between(0, 100).all())
+
+    def test_complete_input_is_unchanged(self):
+        close = pd.Series([1.0, 2.0, 1.5, 2.5, 2.0, 3.0, 2.5, 3.5, 3.0, 4.0, 3.5, 4.5, 4.0, 5.0, 4.5, 5.5])
+        result = RSIIndicator(close, window=14).rsi()
+        self.assertTrue(result.iloc[:13].isna().all())
+        self.assertTrue(result.iloc[13:].notna().all())
 
 
 class TestRSIIndicator(unittest.TestCase):
