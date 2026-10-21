@@ -35,8 +35,13 @@ class RSIIndicator(IndicatorMixin):
 
     def _run(self):
         diff = self._close.diff(1)
-        up_direction = diff.where(diff > 0, 0.0)
-        down_direction = -diff.where(diff < 0, 0.0)
+        # A NaN price makes the change unknown, not zero. The first row's diff is
+        # always NaN and keeps counting as a zero move, as it always has.
+        unknown = diff.isna()
+        if len(unknown) > 0:
+            unknown.iloc[0] = False
+        up_direction = diff.where(diff > 0, 0.0).mask(unknown)
+        down_direction = -diff.where(diff < 0, 0.0).mask(unknown)
         min_periods = 0 if self._fillna else self._window
         emaup = up_direction.ewm(
             alpha=1 / self._window, min_periods=min_periods, adjust=False
@@ -48,7 +53,7 @@ class RSIIndicator(IndicatorMixin):
         self._rsi = pd.Series(
             np.where(emadn == 0, 100, 100 - (100 / (1 + relative_strength))),
             index=self._close.index,
-        )
+        ).mask(unknown)
 
     def rsi(self) -> pd.Series:
         """Relative Strength Index (RSI)
